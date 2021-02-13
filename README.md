@@ -107,7 +107,7 @@ C# Snippet Productivity
 
 ## How to use
 
-\!\[feature X\]\(images/feature-x.png\)
+\!\[clipvarclassfunc]\(videos/clipvarclassfunc.gif)
 
 ## Do you want to contribute?
 
