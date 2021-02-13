@@ -107,7 +107,7 @@ C# Snippet Productivity
 
 ## How to use
 
-\!\[clipvarclassfunc]\(videos/clipvarclassfunc.gif)
+\!\[clipvarclassfunc]\(https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/clipvarclassfunc.gif)
 
 ## Do you want to contribute?
 
