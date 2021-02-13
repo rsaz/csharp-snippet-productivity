@@ -1,0 +1,430 @@
+{
+	"-> TODO Comments": {
+		"prefix": "todo",
+		"body": [
+			"// TODO: ${0: comments}"
+		],
+		"description": "TODO Comments"
+	},
+	"-> REVIEW Comments": {
+		"prefix": "review",
+		"body": [
+			"// TO REVIEW: ${0: comments}"
+		],
+		"description": "To Review Comments"
+	},
+	"-> BUG Comments": {
+		"prefix": "bug",
+		"body": [
+			"// BUG: ${0: comments}"
+		],
+		"description": "Bug Comments"
+	},
+	"-> RESEARCH Comments": {
+		"prefix": "research",
+		"body": [
+			"// RESEARCH: ${0: comments}"
+		],
+		"description": "Research Comments"
+	},
+	"-> Console WriteLine": {
+		"prefix": "cw",
+		"body": [
+			"Console.${1|WriteLine,Write|}($0);"
+		],
+		"description": "Console WriteLine();"
+	},
+	"-> WriteLine Interpolation": {
+		"prefix": "cwi",
+		"body": [
+			"Console.${1|WriteLine,Write|}($\"${0:Text}\");"
+		],
+		"description": "Console WriteLine with Interpolation"
+	},
+	"-> Console ReadLine": {
+		"prefix": "cr",
+		"body": [
+			"Console.ReadLine();",
+			"$0"
+		],
+		"description": "Console ReadLine"
+	},
+	"-> Console ReadKey": {
+		"prefix": "crk",
+		"body": [
+			"Console.ReadKey(true);",
+			"$0"
+		],
+		"description": "Console ReadKey"
+	},
+	"-> Console Clear": {
+		"prefix": "clr",
+		"body": [
+			"Console.Clear();",
+			"$0"
+		],
+		"description": "Console Clear"
+	},
+	"-> Variable Declaration": {
+		"prefix": "var",
+		"body": [
+			"${1:int} ${2:variable} = ${3:0};",
+			"$0"
+		],
+		"description": "Variable declaration"
+	},
+	"-> if statement": {
+		"prefix": "if",
+		"body": [
+			"if (${1:condition})",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates an if statement"
+	},
+	"-> Else statement": {
+		"prefix": "else",
+		"body": [
+			"else",
+			"{",
+			"    $0",
+			"}"
+		],
+		"description": "Else statement"
+	},
+	"-> if else statement": {
+		"prefix": "ifelse",
+		"body": [
+			"if (${1:condition})",
+			"{",
+			"\t$0",
+			"}",
+			"else",
+			"{",
+			"\t",
+			"}"
+		],
+		"description": "Creates an if else statement"
+	},
+	"-> Conditional operator": {
+		"prefix": "iif",
+		"body": [
+			"var ${1:variable} = ${2:true};",
+			"var ${3:result} = (${1} ? ${4:true} : ${5:false});",
+			"$0"
+		],
+		"description": "Creates a conditional operator"
+	},
+	"-> Enum": {
+		"prefix": "enum",
+		"body": [
+			"enum ${1:Name}",
+			"{",
+			"    $0",
+			"}"
+		],
+		"description": "Create a Enum Type"
+	},
+	"-> Switch statement": {
+		"prefix": "switch",
+		"body": [
+			"switch (${1:condition})",
+			"{",
+			"    $0",
+			"    default:",
+			"    break;",
+			"}"
+		],
+		"description": "Create a Switch statement"
+	},
+	"-> Using statement": {
+		"prefix": "using",
+		"body": [
+			"using (${1:resource})",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Using statement"
+	},
+	"-> While loop": {
+		"prefix": "while",
+		"body": [
+			"while (${1:condition})",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "While loop"
+	},
+	"-> Do while loop": {
+		"prefix": "dowhile",
+		"body": [
+			"do",
+			"{",
+			"\t$0",
+			"} while (${1:condition})"
+		],
+		"description": "Creates a do while loop"
+	},
+	"-> for loop": {
+		"prefix": "for",
+		"body": [
+			"for (var ${1:i} = 0; $1 < ${2:length}; $1++)",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a for loop"
+	},
+	"-> foreach statement": {
+		"prefix": "foreach",
+		"body": [
+			"foreach (var ${1:item} in ${2:collection})",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a foreach statement"
+	},
+	"-> Array": {
+		"prefix": "arr",
+		"body": [
+			"${1:type}[] ${2:arrayName} = new ${1}[${3:size}];",
+			"$0"
+		],
+		"description": "Creates an array"
+	},
+	"-> List": {
+		"prefix": "lst",
+		"body": [
+			"List<${1:type}> ${2:arrayName} = new List<${1}>();",
+			"$0"
+		],
+		"description": "Creates a list"
+	},
+	"-> IList": {
+		"prefix": "ilst",
+		"body": [
+			"IList<${1:type}> ${2:arrayName} = new List<${1}>();",
+			"$0"
+		],
+		"description": "Creates a generic list"
+	},
+	"-> Dictionary": {
+		"prefix": "dic",
+		"body": [
+			"Dictionary<${1:key}, ${2:value}> ${3:dictionaryName} = new Dictionary<${1},${2}>();",
+			"$0"
+		],
+		"description": "Creates a dictionary"
+	},
+	"-> Concurrent Dictionary": {
+		"prefix": "cdic",
+		"body": [
+			"ConcurrentDictionary<${1:key}, ${2:value}> ${3:dictionaryName} = new ConcurrentDictionary<${1},${2}>();",
+			"$0"
+		],
+		"description": "Creates a concurrent dictionary"
+	},
+	"-> IDictionary": {
+		"prefix": "idic",
+		"body": [
+			"IDictionary<${1:key}, ${2:value}> ${3:dictionaryName} = new Dictionary<${1},${2}>();",
+			"$0"
+		],
+		"description": "Creates a idictionary"
+	},
+	"-> Function": {
+		"prefix": "func",
+		"body": [
+			"public ${1:void} ${2:functionName}()",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a standard function"
+	},
+	"-> Virtual Function": {
+		"prefix": "vfunc",
+		"body": [
+			"public virtual ${1:void} ${2:functionName}()",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a virtual function"
+	},
+	"-> Abstract Function": {
+		"prefix": "afunc",
+		"body": [
+			"public abstract ${1:void} ${2:functionName}();",
+			"\t$0"
+		],
+		"description": "Creates a virtual function"
+	},
+	"-> Return Function": {
+		"prefix": "rfunc",
+		"body": [
+			"public ${1:int} ${2:functionName}()",
+			"{",
+			"\t$0",
+			"\treturn 0;",
+			"}"
+		],
+		"description": "Creates a function with return type"
+	},
+	"-> Static Function": {
+		"prefix": "sfunc",
+		"body": [
+			"public static ${1:void} ${2:functionName}()",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a static function"
+	},
+	"-> Params Function": {
+		"prefix": "pfunc",
+		"body": [
+			"public ${1:void} ${2:functionName}(params ${3:type}[] list)",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a static function"
+	},
+	"-> Exception Try Catch": {
+		"prefix": "try",
+		"body": [
+			"try",
+			"{",
+			"\t$0",
+			"}",
+			"catch (${1:Exception} ${2:ex})",
+			"{",
+			"\t // TODO",
+			"}"
+		],
+		"description": "Creates a try catch block"
+	},
+	"-> Namespace": {
+		"prefix": "namespace",
+		"body": [
+			"namespace ${name}",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Add namespace based on file directory"
+	},
+	"-> Struct": {
+		"prefix": "struct",
+		"body": [
+			"struct ${1:structName}",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a struct"
+	},
+	"-> Class": {
+		"prefix": "class",
+		"body": [
+			"public class ${TM_FILENAME_BASE}",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a basic class"
+	},
+	"-> Class Constructor": {
+		"prefix": "ctor",
+		"body": [
+			"public ${TM_FILENAME_BASE}()",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a constructor"
+	},
+	"-> Object Instantiation": {
+		"prefix": "instantiate",
+		"body": [
+			"${1:class} ${2:objectName} = new ${1}($3);",
+			"$0"
+		],
+		"description": "Creates an object"
+	},
+	"-> Full Class": {
+		"prefix": "fclass",
+		"body": [
+			"public class ${TM_FILENAME_BASE}",
+			"{",
+			"\tpublic ${TM_FILENAME_BASE}(){}",
+			"\tpublic override string ToString(){throw new NotImplementedException();}",
+			"\tpublic override bool Equals(object obj){throw new NotImplementedException();}",
+			"\tpublic override int GetHashCode(){throw new NotImplementedException();}",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a complete class implementation"
+	},
+	"-> Static Class": {
+		"prefix": "sclass",
+		"body": [
+			"public static class ${TM_FILENAME_BASE}",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a basic static class"
+	},
+	"-> Abstract Class": {
+		"prefix": "aclass",
+		"body": [
+			"public abstract class ${TM_FILENAME_BASE}",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates an abstract class"
+	},
+	"-> Interface": {
+		"prefix": "interface",
+		"body": [
+			"public interface I${TM_FILENAME_BASE}",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates an interface"
+	},
+	"-> Properties": {
+		"prefix": "prop",
+		"body": [
+			"public ${1:type} ${2:Property} { get; set; }"
+		],
+		"description": "Creates property"
+	},
+	"-> Expanded Properties": {
+		"prefix": "prope",
+		"body": [
+			"private ${1} _${3:property};",
+			"public ${1:type} ${2:Property}",
+			"{",
+			"\tget => _${3}; ",
+			"\tset => _${3} = value;",
+			"}"
+		],
+		"description": "Creates property"
+	},
+	"-> Record": {
+		"prefix": "record",
+		"body": [
+			"public record ${1:RecordName}($0);"
+		],
+		"description": "Creates a record model"
+	}
+}

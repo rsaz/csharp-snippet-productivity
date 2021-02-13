@@ -1,0 +1,156 @@
+{
+    "-> XML Summary": {
+        "prefix": "xml-summary",
+        "body": [
+            "/// <summary>",
+            "/// ${1:The main class}",
+            "/// ${2:Contain all methods for performing basic operations}",
+            "/// </summary>"
+        ],
+        "description": "The <summary> tag adds brief information about a type or member"
+    },
+    "-> XML Remarks": {
+        "prefix": "xml-remarks",
+        "body": [
+            "/// <summary>",
+            "/// ${1:The main class}",
+            "/// ${2:Contain all methods for performing basic operations}",
+            "/// </summary>",
+            "/// <remarks>",
+            "/// ${3:This class can add, subtract, multiply and divide}",
+            "/// </remarks>"
+        ],
+        "description": "The <remarks> tag supplements the information about types or members that the <summary> tag provides"
+    },
+    "-> XML Returns": {
+        "prefix": "xml-returns",
+        "body": [
+            "/// <summary>",
+            "/// ${1:Add two integers and return the result}",
+            "/// </summary>",
+            "/// <returns>",
+            "/// ${2:The sum of two integers}",
+            "/// </returns>"
+        ],
+        "description": "The <returns> tag describes the return value of a method declaration"
+    },
+    "-> XML Value": {
+        "prefix": "xml-value",
+        "body": [
+            "/// <value>${1:text}</value>"
+        ],
+        "description": "The <value> tag is similar to the <returns> tag, except that you use it for properties"
+    },
+    "-> XML Example": {
+        "prefix": "xml-example",
+        "body": [
+            "/// <summary>",
+            "/// ${1:Add two integers and return the result}",
+            "/// </summary>",
+            "/// <returns>",
+            "/// ${2:The sum of two integers}",
+            "/// </returns>",
+            "/// <example>",
+            "/// <code>",
+            "/// int a = 5, b = 10;",
+            "/// int sum = a + b;",
+            "/// Console.WriteLine(\"Sum :\"sum)",
+            "/// </code>",
+            "/// </example>"
+        ],
+        "description": "You use the <example> tag to include an example in your XML documentation. This involves using the child <code> tag"
+    },
+    "-> XML Para": {
+        "prefix": "xml-para",
+        "body": [
+            "/// <para>${1:text}</para>"
+        ],
+        "description": "You use the <para> tag to format the content within its parent tag. <para> is usually used inside a tag, such as <remarks> or <returns>, to divide text into paragraphs. You can format the contents of the <remarks> tag for your class definition"
+    },
+    "-> XML C": {
+        "prefix": "xml-c",
+        "body": [
+            "/// <c>${1:text}</c>"
+        ],
+        "description": "Still on the topic of formatting, you use the <c> tag for marking part of text as code. It's like the <code> tag but inline. It's useful when you want to show a quick code example as part of a tag's content"
+    },
+    "-> XML Exception": {
+        "prefix": "xml-exception",
+        "body": [
+            "/// <exception cref=\"${1:System.OverflowException}\">${2:Param is max and the other greater than 0}</exception>"
+        ],
+        "description": "by using the <exception> tag, you let your developers know that a method can throw specific exceptions"
+    },
+    "-> XML See": {
+        "prefix": "xml-see",
+        "body": [
+            "/// <see cref=\"${1:member}\"/>"
+        ],
+        "description": "the <see> tag lets you create a clickable link to a documentation page for another code element"
+    },
+    "-> XML Seealso": {
+        "prefix": "xml-seealso",
+        "body": [
+            "/// <seealso cref=\"${1:member}\"/>"
+        ],
+        "description": "you use the <seealso> tag in the same way you do the <see> tag. The only difference is that its content is typically placed in a \"See Also\" section"
+    },
+    "-> XML Param": {
+        "prefix": "xml-param",
+        "body": [
+            "/// <param name=\"${1:name}\">${2:description}</param>"
+        ],
+        "description": "you use the <param> tag to describe a method's parameters"
+    },
+    "XML Typeparam": {
+        "prefix": "xml-typeparam",
+        "body": [
+            "/// <typeparam name=\"${1:name}\">${2:description}</typeparam>"
+        ],
+        "description": "You use <typeparam> tag just like the <param> tag but for generic type or method declarations to describe a generic parameter"
+    },
+    "XML Paramref": {
+        "prefix": "xml-paramref",
+        "body": [
+            "/// <paramref name=\"${1:name}\"/>"
+        ],
+        "description": "sometimes you might be in the middle of describing what a method does in what could be a <summary> tag, and you might want to make a reference to a parameter"
+    },
+    "XML Typeparamref": {
+        "prefix": "xml-typeparamref",
+        "body": [
+            "/// <typeparamref name=\"${1:name}\"/>"
+        ],
+        "description": "you use <typeparamref> tag just like the <paramref> tag but for generic type or method declarations to describe a generic parameter"
+    },
+    "-> XML List": {
+        "prefix": "xml-list",
+        "body": [
+            "/// <list type=\"bullet\">",
+            "///     <listheader>",
+            "///        <term>${1:term}</term>",
+            "///        <description>${2:description}</description>",
+            "///     </listheader>",
+            "///     <item>",
+            "///        <term>${3:term}</term>",
+            "///        <description>${4:description}</description>",
+            "///     </item>",
+            "/// </list>"
+        ],
+        "description": "you use the <list> tag to format documentation information as an ordered list, unordered list, or table"
+    },
+    "-> XML Inheritdoc": {
+        "prefix": "xml-inheritdoc",
+        "body": [
+            "/// <inheritdoc/>"
+        ],
+        "description": "you can use the <inheritdoc> tag to inherit XML comments from base classes, interfaces, and similar methods"
+    },
+    "-> XML Include": {
+        "prefix": "xml-include",
+        "body": [
+            "/// <include file='${1:filename}' path='${2:tagpath}[@name=\"${3:id}\"]' />"
+        ],
+        "description": "the <include> tag lets you refer to comments in a separate XML file that describe the types and members in your source code, as opposed to placing documentation comments directly in your source code file"
+    }
+}

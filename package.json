@@ -1,0 +1,30 @@
+{
+    "name": "csharp-snippet-productivity",
+    "displayName": "C# Toolbox of Productivity",
+    "description": "The complete set of tools for C# development",
+    "version": "1.0.0",
+    "publisher": "Richard Zampieri",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rsaz/csharp-snippet-productivity"
+    },
+    "engines": {
+        "vscode": "^1.53.0"
+    },
+    "categories": [
+        "Snippets"
+    ],
+    "icon": "icon.png",
+    "contributes": {
+        "snippets": [
+            {
+                "language": "csharp",
+                "path": "./snippets/general.json"
+            },
+            {
+                "language": "csharp",
+                "path": "./snippets/documentxml.json"
+            }
+        ]
+    }
+}
