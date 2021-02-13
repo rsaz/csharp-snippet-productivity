@@ -107,7 +107,13 @@ C# Snippet Productivity
 
 ## How to use
 
-\!\[clipvarclassfunc]\(https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/clipvarclassfunc.gif)
+> - All the snippets comments are shown as -> snippet name
+> - Snippets were created thinking on productivity and the extensive use of tab key
+![Add var, class, function](./videos/clipvarclassfunc.gif)
+![Add property, dictionary](./videos/clippropdic.gif)
+> - Colored comments were created to increase visibility of todo's, reviews, bugs and research
+![Add list, comments](./videos/cliplistcom.gif)
+![Colored comments](./videos/comment.gif)
 
 ## Do you want to contribute?
 
