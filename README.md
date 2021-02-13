@@ -6,13 +6,13 @@ C# Snippet Productivity
 		<img src="https://img.shields.io/badge/type-Open Project-green" align="center">
 	</a>
     <a href="https://img.shields.io/github/repo-size/rsaz/mankind">
-        <img src="https://img.shields.io/github/repo-size/rsaz/mankind" align="center"/>
+        <img src="https://img.shields.io/github/repo-size/rsaz/csharp-snippet-productivity" align="center"/>
     </a>	
-    <a href="https://img.shields.io/github/contributors/rsaz/mankind.svg">
-        <img src="https://img.shields.io/github/contributors/rsaz/mankind.svg" align="center"/>
+    <a href="https://img.shields.io/github/contributors/rsaz/csharp-snippet-productivity.svg">
+        <img src="https://img.shields.io/github/contributors/rsaz/csharp-snippet-productivity.svg" align="center"/>
     </a>
-    <a href="https://img.shields.io/github/stars/rsaz/mankind?style=social">
-        <img src="https://img.shields.io/github/stars/rsaz/mankind?style=social" align="center"/>
+    <a href="https://img.shields.io/github/stars/rsaz/csharp-snippet-productivity?style=social">
+        <img src="https://img.shields.io/github/stars/rsaz/csharp-snippet-productivity?style=social" align="center"/>
     </a>	
 	<br>
 </h3>
