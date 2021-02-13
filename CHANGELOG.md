@@ -9,5 +9,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 
-- All snippets for c# productivity
-- All snippets for XML Documentation
+- Initial project release
+- Custom comments: colorful comments for better coding organization
+  - NORMAL comments [***//***]
+  - TODO: comments [***todo***]
+  - REVIEW: comments [***review***]
+  - BUG: comments [***bug***]
+  - RESEARCH: comments [***research***]
+- General C# snippets
+- XML Documentation snippets

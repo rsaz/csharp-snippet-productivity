@@ -9,7 +9,7 @@
 	"-> REVIEW Comments": {
 		"prefix": "review",
 		"body": [
-			"// TO REVIEW: ${0: comments}"
+			"// REVIEW: ${0: comments}"
 		],
 		"description": "To Review Comments"
 	},
