@@ -2,7 +2,7 @@
     "name": "csharp-snippet-productivity",
     "displayName": "C# Toolbox of Productivity",
     "description": "The complete set of tools for C# development",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "icon": "icon.png",
     "publisher": "richardzampieriprog",
     "license": "SEE LICENSE IN LICENSE.md",

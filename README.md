@@ -29,7 +29,7 @@ C# Snippet Productivity
 > Press CTRL + SHIFT + P: Then type: Create Project
 > [ C# Toolbox: Create Project ]
 >
-> > ![Create Project](videos/createproject.PNG)
+> > ![Create Project](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/createproject.PNG?raw=true)
 >
 > - Projects templates supported:
 > - Blazor Server App
@@ -121,14 +121,16 @@ C# Snippet Productivity
 
 > - All the snippets comments are shown as -> snippet name
 > - Snippets were created thinking on productivity and the extensive use of tab key
->   ![Add var, class, function](videos/clipvarclassfunc.gif)
 >
->   ![Add property, dictionary](videos/clippropdic.gif)
+> ![Add var, class, function](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/clipvarclassfunc.gif?raw=true)
+>
+> ![Add property, dictionary](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/clippropdic.gif?raw=true)
 >
 > - Colored comments were created to increase visibility of todo's, reviews, bugs and research
 >
->   ![Add list, comments](videos/cliplistcom.gif) >
->   ![Colored comments](videos/comment.gif)
+> ![Add list, comments](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/cliplistcom.gif?raw=true)
+>
+> ![Colored comments](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/comment.gif?raw=true)
 
 ## Do you want to contribute?
 
