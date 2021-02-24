@@ -29,7 +29,7 @@ C# Snippet Productivity
 > Press CTRL + SHIFT + P: Then type: Create Project
 > [ C# Toolbox: Create Project ]
 >
-> > ![Create Project](videos/createproject.PNG)
+> > ![Create Project](videos/createproject.PNG,raw=true)
 >
 > - Projects templates supported:
 > - Blazor Server App
