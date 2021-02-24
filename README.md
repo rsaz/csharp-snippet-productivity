@@ -22,17 +22,26 @@ C# Snippet Productivity
 > - C# Snippet Productivity aims to increase the use of vscode editor as the main tool for console, web and game development in C# Programming Language providing the same shortcuts, efficiency, intellisense that is offered by Visual Studio Community.
 > - One of the first objectives is to reduce the amount of extensions downloaded for C# reducing the time and effort on configuration that has to be done by the user as well as to avoid extensions conflicts. Also offers really handy snippets to speed up your development workflow.
 
-## What's new in 1.0.0
+## What's new in 1.1.0
 
-> - Initial project release
-> - Custom comments: colorful comments for better coding organization
->   - NORMAL comments [***//***]
->   - TODO: comments [***todo***]
->   - REVIEW: comments [***review***]
->   - BUG: comments [***bug***]
->   - RESEARCH: comments [***research***]
-> - General C# snippets
-> - XML Documentation snippets
+> Command to create projects
+>
+> Press CTRL + SHIFT + P: Then type: Create Project
+> [ C# Toolbox: Create Project ]
+>
+> > ![Create Project](videos/createproject.png)
+>
+> - Projects templates supported:
+> - Blazor Server App
+> - Blazor WebAssembly App
+> - Console Application
+> - Class Library
+> - .NET Core: Empty, MVC, Razor Page, Angular SPA, React SPA, React/Redux SPA, Web Api, GRPC Services, Razor Class Library
+>
+> - Added snippets for creating arrays, lists and dictionaries using var
+>   - var myArray = new type[size];
+>   - var myList = new List\<type>();
+>   - var myDictionary = new Dictionary\<type,type>();
 
 ## Current features
 
@@ -60,9 +69,12 @@ C# Snippet Productivity
 > - **_for_**: for loop
 > - **_foreach_**: foreach loop
 > - **_arr_**: array structure
+> - **_varr_**: array structure using var
 > - **_lst_**: list structure
+> - **_vlst_**: list structure using var
 > - **_ilst_**: Ilist structure
 > - **_dic_**: dictionary structure
+> - **_vdic_**: dictionary structure using var
 > - **_cdic_**: concurrent dictionary structure
 > - **_idic_**: idictionary structure
 > - **_func_**: create a void function
@@ -109,11 +121,14 @@ C# Snippet Productivity
 
 > - All the snippets comments are shown as -> snippet name
 > - Snippets were created thinking on productivity and the extensive use of tab key
-![Add var, class, function](./videos/clipvarclassfunc.gif)
-![Add property, dictionary](./videos/clippropdic.gif)
+>   ![Add var, class, function](videos/clipvarclassfunc.gif)
+>
+>   ![Add property, dictionary](videos/clippropdic.gif)
+>
 > - Colored comments were created to increase visibility of todo's, reviews, bugs and research
-![Add list, comments](./videos/cliplistcom.gif)
-![Colored comments](./videos/comment.gif)
+>
+>   ![Add list, comments](videos/cliplistcom.gif) >
+>   ![Colored comments](videos/comment.gif)
 
 ## Do you want to contribute?
 

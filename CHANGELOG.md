@@ -3,7 +3,23 @@
 All notable changes to the "csharp-snippet-productivity" extension will be documented in this file.
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [Released]
+
+## [1.1.0] - 2021-02-23
+
+### Added
+
+- Command to create projects
+- Projects templates supported:
+  - Blazor Server App
+  - Blazor WebAssembly App
+  - Console Application
+  - Class Library
+  - .NET Core: Empty, MVC, Razor Page, Angular SPA, React SPA, React/Redux SPA, Web Api, GRPC Services, Razor Class Library
+- Added snippets for creating arrays, lists and dictionaries using var
+  - var myArray = new type[size];
+  - var myList = new List\<type>();
+  - var myDictionary = new Dictionary\<type,type>();
 
 ## [1.0.0] - 2021-02-11
 

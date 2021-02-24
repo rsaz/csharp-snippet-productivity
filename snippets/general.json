@@ -196,6 +196,14 @@
 		],
 		"description": "Creates an array"
 	},
+	"-> Var Array": {
+		"prefix": "varr",
+		"body": [
+			"var ${1:arrayName} = new ${2:type}[${3:size}];",
+			"$0"
+		],
+		"description": "Creates an array using var"
+	},
 	"-> List": {
 		"prefix": "lst",
 		"body": [
@@ -203,6 +211,14 @@
 			"$0"
 		],
 		"description": "Creates a list"
+	},
+	"-> Var List": {
+		"prefix": "vlst",
+		"body": [
+			"var ${1:arrayName} = new List<${2}>();",
+			"$0"
+		],
+		"description": "Creates a list with var"
 	},
 	"-> IList": {
 		"prefix": "ilst",
@@ -219,6 +235,14 @@
 			"$0"
 		],
 		"description": "Creates a dictionary"
+	},
+	"-> Var Dictionary": {
+		"prefix": "vdic",
+		"body": [
+			"var ${1:dictionaryName} = new Dictionary<${2},${3}>();",
+			"$0"
+		],
+		"description": "Creates a dictionary with var"
 	},
 	"-> Concurrent Dictionary": {
 		"prefix": "cdic",
