@@ -4,10 +4,9 @@ node_modules
 .gitignore
 vsc-extension-quickstart.md
 out/test/**
-*/out/
+test/**
 *.vsix
 .yarnrc
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
-out/**
