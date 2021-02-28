@@ -5,9 +5,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
-## [1.1.0] - 2021-02-23
+## [1.2.0] - 2021-02-28
 
-### Added
+- Added command to create Class from the context/menu
+- Added command to create Interface from the context/menu
+
+## [1.1.0] - 2021-02-23
 
 - Command to create projects
 - Projects templates supported:
@@ -22,8 +25,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   - var myDictionary = new Dictionary\<type,type>();
 
 ## [1.0.0] - 2021-02-11
-
-### Added
 
 - Initial project release
 - Custom comments: colorful comments for better coding organization

@@ -20,9 +20,20 @@ C# Snippet Productivity
 ## Goal
 
 > - C# Snippet Productivity aims to increase the use of vscode editor as the main tool for console, web and game development in C# Programming Language providing the same shortcuts, efficiency, intellisense that is offered by Visual Studio Community.
-> - One of the first objectives is to reduce the amount of extensions downloaded for C# reducing the time and effort on configuration that has to be done by the user as well as to avoid extensions conflicts. Also offers really handy snippets to speed up your development workflow.
+> - One of the first objectives is to reduce the amount of extensions downloaded for C# reducing the time and effort on configuration that has to be done by the user as well as to avoid extensions conflicts. Also great features to speed up your development workflow.
 
-## What's new in 1.1.0
+## What's new in 1.2.0
+
+> - Added command to create Class from the context/menu
+> - Added command to create Interface from the context/menu
+> - How to use:
+>   - Right click in the project folder or any folder inside of your project folder and select either Create Class or Create Interface
+>   - Give it a name of your file and class or interface will be created automatically in the selected folder
+>     > ![Class and Interface](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/classInterface.PNG?raw=true)
+
+## Current features
+
+### Command to Create Solution or Project
 
 > Command to create projects
 >
@@ -43,14 +54,18 @@ C# Snippet Productivity
 >   - var myList = new List\<type>();
 >   - var myDictionary = new Dictionary\<type,type>();
 
-## Current features
+> ### Smart Comments
+>
+> - Colorful and configurable comments to better emphasize your work
+> - Snippets:
+>   - **_todo_** : comments
+>   - **_review_** : comments
+>   - **_bug_** : comments
+>   - **_research_** : comments
+>     > ![Colored comments](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/comment.gif?raw=true)
 
 > ### General Snippets
 >
-> - **_todo_** : comments
-> - **_review_** : comments
-> - **_bug_** : comments
-> - **_research_** : comments
 > - **_cw_** : console write/writeline
 > - **_cwi_** : console writeline interpolation
 > - **_cr_** : console readline
@@ -129,8 +144,6 @@ C# Snippet Productivity
 > - Colored comments were created to increase visibility of todo's, reviews, bugs and research
 >
 > ![Add list, comments](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/cliplistcom.gif?raw=true)
->
-> ![Colored comments](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/comment.gif?raw=true)
 
 ## Do you want to contribute?
 
