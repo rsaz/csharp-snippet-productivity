@@ -5,8 +5,9 @@ node_modules
 vsc-extension-quickstart.md
 out/test/**
 */out/
-src/**
+*.vsix
 .yarnrc
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
+out/**
