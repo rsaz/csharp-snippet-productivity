@@ -44,7 +44,9 @@
         "onLanguage:python",
         "onLanguage:typescript",
         "onLanguage:typescriptreact",
-        "onCommand:csharp-snippet-productivity.createProject"
+        "onCommand:csharp-snippet-productivity.createProject",
+        "onCommand:csharp-snippet-productivity.createClass",
+        "onCommand:csharp-snippet-productivity.createInterface"
     ],
     "contributes": {
         "snippets": [
@@ -62,8 +64,38 @@
                 "command": "csharp-snippet-productivity.createProject",
                 "title": "Create Project",
                 "category": "C# Toolbox"
+            },
+            {
+                "command": "csharp-snippet-productivity.createClass",
+                "title": "C# Toolbox: Create Class"
+            },
+            {
+                "command": "csharp-snippet-productivity.createInterface",
+                "title": "C# Toolbox: Create Interface"
             }
         ],
+        "menus": {
+            "explorer/context": [
+                {
+                    "group": "navigation@-1",
+                    "command": "csharp-snippet-productivity.createClass"
+                },
+                {
+                    "group": "navigation@-1",
+                    "command": "csharp-snippet-productivity.createInterface"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "csharp-snippet-productivity.createClass",
+                    "when": "false"
+                },
+                {
+                    "command": "csharp-snippet-productivity.createInterface",
+                    "when": "false"
+                }
+            ]
+        },
         "configuration": {
             "title": "Smart comments configuration",
             "properties": {
@@ -145,16 +177,22 @@
         "test": "node ./out/test/runTest.js"
     },
     "devDependencies": {
-        "@types/vscode": "^1.53.0",
+        "@types/find-parent-dir": "^0.3.0",
         "@types/glob": "^7.1.3",
         "@types/mocha": "^8.0.4",
         "@types/node": "^12.11.7",
-        "eslint": "^7.19.0",
+        "@types/vscode": "^1.53.0",
         "@typescript-eslint/eslint-plugin": "^4.14.1",
         "@typescript-eslint/parser": "^4.14.1",
+        "eslint": "^7.19.0",
         "glob": "^7.1.6",
         "mocha": "^8.2.1",
         "typescript": "^4.1.3",
         "vscode-test": "^1.5.0"
+    },
+    "dependencies": {
+        "find-parent-dir": "^0.3.0",
+        "find-up-glob": "^1.0.0",
+        "os": "^0.1.1"
     }
 }
