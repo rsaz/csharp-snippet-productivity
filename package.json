@@ -93,6 +93,10 @@
                 {
                     "command": "csharp-snippet-productivity.createInterface",
                     "when": "false"
+                },
+                {
+                    "command": "csharp-snippet-productivity.createProject",
+                    "when": "true"
                 }
             ]
         },
