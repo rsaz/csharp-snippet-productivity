@@ -4,8 +4,6 @@
 out/test/**
 test/**
 src/**
-**/*.map
-*.vsix
 .gitignore
 tsconfig.json
 tslint.json
