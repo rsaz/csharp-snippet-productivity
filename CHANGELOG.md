@@ -5,6 +5,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [1.2.1] - 2021-02-28
+
+- Fixing command not found issue on 1.2 version
+
 ## [1.2.0] - 2021-02-28
 
 - Added command to create Class from the context/menu
