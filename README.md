@@ -22,16 +22,23 @@ C# Snippet Productivity
 > - C# Snippet Productivity aims to increase the use of vscode editor as the main tool for console, web and game development in C# Programming Language providing the same shortcuts, efficiency, intellisense that is offered by Visual Studio Community.
 > - One of the first objectives is to reduce the amount of extensions downloaded for C# reducing the time and effort on configuration that has to be done by the user as well as to avoid extensions conflicts. Also great features to speed up your development workflow.
 
-## What's new in 1.2.0
+## Changelog
+
+> [Click here](https://github.com/rsaz/csharp-snippet-productivity/blob/main/CHANGELOG.md)
+
+## What's new in 1.2.2
+
+> - **_Enhancement_**: When creating classes or interfaces system will consider if you have a `<RootNamespace>`YourUniqueNamespace`</RootNamespace>` tag on your **_.csproj_**. If the tag is not found system will use your project name as your root namespace.
+
+## Current features
 
 > - Added command to create Class from the context/menu
 > - Added command to create Interface from the context/menu
 > - How to use:
 >   - Right click in the project folder or any folder inside of your project folder and select either Create Class or Create Interface
 >   - Give it a name of your file and class or interface will be created automatically in the selected folder
->     > ![Class and Interface](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/classInterface.PNG?raw=true)
-
-## Current features
+>
+> ![Class and Interface](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/classInterface.PNG?raw=true)
 
 ### Command to Create Solution or Project
 

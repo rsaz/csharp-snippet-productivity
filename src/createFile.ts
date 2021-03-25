@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as parentFinder from 'find-parent-dir';
 import * as os from 'os';
 const findUpGlob = require('find-up-glob');
+const lineByLine = require('n-readlines');
 
 export class DocumentGenerator{
 
@@ -28,16 +29,23 @@ export class DocumentGenerator{
                 let originalFilePath = newFilePath;
 
                 let rootDir = getProjectRootDirOrFilePath(newFilePath);
+
                 if (rootDir === null){
                     vscode.window.showErrorMessage('Unable to find *.csproj or project.json');
                     return;
                 }
+
+                let rootNamespace: any = checkRootNameOnCsproj(newFilePath);
                 
                 // Review: removing trailing separator. Check if works in other OS languages 
                 rootDir = (rootDir[rootDir.length - 1] === path.sep)? rootDir.substring(0, rootDir.length - 1) : rootDir; 
 
-                let projRootDir = rootDir.substring(rootDir.lastIndexOf(path.sep) + 1);
+                let projRootDir = rootDir.substring(rootDir.lastIndexOf(path.sep) + 1);                    
                 let childFilePath = newFilePath.substring(newFilePath.lastIndexOf(projRootDir));
+                
+                if (rootNamespace !== null) {
+                    childFilePath = childFilePath.replace(childFilePath.substring(0, childFilePath.indexOf('\\')), rootNamespace);
+                }
 
                 // set the regex pattern for path structure
                 let pathSepRegEX = /\//g;
@@ -79,6 +87,7 @@ function getProjectRootDirOrFilePath(filePath: any){
     var projectRootDir = parentFinder.sync(path.dirname(filePath), 'project.json');
     if (projectRootDir === null) {
         let csProjFiles = findUpGlob.sync('*.csproj', { cwd: path.dirname(filePath) });
+        
         if (csProjFiles === null) {
             return null;
         }
@@ -117,4 +126,27 @@ function findCursorPos(content: string){
     let line = beforePos.match(/\n/gi)?.length;
     let charId = beforePos.substring(beforePos.lastIndexOf('\n')).length;
     return new vscode.Position((line !== undefined)? line: 0, charId);
+}
+
+function checkRootNameOnCsproj(filePath: string){
+    let rootNamespace: string  = (findUpGlob.sync('*.csproj', { cwd: path.dirname(filePath) }))[0];
+    const liner = new lineByLine(rootNamespace);
+    let line;
+ 
+    while (line = liner.next()) {
+        let l = line.toString('ascii');
+        let result:string = l.match(/<RootNamespace>(.*?)<\/RootNamespace>/g);
+        if (result === null) {
+            continue;
+        }
+        let content = result[0];
+
+        let root:string = content.substring(content.indexOf('>')+1, content.indexOf('</'));  
+        
+         if (root !== null && root !== '') {
+             return root;
+         }
+    }
+    
+    return null;
 }

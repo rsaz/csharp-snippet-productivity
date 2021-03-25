@@ -5,6 +5,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [1.2.2] - 2021-03-24
+
+- Enhancement: When creating classes or interfaces system will consider if you have a \<RootNamespace>YourUniqueNamespace\</RootNamespace> tag. If the tag is not found system will use your project name as your root namespace.
+
 ## [1.2.1] - 2021-02-28
 
 - Fixing command not found issue on 1.2 version

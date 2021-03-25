@@ -7,6 +7,7 @@ const fs = require("fs");
 const parentFinder = require("find-parent-dir");
 const os = require("os");
 const findUpGlob = require('find-up-glob');
+const lineByLine = require('n-readlines');
 class DocumentGenerator {
     static init(uri, fileType) {
         let pathSelected = uri.fsPath;
@@ -28,10 +29,14 @@ class DocumentGenerator {
                 vscode.window.showErrorMessage('Unable to find *.csproj or project.json');
                 return;
             }
+            let rootNamespace = checkRootNameOnCsproj(newFilePath);
             // Review: removing trailing separator. Check if works in other OS languages 
             rootDir = (rootDir[rootDir.length - 1] === path.sep) ? rootDir.substring(0, rootDir.length - 1) : rootDir;
             let projRootDir = rootDir.substring(rootDir.lastIndexOf(path.sep) + 1);
             let childFilePath = newFilePath.substring(newFilePath.lastIndexOf(projRootDir));
+            if (rootNamespace !== null) {
+                childFilePath = childFilePath.replace(childFilePath.substring(0, childFilePath.indexOf('\\')), rootNamespace);
+            }
             // set the regex pattern for path structure
             let pathSepRegEX = /\//g;
             if (os.platform() === 'win32') {
@@ -101,5 +106,23 @@ function findCursorPos(content) {
     let line = (_a = beforePos.match(/\n/gi)) === null || _a === void 0 ? void 0 : _a.length;
     let charId = beforePos.substring(beforePos.lastIndexOf('\n')).length;
     return new vscode.Position((line !== undefined) ? line : 0, charId);
+}
+function checkRootNameOnCsproj(filePath) {
+    let rootNamespace = (findUpGlob.sync('*.csproj', { cwd: path.dirname(filePath) }))[0];
+    const liner = new lineByLine(rootNamespace);
+    let line;
+    while (line = liner.next()) {
+        let l = line.toString('ascii');
+        let result = l.match(/<RootNamespace>(.*?)<\/RootNamespace>/g);
+        if (result === null) {
+            continue;
+        }
+        let content = result[0];
+        let root = content.substring(content.indexOf('>') + 1, content.indexOf('</'));
+        if (root !== null && root !== '') {
+            return root;
+        }
+    }
+    return null;
 }
 //# sourceMappingURL=createFile.js.map
