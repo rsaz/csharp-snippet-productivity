@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateProjectPanel = void 0;
 const vscode = require("vscode");
-const getNonce_1 = require("./getNonce");
+const GetNonce_1 = require("./GetNonce");
 class CreateProjectPanel {
     constructor(panel, extensionUri) {
         this.filepath = "";
@@ -125,7 +125,7 @@ class CreateProjectPanel {
         const stylesResetUri = webview.asWebviewUri(styleResetPath);
         const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
         // Use a nonce to only allow specific scripts to be run
-        const nonce = getNonce_1.getNonce();
+        const nonce = GetNonce_1.getNonce();
         return `<!DOCTYPE html>
     <html lang="en">
 <head>
@@ -188,4 +188,4 @@ class CreateProjectPanel {
 }
 exports.CreateProjectPanel = CreateProjectPanel;
 CreateProjectPanel.viewType = "create-project";
-//# sourceMappingURL=createProject.js.map
+//# sourceMappingURL=CreateProject.js.map

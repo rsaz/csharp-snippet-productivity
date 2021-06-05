@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DocumentGenerator = void 0;
+exports.ContextualMenu = void 0;
 const vscode = require("vscode");
 const path = require("path");
 const fs = require("fs");
@@ -8,7 +8,7 @@ const parentFinder = require("find-parent-dir");
 const os = require("os");
 const findUpGlob = require('find-up-glob');
 const lineByLine = require('n-readlines');
-class DocumentGenerator {
+class ContextualMenu {
     static init(uri, fileType) {
         let pathSelected = uri.fsPath;
         vscode.window.showInputBox({ ignoreFocusOut: true, prompt: 'Type the file name', value: 'New ' + fileType + '.cs' })
@@ -53,7 +53,7 @@ class DocumentGenerator {
         });
     }
 }
-exports.DocumentGenerator = DocumentGenerator;
+exports.ContextualMenu = ContextualMenu;
 // function to fix the file extension in case user forget to input .cs
 function correctFileNameExtension(fileName) {
     if (path.extname(fileName) !== '.cs') {
@@ -125,4 +125,4 @@ function checkRootNameOnCsproj(filePath) {
     }
     return null;
 }
-//# sourceMappingURL=createFile.js.map
+//# sourceMappingURL=ContextualMenu.js.map

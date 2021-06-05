@@ -6,7 +6,7 @@ import * as os from 'os';
 const findUpGlob = require('find-up-glob');
 const lineByLine = require('n-readlines');
 
-export class DocumentGenerator{
+class ContextualMenu {
 
     public static init(uri: vscode.Uri, fileType: string){
         let pathSelected: string = uri.fsPath;
@@ -69,6 +69,8 @@ export class DocumentGenerator{
         ); 
     }
 }
+
+export {ContextualMenu};
 
 // function to fix the file extension in case user forget to input .cs
 function correctFileNameExtension(fileName: any){
