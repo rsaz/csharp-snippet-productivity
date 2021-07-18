@@ -58,6 +58,10 @@
             {
                 "language": "csharp",
                 "path": "./snippets/documentxml.json"
+            },
+            {
+                "language": "csharp",
+                "path": "./snippets/designpattern.json"
             }
         ],
         "commands": [

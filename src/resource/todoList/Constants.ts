@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export const EXTENSION_ID = 'csharp-snippet-productivity';
 
 export const VIEWS = {

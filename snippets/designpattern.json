@@ -1,0 +1,52 @@
+{
+    "-> Singleton": {
+        "prefix": "singleton",
+        "body": [
+            "// class Singleton {",
+            "//\t\tprivate static Singleton _instance",
+            "//\t\tpublic static Singleton GetInstance() {",
+            "//\t\t\tif (_instance == null) {",
+            "//\t\t\t\t_instance = new Singleton();",
+            "// return _instance;",
+            "//}"
+        ],
+        "description": "Creational design pattern singleton"
+    },
+    "-> Factory Method": {
+        "prefix": "factoryMethod",
+        "body": [
+            "// abstract class Creator {",
+            "//\t\tpublic abstract IProduct FactoryMethod();",
+            "//\t\tpublic string SomeOperation() {",
+            "//\t\t\tvar product = FactoryMethod();",
+            "//\t\t\tvar result = \"Creator: The same creator's code has just worked with + product.Operation();",
+            "//\t\t\treturn result;",
+            "// }",
+            " ",
+            "// class ConcreteCreator1 : Creator {",
+            "//\t\tpublic override IProduct FactoryMethod() {",
+            "// return new ConcreteProduct1();",
+            "// }",
+            " ",
+            "// class ConcreteCreator2 : Creator {",
+            "//\t\tpublic override IProduct FactoryMethod() {",
+            "// return new ConcreteProduct2();",
+            "// }",
+            " ",
+            "// public interface IProduct {",
+            "//\t\tstring Operation()",
+            "// }",
+            " ",
+            "// class ConcreteProduct1 : IProduct {",
+            "//\t\tpublic string Operation() {",
+            "// return {Result of concreteProduct1};",
+            "// }",
+            " ",
+            "// class ConcreteProduct2 : IProduct {",
+            "//\t\tpublic string Operation() {",
+            "// return {Result of concreteProduct2};",
+            "// }"
+        ],
+        "description": "Creational design pattern factory method"
+    }
+}

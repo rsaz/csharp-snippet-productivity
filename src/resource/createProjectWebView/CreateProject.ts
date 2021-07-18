@@ -6,17 +6,13 @@ import * as fs from "fs";
 export class CreateProjectPanel {
 
   public static currentPanel: CreateProjectPanel | undefined;
-  public static readonly viewType = "create-project";
   private filepath: any = "";
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
-  private listOfSDKs: string[] = [];
-
+  
   public static createOrShow(extensionUri: vscode.Uri) {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
+    const column = vscode.window.activeTextEditor? vscode.window.activeTextEditor.viewColumn : undefined;
 
     // If we already have a panel, show it.
     if (CreateProjectPanel.currentPanel) {
@@ -26,15 +22,9 @@ export class CreateProjectPanel {
     }
 
     // Otherwise, create a new panel.
-    const panel = vscode.window.createWebviewPanel(
-        CreateProjectPanel.viewType,
-      "Create Project",
-      column || vscode.ViewColumn.One,
+    const panel = vscode.window.createWebviewPanel('create-project', "Create Project",column || vscode.ViewColumn.One,
       {
-        // Enable javascript in the webview
         enableScripts: true,
-
-        // And restrict the webview to only loading content from our extension's `media` directory.
         localResourceRoots: [
           vscode.Uri.joinPath(extensionUri, "media"),
           vscode.Uri.joinPath(extensionUri, "out/compiled")
@@ -53,17 +43,15 @@ export class CreateProjectPanel {
   public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
   }
-
   // constructor
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
     this._extensionUri = extensionUri;
 
-    // Set the webview's initial html content
+    // Set the Webview initial html content
     this._update();
 
-    // Listen for when the panel is disposed
-    // This happens when the user closes the panel or when the panel is closed programatically
+    // OnPanel Close
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     this._panel.webview.onDidReceiveMessage(
@@ -143,12 +131,10 @@ export class CreateProjectPanel {
     let sdkFile: string = String(sdksResource.fsPath);
     sdkFile.replace('/', '\\');
     sdkFile = sdkFile.substring(0, sdkFile.length);
-    console.log(sdkFile);
     
     const os = process.platform;
-		
-		if (os ==='win32' || "win64") terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
-		else terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
+		if (os ==='win32') {terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);}
+		else {terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);}
 		
 		const sdksList: string = fs.readFileSync(sdksResource.fsPath, 'utf8');
 		let lines: string[] = sdksList.split('\n');
@@ -163,10 +149,8 @@ export class CreateProjectPanel {
       }
 		});
 
-		// add unique values to array
+		// Eliminate duplicates
 		sdks = sdks.filter((value, index, self) => self.indexOf(value) === index);
-    
-    this.listOfSDKs = sdks;
     
     return sdks;
   }

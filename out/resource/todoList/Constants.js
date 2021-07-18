@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EXCLUDE = exports.INCLUDE = exports.REGEX = exports.TODO = exports.MAX_RESULTS = exports.COMMANDS = exports.VIEWS = exports.EXTENSION_ID = void 0;
+/* eslint-disable @typescript-eslint/naming-convention */
 exports.EXTENSION_ID = 'csharp-snippet-productivity';
 exports.VIEWS = {
     TODO_LIST: 'todo-list'

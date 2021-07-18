@@ -31,7 +31,7 @@ export class CommandRegister {
         this.createProject();
         this.menuActivation();
         this.smartCommentsActivation();
-        this.activateTodoList();
+        //this.activateTodoList();
     }
 
     // ****** Command registration ******
@@ -89,7 +89,7 @@ export class CommandRegister {
 
 // supporting function to activate todo list
 function styleText(editor: vscode.TextEditor | undefined) {
-    if (!editor) return;
+    if (!editor) {return;}
     const doc = editor.document;
     const str = doc.getText();
     let match;

@@ -18,13 +18,11 @@ class CreateProjectPanel {
     constructor(panel, extensionUri) {
         this.filepath = "";
         this._disposables = [];
-        this.listOfSDKs = [];
         this._panel = panel;
         this._extensionUri = extensionUri;
-        // Set the webview's initial html content
+        // Set the Webview initial html content
         this._update();
-        // Listen for when the panel is disposed
-        // This happens when the user closes the panel or when the panel is closed programatically
+        // OnPanel Close
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
         this._panel.webview.onDidReceiveMessage((message) => __awaiter(this, void 0, void 0, function* () {
             switch (message.command) {
@@ -49,9 +47,7 @@ class CreateProjectPanel {
         }), null, this._disposables);
     }
     static createOrShow(extensionUri) {
-        const column = vscode.window.activeTextEditor
-            ? vscode.window.activeTextEditor.viewColumn
-            : undefined;
+        const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
         // If we already have a panel, show it.
         if (CreateProjectPanel.currentPanel) {
             CreateProjectPanel.currentPanel._panel.reveal(column);
@@ -59,10 +55,8 @@ class CreateProjectPanel {
             return;
         }
         // Otherwise, create a new panel.
-        const panel = vscode.window.createWebviewPanel(CreateProjectPanel.viewType, "Create Project", column || vscode.ViewColumn.One, {
-            // Enable javascript in the webview
+        const panel = vscode.window.createWebviewPanel('create-project', "Create Project", column || vscode.ViewColumn.One, {
             enableScripts: true,
-            // And restrict the webview to only loading content from our extension's `media` directory.
             localResourceRoots: [
                 vscode.Uri.joinPath(extensionUri, "media"),
                 vscode.Uri.joinPath(extensionUri, "out/compiled")
@@ -119,12 +113,13 @@ class CreateProjectPanel {
         let sdkFile = String(sdksResource.fsPath);
         sdkFile.replace('/', '\\');
         sdkFile = sdkFile.substring(0, sdkFile.length);
-        console.log(sdkFile);
         const os = process.platform;
-        if (os === 'win32' || "win64")
+        if (os === 'win32') {
             terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
-        else
+        }
+        else {
             terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
+        }
         const sdksList = fs.readFileSync(sdksResource.fsPath, 'utf8');
         let lines = sdksList.split('\n');
         let sdks = [];
@@ -136,9 +131,8 @@ class CreateProjectPanel {
                 sdks.push(sdk);
             }
         });
-        // add unique values to array
+        // Eliminate duplicates
         sdks = sdks.filter((value, index, self) => self.indexOf(value) === index);
-        this.listOfSDKs = sdks;
         return sdks;
     }
     _update(templateName = 'Select Template', template = 'console', project = '', solution = '', framework = '') {
@@ -217,5 +211,4 @@ class CreateProjectPanel {
     }
 }
 exports.CreateProjectPanel = CreateProjectPanel;
-CreateProjectPanel.viewType = "create-project";
 //# sourceMappingURL=CreateProject.js.map

@@ -36,7 +36,7 @@ class CommandRegister {
         this.createProject();
         this.menuActivation();
         this.smartCommentsActivation();
-        this.activateTodoList();
+        //this.activateTodoList();
     }
     // ****** Command registration ******
     smartCommentsActivation() {
@@ -87,8 +87,9 @@ class CommandRegister {
 exports.CommandRegister = CommandRegister;
 // supporting function to activate todo list
 function styleText(editor) {
-    if (!editor)
+    if (!editor) {
         return;
+    }
     const doc = editor.document;
     const str = doc.getText();
     let match;
