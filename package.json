@@ -2,7 +2,7 @@
     "name": "csharp-snippet-productivity",
     "displayName": "C# Toolbox of Productivity",
     "description": "The complete set of tools for C# development",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "icon": "icon.png",
     "publisher": "richardzampieriprog",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -46,7 +46,8 @@
         "onLanguage:typescriptreact",
         "onCommand:csharp-snippet-productivity.createProject",
         "onCommand:csharp-snippet-productivity.createClass",
-        "onCommand:csharp-snippet-productivity.createInterface"
+        "onCommand:csharp-snippet-productivity.createInterface",
+        "onCommand:csharp-snippet-productivity.openFile"
     ],
     "contributes": {
         "snippets": [
@@ -72,8 +73,31 @@
             {
                 "command": "csharp-snippet-productivity.createInterface",
                 "title": "C# Toolbox: Create Interface"
+            },
+            {
+                "command": "csharp-snippet-productivity.openFile",
+                "title": "Open File",
+                "category": "C# Toolbox",
+                "icon": "$(file)"
             }
         ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "csharp-snippet-productivity",
+                    "title": "Todo List",
+                    "icon": "./src/resource/todoList/icon.svg"
+                }
+            ]
+        },
+        "views": {
+            "todoListTree": [
+                {
+                    "id": "todo-list",
+                    "name": "Todo List"
+                }
+            ]
+        },
         "menus": {
             "explorer/context": [
                 {

@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateProjectPanel = void 0;
 const vscode = require("vscode");
 const GetNonce_1 = require("./GetNonce");
+const fs = require("fs");
 class CreateProjectPanel {
+    // constructor
     constructor(panel, extensionUri) {
         this.filepath = "";
         this._disposables = [];
+        this.listOfSDKs = [];
         this._panel = panel;
         this._extensionUri = extensionUri;
         // Set the webview's initial html content
@@ -110,6 +113,34 @@ class CreateProjectPanel {
             }
         }
     }
+    getTargetFrameworks(sdksResource) {
+        const terminal = vscode.window.createTerminal();
+        // Cleaning the sdk's folder path
+        let sdkFile = String(sdksResource.fsPath);
+        sdkFile.replace('/', '\\');
+        sdkFile = sdkFile.substring(0, sdkFile.length);
+        console.log(sdkFile);
+        const os = process.platform;
+        if (os === 'win32' || "win64")
+            terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
+        else
+            terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
+        const sdksList = fs.readFileSync(sdksResource.fsPath, 'utf8');
+        let lines = sdksList.split('\n');
+        let sdks = [];
+        lines.forEach((line) => {
+            let lineUpdated = line.replace(/\s+/g, '');
+            lineUpdated = lineUpdated.replace(/[^a-z0-9A-Z.]/g, '');
+            let sdk = lineUpdated.substring(0, 3);
+            if (sdk) {
+                sdks.push(sdk);
+            }
+        });
+        // add unique values to array
+        sdks = sdks.filter((value, index, self) => self.indexOf(value) === index);
+        this.listOfSDKs = sdks;
+        return sdks;
+    }
     _update(templateName = 'Select Template', template = 'console', project = '', solution = '', framework = '') {
         return __awaiter(this, void 0, void 0, function* () {
             const webview = this._panel.webview;
@@ -117,6 +148,10 @@ class CreateProjectPanel {
         });
     }
     _getHtmlForWebview(webview, templateName, template, project, solution, framework) {
+        // list of sdk's
+        const sdksResource = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sdks.txt'));
+        const sdks = this.getTargetFrameworks(sdksResource);
+        // main script integration
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
         // Local path to css styles
         const styleResetPath = vscode.Uri.joinPath(this._extensionUri, "media", "reset.css");
@@ -173,12 +208,7 @@ class CreateProjectPanel {
   <label for="framework">Framework</label>
   <br />
   <select id="custom-select2" name="framework">
-    <option value="net5.0">.NET 5.0</option>
-    <option value="netcoreapp3.1">.NET 3.1</option>
-    <option value="netcoreapp3.0">.NET 3.0</option>
-    <option value="netcoreapp2.2">.NET 2.2</option>
-    <option value="netcoreapp2.1">.NET 2.1</option>
-    <option value="netcoreapp2.0">.NET 2.0</option>
+    ${sdks.map((sdk) => `<option value="${sdk}">${sdk}</option>`).join('')}
   </select>
   <button id="create-project-button">Create Project</button>
   <script nonce="${nonce}" src="${scriptUri}"></script>

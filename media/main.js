@@ -53,13 +53,23 @@
 
     // create console project
     buttonCreateProject.addEventListener('click', () => {
+        let frameworkSelected = framework.options[framework.selectedIndex].value;
+        let frameworkRun = "";
+         
+        if (frameworkSelected === "2.0") frameworkRun = "netcoreapp2.0";
+        else if (frameworkSelected === "2.1") frameworkRun = "netcoreapp2.1";
+        else if (frameworkSelected === "2.2") frameworkRun = "netcoreapp2.2";
+        else if (frameworkSelected === "3.0") frameworkRun = "netcoreapp3.0";
+        else if (frameworkSelected === "3.1") frameworkRun = "netcoreapp3.1";
+        else if (frameworkSelected === "5.0") frameworkRun = "net5.0";
+
         vscode.postMessage({
             command: 'createProject',
             template: template.options[template.selectedIndex].value,
             project: project.value,
             filePath: filePath.value,
             solution: solution.value,
-            framework: framework.options[framework.selectedIndex].value,
+            framework: frameworkRun,
         });
     });
 

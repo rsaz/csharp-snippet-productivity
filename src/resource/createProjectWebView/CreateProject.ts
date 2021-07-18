@@ -1,19 +1,17 @@
 import * as vscode from "vscode";
 import { getNonce } from "./GetNonce";
+import * as path from "path";
+import * as fs from "fs";
 
 export class CreateProjectPanel {
-  /**
-   * Track the currently panel. Only allow a single panel to exist at a time.
-   */
+
   public static currentPanel: CreateProjectPanel | undefined;
-
   public static readonly viewType = "create-project";
-
   private filepath: any = "";
- 
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
+  private listOfSDKs: string[] = [];
 
   public static createOrShow(extensionUri: vscode.Uri) {
     const column = vscode.window.activeTextEditor
@@ -56,6 +54,7 @@ export class CreateProjectPanel {
     CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
   }
 
+  // constructor
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
     this._extensionUri = extensionUri;
@@ -136,6 +135,42 @@ export class CreateProjectPanel {
     }
   }
 
+  private getTargetFrameworks(sdksResource:vscode.Uri): string[] {
+        
+    const terminal = vscode.window.createTerminal();
+    
+    // Cleaning the sdk's folder path
+    let sdkFile: string = String(sdksResource.fsPath);
+    sdkFile.replace('/', '\\');
+    sdkFile = sdkFile.substring(0, sdkFile.length);
+    console.log(sdkFile);
+    
+    const os = process.platform;
+		
+		if (os ==='win32' || "win64") terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
+		else terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
+		
+		const sdksList: string = fs.readFileSync(sdksResource.fsPath, 'utf8');
+		let lines: string[] = sdksList.split('\n');
+		let sdks: string[] = [];
+		
+		lines.forEach((line: string) => {
+			let lineUpdated: string = line.replace(/\s+/g, '');
+			lineUpdated = lineUpdated.replace(/[^a-z0-9A-Z.]/g,'');
+			let sdk: string = lineUpdated.substring(0,3);
+      if (sdk) {
+        sdks.push(sdk);
+      }
+		});
+
+		// add unique values to array
+		sdks = sdks.filter((value, index, self) => self.indexOf(value) === index);
+    
+    this.listOfSDKs = sdks;
+    
+    return sdks;
+  }
+
   private async _update(templateName: any = 'Select Template', template: any = 'console', project: any = '', solution: any = '', framework: any = '') {
     
     const webview = this._panel.webview;
@@ -143,7 +178,12 @@ export class CreateProjectPanel {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview, templateName:any, template: any, project: any, solution: any, framework: any) {
-    
+
+    // list of sdk's
+    const sdksResource: vscode.Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sdks.txt'));
+    const sdks = this.getTargetFrameworks(sdksResource);
+
+    // main script integration
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
 
@@ -205,12 +245,7 @@ export class CreateProjectPanel {
   <label for="framework">Framework</label>
   <br />
   <select id="custom-select2" name="framework">
-    <option value="net5.0">.NET 5.0</option>
-    <option value="netcoreapp3.1">.NET 3.1</option>
-    <option value="netcoreapp3.0">.NET 3.0</option>
-    <option value="netcoreapp2.2">.NET 2.2</option>
-    <option value="netcoreapp2.1">.NET 2.1</option>
-    <option value="netcoreapp2.0">.NET 2.0</option>
+    ${sdks.map((sdk: string) => `<option value="${sdk}">${sdk}</option>`).join('')}
   </select>
   <button id="create-project-button">Create Project</button>
   <script nonce="${nonce}" src="${scriptUri}"></script>
