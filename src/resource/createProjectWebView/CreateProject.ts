@@ -10,6 +10,7 @@ export class CreateProjectPanel {
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
+  private _sdks: string[] = [];
   
   public static createOrShow(extensionUri: vscode.Uri) {
     const column = vscode.window.activeTextEditor? vscode.window.activeTextEditor.viewColumn : undefined;
@@ -125,17 +126,16 @@ export class CreateProjectPanel {
 
   private getTargetFrameworks(sdksResource:vscode.Uri): string[] {
         
-    const terminal = vscode.window.createTerminal();
-    
     // Cleaning the sdk's folder path
     let sdkFile: string = String(sdksResource.fsPath);
     sdkFile.replace('/', '\\');
     sdkFile = sdkFile.substring(0, sdkFile.length);
+
+    // clean file
+    fs.truncate(sdksResource.fsPath,0,()=>{});
     
-    const os = process.platform;
-		if (os ==='win32') {terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);}
-		else {terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);}
-		
+    this.writeSDKOnFile(sdkFile);
+	
 		const sdksList: string = fs.readFileSync(sdksResource.fsPath, 'utf8');
 		let lines: string[] = sdksList.split('\n');
 		let sdks: string[] = [];
@@ -155,17 +155,25 @@ export class CreateProjectPanel {
     return sdks;
   }
 
+  private writeSDKOnFile(sdkFile: string) {
+    const terminal = vscode.window.createTerminal();
+    const os = process.platform;
+		if (os ==='win32') {terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);}
+		else {terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);}
+  }
+
   private async _update(templateName: any = 'Select Template', template: any = 'console', project: any = '', solution: any = '', framework: any = '') {
     
     const webview = this._panel.webview;
+    
+    // list of sdk's
+    const sdksResource: vscode.Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sdks.txt'));
+    this._sdks = this.getTargetFrameworks(sdksResource);
+
     this._panel.webview.html = this._getHtmlForWebview(webview, templateName, template, project, solution, framework);
   }
 
   private _getHtmlForWebview(webview: vscode.Webview, templateName:any, template: any, project: any, solution: any, framework: any) {
-
-    // list of sdk's
-    const sdksResource: vscode.Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sdks.txt'));
-    const sdks = this.getTargetFrameworks(sdksResource);
 
     // main script integration
     const scriptUri = webview.asWebviewUri(
@@ -229,7 +237,7 @@ export class CreateProjectPanel {
   <label for="framework">Framework</label>
   <br />
   <select id="custom-select2" name="framework">
-    ${sdks.map((sdk: string) => `<option value="${sdk}">${sdk}</option>`).join('')}
+    ${this._sdks.map((sdk: string) => `<option value="${sdk}">${sdk}</option>`).join('')}
   </select>
   <button id="create-project-button">Create Project</button>
   <script nonce="${nonce}" src="${scriptUri}"></script>

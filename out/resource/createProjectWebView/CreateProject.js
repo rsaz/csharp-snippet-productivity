@@ -18,6 +18,7 @@ class CreateProjectPanel {
     constructor(panel, extensionUri) {
         this.filepath = "";
         this._disposables = [];
+        this._sdks = [];
         this._panel = panel;
         this._extensionUri = extensionUri;
         // Set the Webview initial html content
@@ -108,18 +109,13 @@ class CreateProjectPanel {
         }
     }
     getTargetFrameworks(sdksResource) {
-        const terminal = vscode.window.createTerminal();
         // Cleaning the sdk's folder path
         let sdkFile = String(sdksResource.fsPath);
         sdkFile.replace('/', '\\');
         sdkFile = sdkFile.substring(0, sdkFile.length);
-        const os = process.platform;
-        if (os === 'win32') {
-            terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
-        }
-        else {
-            terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
-        }
+        // clean file
+        fs.truncate(sdksResource.fsPath, 0, () => { });
+        this.writeSDKOnFile(sdkFile);
         const sdksList = fs.readFileSync(sdksResource.fsPath, 'utf8');
         let lines = sdksList.split('\n');
         let sdks = [];
@@ -135,16 +131,26 @@ class CreateProjectPanel {
         sdks = sdks.filter((value, index, self) => self.indexOf(value) === index);
         return sdks;
     }
+    writeSDKOnFile(sdkFile) {
+        const terminal = vscode.window.createTerminal();
+        const os = process.platform;
+        if (os === 'win32') {
+            terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
+        }
+        else {
+            terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
+        }
+    }
     _update(templateName = 'Select Template', template = 'console', project = '', solution = '', framework = '') {
         return __awaiter(this, void 0, void 0, function* () {
             const webview = this._panel.webview;
+            // list of sdk's
+            const sdksResource = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sdks.txt'));
+            this._sdks = this.getTargetFrameworks(sdksResource);
             this._panel.webview.html = this._getHtmlForWebview(webview, templateName, template, project, solution, framework);
         });
     }
     _getHtmlForWebview(webview, templateName, template, project, solution, framework) {
-        // list of sdk's
-        const sdksResource = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sdks.txt'));
-        const sdks = this.getTargetFrameworks(sdksResource);
         // main script integration
         const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
         // Local path to css styles
@@ -202,7 +208,7 @@ class CreateProjectPanel {
   <label for="framework">Framework</label>
   <br />
   <select id="custom-select2" name="framework">
-    ${sdks.map((sdk) => `<option value="${sdk}">${sdk}</option>`).join('')}
+    ${this._sdks.map((sdk) => `<option value="${sdk}">${sdk}</option>`).join('')}
   </select>
   <button id="create-project-button">Create Project</button>
   <script nonce="${nonce}" src="${scriptUri}"></script>
