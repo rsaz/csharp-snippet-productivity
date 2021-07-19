@@ -5,6 +5,17 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [1.2.3] - 2021-07-18
+
+- **_Fix_**: .NET target frameworks list on project creation are based on OS and SDKs installed.
+- **_Enhancement_**: Design patterns snippets added. It will create a commented pattern code to be used as reference
+- **_singleton_** : Creational singleton pattern
+- **_factoryMethod_** : Creational factory method pattern
+- **_adapter_** : Structural adapter pattern
+- **_observer_**: Structural observer pattern
+- **_Enhancement_**: Regex snippet cheat sheet added.
+- **_regex_** : Regex cheat sheet
+
 ## [1.2.2] - 2021-03-24
 
 - Enhancement: When creating classes or interfaces system will consider if you have a \<RootNamespace>YourUniqueNamespace\</RootNamespace> tag. If the tag is not found system will use your project name as your root namespace.

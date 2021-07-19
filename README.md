@@ -26,12 +26,20 @@ C# Snippet Productivity
 
 > [Click here](https://github.com/rsaz/csharp-snippet-productivity/blob/main/CHANGELOG.md)
 
-## What's new in 1.2.2
+## What's new in 1.2.3
 
-> - **_Enhancement_**: When creating classes or interfaces system will consider if you have a `<RootNamespace>`YourUniqueNamespace`</RootNamespace>` tag on your **_.csproj_**. If the tag is not found system will use your project name as your root namespace.
+> - **_Fix_**: .NET target frameworks list on project creation are based on OS and SDKs installed.
+> - **_Enhancement_**: Design patterns snippets added. It will create a commented pattern code to be used as reference
+> - **_singleton_** : Creational singleton pattern
+> - **_factoryMethod_** : Creational factory method pattern
+> - **_adapter_** : Structural adapter pattern
+> - **_observer_**: Structural observer pattern
+> - **_Enhancement_**: Regex snippet cheat sheet added.
+> - **_regex_** : Regex cheat sheet
 
 ## Current features
 
+> - When creating classes or interfaces system will consider if you have a `<RootNamespace>`YourUniqueNamespace`</RootNamespace>` tag on your **_.csproj_**. If the tag is not found system will use your project name as your root namespace
 > - Added command to create Class from the context/menu
 > - Added command to create Interface from the context/menu
 > - How to use:
