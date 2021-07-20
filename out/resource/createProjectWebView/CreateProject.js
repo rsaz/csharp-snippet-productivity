@@ -73,6 +73,17 @@ class CreateProjectPanel {
     static revive(panel, extensionUri) {
         CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
     }
+    dispose() {
+        CreateProjectPanel.currentPanel = undefined;
+        // Clean up our resources
+        this._panel.dispose();
+        while (this._disposables.length) {
+            const x = this._disposables.pop();
+            if (x) {
+                x.dispose();
+            }
+        }
+    }
     projectCreation(message) {
         return __awaiter(this, void 0, void 0, function* () {
             if (message.template === 'grpc') {
@@ -96,17 +107,6 @@ class CreateProjectPanel {
                 yield terminal.sendText("code " + this.filepath + "\\" + message.solution + " -r");
             }
         });
-    }
-    dispose() {
-        CreateProjectPanel.currentPanel = undefined;
-        // Clean up our resources
-        this._panel.dispose();
-        while (this._disposables.length) {
-            const x = this._disposables.pop();
-            if (x) {
-                x.dispose();
-            }
-        }
     }
     getTargetFrameworks(sdksResource) {
         // Cleaning the sdk's folder path

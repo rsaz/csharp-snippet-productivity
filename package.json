@@ -31,19 +31,9 @@
         "ui"
     ],
     "activationEvents": [
-        "onLanguage:cpp",
         "onLanguage:csharp",
-        "onLanguage:html",
-        "onLanguage:javascript",
-        "onLanguage:javascriptreact",
-        "onLanguage:makefile",
         "onLanguage:markdown",
         "onLanguage:plaintext",
-        "onLanguage:powershell",
-        "onLanguage:puppet",
-        "onLanguage:python",
-        "onLanguage:typescript",
-        "onLanguage:typescriptreact",
         "onCommand:csharp-snippet-productivity.createProject",
         "onCommand:csharp-snippet-productivity.createClass",
         "onCommand:csharp-snippet-productivity.createInterface",
@@ -95,10 +85,10 @@
             ]
         },
         "views": {
-            "todoListTree": [
+            "csharp-snippet-productivity": [
                 {
                     "id": "todo-list",
-                    "name": "Todo List"
+                    "name": "( Pending )"
                 }
             ]
         },
@@ -143,7 +133,7 @@
                 },
                 "csharp-snippet-productivity.tags": {
                     "type": "array",
-                    "description": "Tags which are used to color the comments. Changes require a restart of VS Code to take effect",
+                    "description": "Colored comments. Select your favorite colors. Changes require a restart of VS Code to take effect",
                     "default": [
                         {
                             "tag": "bug",

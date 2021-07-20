@@ -12,6 +12,46 @@ export class CreateProjectPanel {
   private _disposables: vscode.Disposable[] = [];
   private _sdks: string[] = [];
   
+  // constructor
+  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+      this._panel = panel;
+      this._extensionUri = extensionUri;
+  
+      // Set the Webview initial html content
+      this._update();
+  
+      // OnPanel Close
+      this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+  
+      this._panel.webview.onDidReceiveMessage(
+        async (message) => {
+          switch (message.command) {
+            case "createProject": //console
+              await this.projectCreation(message);
+              return;
+  
+            case "selectDirectory":
+              const options: vscode.OpenDialogOptions = {
+                canSelectMany: false,
+                openLabel: 'Select',
+                canSelectFiles: false,
+                canSelectFolders: true
+              };
+           
+              vscode.window.showOpenDialog(options).then(fileUri => {
+               if (fileUri && fileUri[0]) {
+                   this.filepath = fileUri[0].fsPath;
+                   this._update(message.templateName,message.template, message.project, message.solution, message.framework);
+               }
+              });
+            return;
+          }
+        },
+        null,
+        this._disposables
+      );
+  }
+
   public static createOrShow(extensionUri: vscode.Uri) {
     const column = vscode.window.activeTextEditor? vscode.window.activeTextEditor.viewColumn : undefined;
 
@@ -44,44 +84,19 @@ export class CreateProjectPanel {
   public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
   }
-  // constructor
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    this._panel = panel;
-    this._extensionUri = extensionUri;
 
-    // Set the Webview initial html content
-    this._update();
+  public dispose() {
+    CreateProjectPanel.currentPanel = undefined;
 
-    // OnPanel Close
-    this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+    // Clean up our resources
+    this._panel.dispose();
 
-    this._panel.webview.onDidReceiveMessage(
-      async (message) => {
-        switch (message.command) {
-          case "createProject": //console
-            await this.projectCreation(message);
-            return;
-
-          case "selectDirectory":
-            const options: vscode.OpenDialogOptions = {
-              canSelectMany: false,
-              openLabel: 'Select',
-              canSelectFiles: false,
-              canSelectFolders: true
-            };
-         
-            vscode.window.showOpenDialog(options).then(fileUri => {
-             if (fileUri && fileUri[0]) {
-                 this.filepath = fileUri[0].fsPath;
-                 this._update(message.templateName,message.template, message.project, message.solution, message.framework);
-             }
-            });
-          return;
-        }
-      },
-      null,
-      this._disposables
-    );
+    while (this._disposables.length) {
+      const x = this._disposables.pop();
+      if (x) {
+        x.dispose();
+      }
+    }
   }
 
   private async projectCreation(message: any){
@@ -108,20 +123,6 @@ export class CreateProjectPanel {
       await terminal.sendText("code "+this.filepath+"\\"+message.solution+" -r");  
     }
 
-  }
-
-  public dispose() {
-    CreateProjectPanel.currentPanel = undefined;
-
-    // Clean up our resources
-    this._panel.dispose();
-
-    while (this._disposables.length) {
-      const x = this._disposables.pop();
-      if (x) {
-        x.dispose();
-      }
-    }
   }
 
   private getTargetFrameworks(sdksResource:vscode.Uri): string[] {
