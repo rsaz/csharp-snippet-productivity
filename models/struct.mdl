@@ -1,0 +1,9 @@
+using System;
+
+namespace ${namespace}
+{
+    public struct ${fileName}
+    {
+        ${cursor}
+    }
+}

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { CreateProjectPanel } from './resource/createProjectWebView/CreateProject';
 import { SmartComments } from './resource/smartComments/SmartComments';
 import { ContextualMenu } from './resource/contextualMenu/ContextualMenu';
+import { AddProjectToSolution } from './resource/createProjectWebView/AddProjectToSolution';
 
 /**
  * Singleton class to hold all CommandRegister configuration
@@ -25,6 +26,7 @@ export class CommandRegister {
         this.context = context;
 
         this.createProject();
+        this.addProjectToSolution();
         this.menuActivation();
         this.smartCommentsActivation();
     }
@@ -48,6 +50,21 @@ export class CommandRegister {
     
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createInterface', async (uri: vscode.Uri)=> {
             ContextualMenu.init(uri, 'interface');
-        }));  
+        }));
+        
+        this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createStruct', async (uri: vscode.Uri)=> {
+            ContextualMenu.init(uri, 'struct');
+        }));
+        
+        this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createRecord', async (uri: vscode.Uri)=> {
+            ContextualMenu.init(uri, 'record');
+        }));
+    }
+
+    private addProjectToSolution() {
+        this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.addProjectToSolution', async (uri: vscode.Uri)=> {
+            AddProjectToSolution.init(uri);
+        }));
+        
     }
 }

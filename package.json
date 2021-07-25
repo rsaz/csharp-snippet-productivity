@@ -37,7 +37,8 @@
         "onCommand:csharp-snippet-productivity.createProject",
         "onCommand:csharp-snippet-productivity.createClass",
         "onCommand:csharp-snippet-productivity.createInterface",
-        "onCommand:csharp-snippet-productivity.openFile"
+        "onCommand:csharp-snippet-productivity.createStruct",
+        "onCommand:csharp-snippet-productivity.createRecord"
     ],
     "contributes": {
         "snippets": [
@@ -62,17 +63,23 @@
             },
             {
                 "command": "csharp-snippet-productivity.createClass",
-                "title": "C# Toolbox: Create Class"
+                "title": "Create Class"
             },
             {
                 "command": "csharp-snippet-productivity.createInterface",
-                "title": "C# Toolbox: Create Interface"
+                "title": "Create Interface"
             },
             {
-                "command": "csharp-snippet-productivity.openFile",
-                "title": "Open File",
-                "category": "C# Toolbox",
-                "icon": "$(file)"
+                "command": "csharp-snippet-productivity.createStruct",
+                "title": "Create Struct"
+            },
+            {
+                "command": "csharp-snippet-productivity.createRecord",
+                "title": "Create Record"
+            },
+            {
+                "command": "csharp-snippet-productivity.addProjectToSolution",
+                "title": "Add Project"
             }
         ],
         "viewsContainers": {
@@ -95,15 +102,32 @@
         "menus": {
             "explorer/context": [
                 {
-                    "group": "navigation@-1",
+                    "submenu": "cSharp.subMenu",
+                    "group": "navigation@-1"
+                }
+            ],
+            "cSharp.subMenu": [
+                {
                     "command": "csharp-snippet-productivity.createClass"
                 },
                 {
-                    "group": "navigation@-1",
                     "command": "csharp-snippet-productivity.createInterface"
+                },
+                {
+                    "command": "csharp-snippet-productivity.createStruct"
+                },
+                {
+                    "command": "csharp-snippet-productivity.createRecord"
+                },
+                {
+                    "command": "csharp-snippet-productivity.addProjectToSolution"
                 }
             ],
             "commandPalette": [
+                {
+                    "command": "csharp-snippet-productivity.createProject",
+                    "when": "true"
+                },
                 {
                     "command": "csharp-snippet-productivity.createClass",
                     "when": "false"
@@ -113,11 +137,25 @@
                     "when": "false"
                 },
                 {
-                    "command": "csharp-snippet-productivity.createProject",
-                    "when": "true"
+                    "command": "csharp-snippet-productivity.createStruct",
+                    "when": "false"
+                },
+                {
+                    "command": "csharp-snippet-productivity.createRecord",
+                    "when": "false"
+                },
+                {
+                    "command": "csharp-snippet-productivity.addProjectToSolution",
+                    "when": "false"
                 }
             ]
         },
+        "submenus": [
+            {
+                "id": "cSharp.subMenu",
+                "label": "C# Toolbox: Options"
+            }
+        ],
         "configuration": {
             "title": "Smart comments configuration",
             "properties": {

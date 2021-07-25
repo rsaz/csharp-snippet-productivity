@@ -14,6 +14,7 @@ const vscode = require("vscode");
 const CreateProject_1 = require("./resource/createProjectWebView/CreateProject");
 const SmartComments_1 = require("./resource/smartComments/SmartComments");
 const ContextualMenu_1 = require("./resource/contextualMenu/ContextualMenu");
+const AddProjectToSolution_1 = require("./resource/createProjectWebView/AddProjectToSolution");
 /**
  * Singleton class to hold all CommandRegister configuration
  * This class is used to register new CommandRegister available in the system
@@ -30,6 +31,7 @@ class CommandRegister {
     initializeCommands(context) {
         this.context = context;
         this.createProject();
+        this.addProjectToSolution();
         this.menuActivation();
         this.smartCommentsActivation();
     }
@@ -49,6 +51,17 @@ class CommandRegister {
         })));
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createInterface', (uri) => __awaiter(this, void 0, void 0, function* () {
             ContextualMenu_1.ContextualMenu.init(uri, 'interface');
+        })));
+        this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createStruct', (uri) => __awaiter(this, void 0, void 0, function* () {
+            ContextualMenu_1.ContextualMenu.init(uri, 'struct');
+        })));
+        this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createRecord', (uri) => __awaiter(this, void 0, void 0, function* () {
+            ContextualMenu_1.ContextualMenu.init(uri, 'record');
+        })));
+    }
+    addProjectToSolution() {
+        this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.addProjectToSolution', (uri) => __awaiter(this, void 0, void 0, function* () {
+            AddProjectToSolution_1.AddProjectToSolution.init(uri);
         })));
     }
 }
