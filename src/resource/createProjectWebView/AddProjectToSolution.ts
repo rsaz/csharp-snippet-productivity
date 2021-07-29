@@ -7,9 +7,6 @@ const findUpGlob = require('find-up-glob');
 export class AddProjectToSolution {
     
     public static init(uri: vscode.Uri) {
-        
-        // TODO: verify if solution exist, if exist create a project with terminal
-        let pathSelected: string = uri.fsPath;
           
             vscode.window.showInputBox({ignoreFocusOut: true, prompt: 'Type the project name', value: 'New project name'})
                 .then((newFileName) => {
@@ -17,37 +14,48 @@ export class AddProjectToSolution {
                         vscode.window.showErrorMessage('Please input a valid name or press Scape to cancel the operation!');
                         return this.init(uri); 
                     }
+                    
+                    // Acquiring the solution root folder
+                    let root = vscode.workspace.workspaceFolders?.map(folder => folder.uri.path)[0]
+                    .replace(/\//g,'\\');
+                    root = root?.slice(1, root.length);
+                    
+                    // Removing white spaces within the new project name
+                    if (newFileName) newFileName = newFileName.replace(/\s/g, "");
+
+                    // Setting the new project path
+                    const newFilePath = root + path.sep + newFileName;
     
-                    let newFilePath = pathSelected + path.sep + newFileName;
-    
+                    // Verify if project already exist
                     if (fs.existsSync(newFilePath)) {
                         vscode.window.showErrorMessage(`Project ${newFileName} already exist`);
-                        return;    
+                        return this.init(uri);    
                     }
-    
-                    let rootDir = getProjectRootDirOrFilePath(newFilePath);
+                    
+                    let rootDir = getProjectRootDirOrFilePath(root);
     
                     if (rootDir === null){
-                        vscode.window.showErrorMessage('Unable to find *.csproj or project.json');
+                        vscode.window.showErrorMessage('Unable to find *.sln (solution)');
                         return;
                     }
+                    
+                    // Create a project
+                    // TODO: Invoke the current panel, type project name and select project template
+                   
                 }
             ); 
-    
     }
     
 }
 
 // function to detect the root directory where the .csproj is included
 function getProjectRootDirOrFilePath(filePath: any){
-    var projectRootDir = parentFinder.sync(path.dirname(filePath), 'project.json');
-    if (projectRootDir === null) {
-        let csProjFiles = findUpGlob.sync('*.csproj', { cwd: path.dirname(filePath) });
-        
-        if (csProjFiles === null) {
-            return null;
-        }
-        projectRootDir = path.dirname(csProjFiles[0]);
+    const paths : string[] = filePath.split("\\");
+    const solution: string = filePath + path.sep + paths[paths.length-1] + '.sln';
+    
+
+    if (!fs.existsSync(solution)) {
+        return null;
     }
-    return projectRootDir;
+    return solution;
 }

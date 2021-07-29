@@ -38,7 +38,8 @@
         "onCommand:csharp-snippet-productivity.createClass",
         "onCommand:csharp-snippet-productivity.createInterface",
         "onCommand:csharp-snippet-productivity.createStruct",
-        "onCommand:csharp-snippet-productivity.createRecord"
+        "onCommand:csharp-snippet-productivity.createRecord",
+        "onCommand:csharp-snippet-productivity.addProjectToSolution"
     ],
     "contributes": {
         "snippets": [

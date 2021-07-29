@@ -105,10 +105,10 @@ export class CreateProjectPanel {
       terminal.show(true);
           
       await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution);
-      await terminal.sendText("dotnet new sln -n "+message.project+" -o "+this.filepath+"\\"+message.solution+" --force");
+      await terminal.sendText("dotnet new sln -n "+message.solution+" -o "+this.filepath+"\\"+message.solution+" --force");
       await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution+"\\"+message.project);
       await terminal.sendText("dotnet new "+message.template+" --language c# -n "+message.project+" -o "+this.filepath+"\\"+message.solution+"\\"+message.project+" --force");
-      await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.project+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
+      await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.solution+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
       await terminal.sendText("code "+this.filepath+"\\"+message.solution+" -r");     
       
     } else {
@@ -116,10 +116,10 @@ export class CreateProjectPanel {
       terminal.show(true);
           
       await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution);
-      await terminal.sendText("dotnet new sln -n "+message.project+" -o "+this.filepath+"\\"+message.solution+" --force");
+      await terminal.sendText("dotnet new sln -n "+message.solution+" -o "+this.filepath+"\\"+message.solution+" --force");
       await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution+"\\"+message.project);
       await terminal.sendText("dotnet new "+message.template+" --language c# -n "+message.project+" -o "+this.filepath+"\\"+message.solution+"\\"+message.project+" -f "+message.framework+" --force");
-      await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.project+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
+      await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.solution+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
       await terminal.sendText("code "+this.filepath+"\\"+message.solution+" -r");  
     }
 
