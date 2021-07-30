@@ -2,17 +2,17 @@ import * as vscode from 'vscode';
 import * as parentFinder from 'find-parent-dir';
 import * as path from 'path';
 import * as fs from 'fs';
+import { CreateProjectPanel, ProjectState } from './CreateProject';
 const findUpGlob = require('find-up-glob');
 
 export class AddProjectToSolution {
     
-    public static init(uri: vscode.Uri) {
-          
+    public static init(uri: vscode.Uri, extensionUri: vscode.Uri) {
             vscode.window.showInputBox({ignoreFocusOut: true, prompt: 'Type the project name', value: 'New project name'})
                 .then((newFileName) => {
                     if (typeof(newFileName) === undefined || newFileName === '') {
                         vscode.window.showErrorMessage('Please input a valid name or press Scape to cancel the operation!');
-                        return this.init(uri); 
+                        return this.init(uri, extensionUri); 
                     }
                     
                     // Acquiring the solution root folder
@@ -29,7 +29,7 @@ export class AddProjectToSolution {
                     // Verify if project already exist
                     if (fs.existsSync(newFilePath)) {
                         vscode.window.showErrorMessage(`Project ${newFileName} already exist`);
-                        return this.init(uri);    
+                        return this.init(uri, extensionUri);    
                     }
                     
                     let rootDir = getProjectRootDirOrFilePath(root);
@@ -40,8 +40,9 @@ export class AddProjectToSolution {
                     }
                     
                     // Create a project
-                    // TODO: Invoke the current panel, type project name and select project template
-                   
+                    // TODO: Pass project solution, project name
+                    const projectState: ProjectState = ProjectState.Add;
+                    CreateProjectPanel.createOrShow(extensionUri, projectState);
                 }
             ); 
     }

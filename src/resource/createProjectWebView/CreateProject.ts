@@ -3,6 +3,11 @@ import { getNonce } from "./GetNonce";
 import * as path from "path";
 import * as fs from "fs";
 
+export enum ProjectState { 
+  Create = 0,
+  Add
+ };
+
 export class CreateProjectPanel {
 
   public static currentPanel: CreateProjectPanel | undefined;
@@ -11,11 +16,13 @@ export class CreateProjectPanel {
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
   private _sdks: string[] = [];
+  private _projectState: ProjectState;
   
   // constructor
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, state: ProjectState) {
       this._panel = panel;
       this._extensionUri = extensionUri;
+      this._projectState = state;
   
       // Set the Webview initial html content
       this._update();
@@ -52,7 +59,7 @@ export class CreateProjectPanel {
       );
   }
 
-  public static createOrShow(extensionUri: vscode.Uri) {
+  public static createOrShow(extensionUri: vscode.Uri, projectState: ProjectState) {
     const column = vscode.window.activeTextEditor? vscode.window.activeTextEditor.viewColumn : undefined;
 
     // If we already have a panel, show it.
@@ -73,7 +80,7 @@ export class CreateProjectPanel {
       }
     );
 
-    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
+    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri, projectState);
   }
 
   public static kill() {
@@ -81,8 +88,8 @@ export class CreateProjectPanel {
     CreateProjectPanel.currentPanel = undefined;
   }
 
-  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
+  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, projectState: ProjectState) {
+    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri, projectState);
   }
 
   public dispose() {
@@ -100,29 +107,40 @@ export class CreateProjectPanel {
   }
 
   private async projectCreation(message: any){
-    if (message.template === 'grpc') {
-      const terminal = vscode.window.createTerminal();
-      terminal.show(true);
-          
-      await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution);
-      await terminal.sendText("dotnet new sln -n "+message.solution+" -o "+this.filepath+"\\"+message.solution+" --force");
-      await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution+"\\"+message.project);
-      await terminal.sendText("dotnet new "+message.template+" --language c# -n "+message.project+" -o "+this.filepath+"\\"+message.solution+"\\"+message.project+" --force");
-      await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.solution+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
-      await terminal.sendText("code "+this.filepath+"\\"+message.solution+" -r");     
+    
+    if (this._projectState === ProjectState.Create) {
       
-    } else {
-      const terminal = vscode.window.createTerminal();
-      terminal.show(true);
-          
-      await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution);
-      await terminal.sendText("dotnet new sln -n "+message.solution+" -o "+this.filepath+"\\"+message.solution+" --force");
-      await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution+"\\"+message.project);
-      await terminal.sendText("dotnet new "+message.template+" --language c# -n "+message.project+" -o "+this.filepath+"\\"+message.solution+"\\"+message.project+" -f "+message.framework+" --force");
-      await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.solution+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
-      await terminal.sendText("code "+this.filepath+"\\"+message.solution+" -r");  
+      if (message.template === 'grpc') {
+        const terminal = vscode.window.createTerminal();
+        terminal.show(true);
+            
+        await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution);
+        await terminal.sendText("dotnet new sln -n "+message.solution+" -o "+this.filepath+"\\"+message.solution+" --force");
+        await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution+"\\"+message.project);
+        await terminal.sendText("dotnet new "+message.template+" --language c# -n "+message.project+" -o "+this.filepath+"\\"+message.solution+"\\"+message.project+" --force");
+        await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.solution+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
+        await terminal.sendText("code "+this.filepath+"\\"+message.solution+" -r");     
+        
+      } else {
+        const terminal = vscode.window.createTerminal();
+        terminal.show(true);
+        
+        await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution);
+        await terminal.sendText("dotnet new sln -n "+message.solution+" -o "+this.filepath+"\\"+message.solution+" --force");
+        await terminal.sendText("mkdir "+this.filepath +"\\"+message.solution+"\\"+message.project);
+        await terminal.sendText("dotnet new "+message.template+" --language c# -n "+message.project+" -o "+this.filepath+"\\"+message.solution+"\\"+message.project+" -f "+message.framework+" --force");
+        await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.solution+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
+        await terminal.sendText("code "+this.filepath+"\\"+message.solution+" -r");
+      }
+    } else if (this._projectState === ProjectState.Add) {
+      // TODO: implement the form to select project type, name, and framework, pass current solution
+      console.log(this.filepath);  
+      // folder.uri.path
+      // Acquiring the solution root folder
+      let root = vscode.workspace.workspaceFolders?.map(folder => folder.uri.path)[0]
+      .replace(/\//g,'\\');
+      root = root?.slice(1, root.length);
     }
-
   }
 
   private getTargetFrameworks(sdksResource:vscode.Uri): string[] {
@@ -243,6 +261,6 @@ export class CreateProjectPanel {
   <button id="create-project-button">Create Project</button>
   <script nonce="${nonce}" src="${scriptUri}"></script>
   </body>
-</html>`;
+</html>`; 
   }
 }

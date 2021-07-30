@@ -4,15 +4,16 @@ exports.AddProjectToSolution = void 0;
 const vscode = require("vscode");
 const path = require("path");
 const fs = require("fs");
+const CreateProject_1 = require("./CreateProject");
 const findUpGlob = require('find-up-glob');
 class AddProjectToSolution {
-    static init(uri) {
+    static init(uri, extensionUri) {
         vscode.window.showInputBox({ ignoreFocusOut: true, prompt: 'Type the project name', value: 'New project name' })
             .then((newFileName) => {
             var _a;
             if (typeof (newFileName) === undefined || newFileName === '') {
                 vscode.window.showErrorMessage('Please input a valid name or press Scape to cancel the operation!');
-                return this.init(uri);
+                return this.init(uri, extensionUri);
             }
             // Acquiring the solution root folder
             let root = (_a = vscode.workspace.workspaceFolders) === null || _a === void 0 ? void 0 : _a.map(folder => folder.uri.path)[0].replace(/\//g, '\\');
@@ -25,7 +26,7 @@ class AddProjectToSolution {
             // Verify if project already exist
             if (fs.existsSync(newFilePath)) {
                 vscode.window.showErrorMessage(`Project ${newFileName} already exist`);
-                return this.init(uri);
+                return this.init(uri, extensionUri);
             }
             let rootDir = getProjectRootDirOrFilePath(root);
             if (rootDir === null) {
@@ -33,7 +34,9 @@ class AddProjectToSolution {
                 return;
             }
             // Create a project
-            // TODO: Invoke the current panel, type project name and select project template
+            // TODO: Pass project solution, project name
+            const projectState = CreateProject_1.ProjectState.Add;
+            CreateProject_1.CreateProjectPanel.createOrShow(extensionUri, projectState);
         });
     }
 }

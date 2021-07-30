@@ -42,7 +42,8 @@ class CommandRegister {
     }
     createProject() {
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createProject', () => __awaiter(this, void 0, void 0, function* () {
-            CreateProject_1.CreateProjectPanel.createOrShow(this.context.extensionUri);
+            const projectState = CreateProject_1.ProjectState.Create;
+            CreateProject_1.CreateProjectPanel.createOrShow(this.context.extensionUri, projectState);
         })));
     }
     menuActivation() {
@@ -61,7 +62,7 @@ class CommandRegister {
     }
     addProjectToSolution() {
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.addProjectToSolution', (uri) => __awaiter(this, void 0, void 0, function* () {
-            AddProjectToSolution_1.AddProjectToSolution.init(uri);
+            AddProjectToSolution_1.AddProjectToSolution.init(uri, this.context.extensionUri);
         })));
     }
 }
