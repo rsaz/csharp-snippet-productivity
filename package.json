@@ -83,23 +83,6 @@
                 "title": "Add Project"
             }
         ],
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "csharp-snippet-productivity",
-                    "title": "Todo List",
-                    "icon": "./src/resource/todoList/icon.svg"
-                }
-            ]
-        },
-        "views": {
-            "csharp-snippet-productivity": [
-                {
-                    "id": "todo-list",
-                    "name": "( Pending )"
-                }
-            ]
-        },
         "menus": {
             "explorer/context": [
                 {
