@@ -3,11 +3,6 @@ import { getNonce } from "./GetNonce";
 import * as path from "path";
 import * as fs from "fs";
 
-export enum ProjectState { 
-  Create = 0,
-  Add
- };
-
 export class CreateProjectPanel {
 
   public static currentPanel: CreateProjectPanel | undefined;
@@ -16,13 +11,12 @@ export class CreateProjectPanel {
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
   private _sdks: string[] = [];
-  private _projectState: ProjectState;
+  private _projectName: string = "";
   
   // constructor
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, state: ProjectState) {
+  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
       this._panel = panel;
-      this._extensionUri = extensionUri;
-      this._projectState = state;
+      this._extensionUri = extensionUri;     
   
       // Set the Webview initial html content
       this._update();
@@ -59,7 +53,8 @@ export class CreateProjectPanel {
       );
   }
 
-  public static createOrShow(extensionUri: vscode.Uri, projectState: ProjectState) {
+  public static createOrShow(extensionUri: vscode.Uri) {
+
     const column = vscode.window.activeTextEditor? vscode.window.activeTextEditor.viewColumn : undefined;
 
     // If we already have a panel, show it.
@@ -80,7 +75,7 @@ export class CreateProjectPanel {
       }
     );
 
-    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri, projectState);
+    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
   }
 
   public static kill() {
@@ -88,8 +83,8 @@ export class CreateProjectPanel {
     CreateProjectPanel.currentPanel = undefined;
   }
 
-  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, projectState: ProjectState) {
-    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri, projectState);
+  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, newFileName: string) {
+    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
   }
 
   public dispose() {
@@ -107,9 +102,7 @@ export class CreateProjectPanel {
   }
 
   private async projectCreation(message: any){
-    
-    if (this._projectState === ProjectState.Create) {
-      
+          
       if (message.template === 'grpc') {
         const terminal = vscode.window.createTerminal();
         terminal.show(true);
@@ -132,16 +125,7 @@ export class CreateProjectPanel {
         await terminal.sendText("dotnet sln "+this.filepath+"\\"+message.solution+"\\"+message.solution+".sln"+" add "+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj");
         await terminal.sendText("code "+this.filepath+"\\"+message.solution+" -r");
       }
-    } else if (this._projectState === ProjectState.Add) {
-      // TODO: implement the form to select project type, name, and framework, pass current solution
-      console.log(this.filepath);  
-      // folder.uri.path
-      // Acquiring the solution root folder
-      let root = vscode.workspace.workspaceFolders?.map(folder => folder.uri.path)[0]
-      .replace(/\//g,'\\');
-      root = root?.slice(1, root.length);
-    }
-  }
+     }
 
   private getTargetFrameworks(sdksResource:vscode.Uri): string[] {
         

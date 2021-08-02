@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { CreateProjectPanel, ProjectState } from './resource/createProjectWebView/CreateProject';
+import { CreateProjectPanel } from './resource/createProjectWebView/CreateProject';
 import { SmartComments } from './resource/smartComments/SmartComments';
 import { ContextualMenu } from './resource/contextualMenu/ContextualMenu';
-import { AddProjectToSolution } from './resource/createProjectWebView/AddProjectToSolution';
+import { AddProjectToSolution } from './resource/addProjectToSolution/AddProjectToSolution';
 
 /**
  * Singleton class to hold all CommandRegister configuration
@@ -39,8 +39,7 @@ export class CommandRegister {
 
     private createProject(): void {
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createProject', async ()=> {
-            const projectState: ProjectState = ProjectState.Create;
-            CreateProjectPanel.createOrShow(this.context.extensionUri, projectState);
+            CreateProjectPanel.createOrShow(this.context.extensionUri);
         }));
     }
 
@@ -64,7 +63,7 @@ export class CommandRegister {
 
     private addProjectToSolution() {
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.addProjectToSolution', async (uri: vscode.Uri)=> {
-            AddProjectToSolution.init(uri, this.context.extensionUri);
+            AddProjectToSolution.init(uri, this.context);
         }));
         
     }

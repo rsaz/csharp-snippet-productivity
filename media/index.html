@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+    <html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}}; img-src {{cspSource}} https:; script-src 'nonce-{{nonce}}';">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="{{stylesResetUri}}" rel="stylesheet">
+  <link href="{{stylesMainUri}}" rel="stylesheet">       
+</head>
+<body>
+  <h1>Add the Project Details</h1>
+  <br/>
+  <br/>
+  <h3>Select the project template</h3>
+  <select id="custom-select" name="project-type">
+    <option value="blazorserver">Blazor Server App</option>
+    <option value="blazorwasm">Blazor WebAssembly App</option>
+    <option value="console" selected="selected">Console Application</option>
+    <option value="classlib">Class Library</option>
+    <option value="web">ASP.NET Core Empty</option>
+    <option value="mvc">ASP.NET Core MVC</option>
+    <option value="webapp">ASP.NET Core MVC Razor Page</option>
+    <option value="angular">ASP.NET Core MVC Angular SPA</option>
+    <option value="react">ASP.NET Core MVC React SPA</option>
+    <option value="reactredux">ASP.NET Core MVC React/Redux SPA</option>
+    <option value="webapi">ASP.NET Core Web API</option>
+    <option value="grpc">ASP.NET Core GRPC Services</option>
+    <option value="razorclasslib">Razor Class Library</option>
+  </select>
+  </br>
+  </br>
+  <label for="projectName">Project Name:</label>
+  <input id="projectName" type="text" name="projectName" value="{{project}}" required placeholder="Insert your project name">
+  <br /> 
+  <label for="framework">Framework</label>
+  <br />
+  <select id="custom-select2" name="framework">
+    <option value="netcoreapp2.0">2.0</option>
+    <option value="netcoreapp2.1">2.1</option>
+    <option value="netcoreapp2.2">2.2</option>
+    <option value="netcoreapp3.0">3.0</option>
+    <option value="netcoreapp3.1">3.1</option>
+    <option value="net5.0" selected="selected">5.0</option>
+  </select>
+  <button id="create-project-button">Create Project</button>
+  <script nonce="{{nonce}}" src="{{script}}"></script>
+  </body>
+</html>
