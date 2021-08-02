@@ -31,12 +31,14 @@ C# Snippet Productivity
 > - **_Fix_**: Solution was being created with project name rather than solution data from solution field.
 > - **_New Features added_**:
 > - **_Add Project to a Solution_** : Capability to add projects to the same solution with a click of a button. You can select a different project framework as well as the template.
+>
+> ![Add Project](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/addProject.PNG?raw=true)
+>
 > - **_Submenu With Options_** :
 > - Create Class
 > - Create Interface
 > - Create Record
 > - Create Struct
->   > ![Add Project](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/addProject.PNG?raw=true)
 
 ## Current features
 
