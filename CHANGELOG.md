@@ -5,6 +5,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [1.2.5] - 2021-08-01
+
+- **_Fix_**: Removed the notes feature preview accidentally uploaded
+
 ## [1.2.4] - 2021-08-01
 
 - **_Fix_**: Solution was being created with project name rather than solution data from solution field.
