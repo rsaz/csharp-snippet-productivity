@@ -213,6 +213,12 @@ export class CreateProjectPanel {
     <option value="blazorwasm">Blazor WebAssembly App</option>
     <option value="console">Console Application</option>
     <option value="classlib">Class Library</option>
+    <option value="winforms">Windows Forms Application</option>
+    <option value="winformslib">Windows Forms Library</option>
+    <option value="wpf">WPF Application</option>
+    <option value="wpfl">WPF Class Library</option>
+    <option value="wpfcustomcontrollib">WPF Custom Control Library</option>
+    <option value="wpfusercontrollib">WPF User Control Library</option>
     <option value="web">ASP.NET Core Empty</option>
     <option value="mvc">ASP.NET Core MVC</option>
     <option value="webapp">ASP.NET Core MVC Razor Page</option>
