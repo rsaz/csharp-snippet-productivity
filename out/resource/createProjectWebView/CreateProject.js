@@ -90,22 +90,22 @@ class CreateProjectPanel {
             if (message.template === 'grpc') {
                 const terminal = vscode.window.createTerminal();
                 terminal.show(true);
-                yield terminal.sendText("mkdir " + this.filepath + "\\" + message.solution);
-                yield terminal.sendText("dotnet new sln -n " + message.solution + " -o " + this.filepath + "\\" + message.solution + " --force");
-                yield terminal.sendText("mkdir " + this.filepath + "\\" + message.solution + "\\" + message.project);
-                yield terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + this.filepath + "\\" + message.solution + "\\" + message.project + " --force");
-                yield terminal.sendText("dotnet sln " + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + " add " + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj");
-                yield terminal.sendText("code " + this.filepath + "\\" + message.solution + " -r");
+                yield terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
+                yield terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
+                yield terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
+                yield terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --force");
+                yield terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
+                yield terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
             }
             else {
                 const terminal = vscode.window.createTerminal();
                 terminal.show(true);
-                yield terminal.sendText("mkdir " + this.filepath + "\\" + message.solution);
-                yield terminal.sendText("dotnet new sln -n " + message.solution + " -o " + this.filepath + "\\" + message.solution + " --force");
-                yield terminal.sendText("mkdir " + this.filepath + "\\" + message.solution + "\\" + message.project);
-                yield terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + this.filepath + "\\" + message.solution + "\\" + message.project + " -f " + message.framework + " --force");
-                yield terminal.sendText("dotnet sln " + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + " add " + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj");
-                yield terminal.sendText("code " + this.filepath + "\\" + message.solution + " -r");
+                yield terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
+                yield terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
+                yield terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
+                yield terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " -f " + message.framework + " --force");
+                yield terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
+                yield terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
             }
         });
     }
