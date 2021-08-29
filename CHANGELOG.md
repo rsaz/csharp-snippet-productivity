@@ -5,6 +5,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [1.2.6] - 2021-08-28
+
+- **_Fix_**: Creating solutions in folders path with spaces were not possible. Now solutions and projects can be created in folders with spaces. **i.e: `c:\Your Project Folder\Solution.sln`**
+
 ## [1.2.5] - 2021-08-01
 
 - **_Fix_**: Removed the notes feature preview accidentally uploaded

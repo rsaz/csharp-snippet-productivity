@@ -26,22 +26,22 @@ C# Snippet Productivity
 
 > [Click here](https://github.com/rsaz/csharp-snippet-productivity/blob/main/CHANGELOG.md)
 
-## What's new in 1.2.4
+## What's new in 1.2.6
 
-> - **_Fix_**: Solution was being created with project name rather than solution data from solution field.
+> - **_Fix_**: Creating solutions in folders path with spaces were not possible. Now solutions and projects can be created in folders with spaces. **i.e: `c:\Your Project Folder\Solution.sln`**
+
+## Current features
+
 > - **_New Features added_**:
 > - **_Add Project to a Solution_** : Capability to add projects to the same solution with a click of a button. You can select a different project framework as well as the template.
 >
 > ![Add Project](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/addProject.PNG?raw=true)
 >
 > - **_Submenu With Options_** :
-> - Create Class
-> - Create Interface
-> - Create Record
-> - Create Struct
-
-## Current features
-
+>   - Create Class
+>   - Create Interface
+>   - Create Record
+>   - Create Struct
 > - **_Fix_**: .NET target frameworks list on project creation are based on OS and SDKs installed.
 > - **_Enhancement_**: Design patterns snippets added. It will create a commented pattern code to be used as reference
 > - **_singleton_** : Creational singleton pattern
