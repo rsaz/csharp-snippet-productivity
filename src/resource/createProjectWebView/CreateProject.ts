@@ -12,12 +12,15 @@ export class CreateProjectPanel {
   private _disposables: vscode.Disposable[] = [];
   private _sdks: string[] = [];
   private _projectName: string = "";
+  private _defaultFolder: vscode.WorkspaceConfiguration | undefined;
   
   // constructor
   private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
       this._panel = panel;
-      this._extensionUri = extensionUri;     
-  
+      this._extensionUri = extensionUri;
+      this._defaultFolder = vscode.workspace.getConfiguration('csharp-snippet-productivity').get('defaultFolderForProjectCreation');   
+      this.filepath = this._defaultFolder;
+
       // Set the Webview initial html content
       this._update();
   

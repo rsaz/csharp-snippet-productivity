@@ -17,6 +17,12 @@ class ContextualMenu {
                 vscode.window.showErrorMessage('Please input a valid name or press Scape to cancel the operation!');
                 return this.init(uri, fileType);
             }
+            if (newFileName) {
+                newFileName = newFileName.replace(/\s/g, '');
+            }
+            else {
+                newFileName = 'New' + fileType + '.cs';
+            }
             let newFilePath = pathSelected + path.sep + newFileName;
             if (fs.existsSync(newFilePath)) {
                 vscode.window.showErrorMessage(`File ${newFileName} already exist`);

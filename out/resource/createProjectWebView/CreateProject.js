@@ -22,6 +22,8 @@ class CreateProjectPanel {
         this._projectName = "";
         this._panel = panel;
         this._extensionUri = extensionUri;
+        this._defaultFolder = vscode.workspace.getConfiguration('csharp-snippet-productivity').get('defaultFolderForProjectCreation');
+        this.filepath = this._defaultFolder;
         // Set the Webview initial html content
         this._update();
         // OnPanel Close

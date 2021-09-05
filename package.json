@@ -2,7 +2,7 @@
     "name": "csharp-snippet-productivity",
     "displayName": "C# Toolbox of Productivity",
     "description": "The complete set of tools for C# development",
-    "version": "1.2.6",
+    "version": "1.2.7",
     "icon": "icon.png",
     "publisher": "richardzampieriprog",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -141,8 +141,16 @@
             }
         ],
         "configuration": {
-            "title": "Smart comments configuration",
+            "title": "C# Toolbox of Productivity",
             "properties": {
+                "csharp-snippet-productivity.defaultFolderForProjectCreation": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Set the default folder for project creation",
+                    "default": null
+                },
                 "csharp-snippet-productivity.multilineComments": {
                     "type": "boolean",
                     "description": "Whether the multiline comment highlighter should be active",
