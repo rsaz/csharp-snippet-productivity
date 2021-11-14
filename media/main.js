@@ -62,6 +62,7 @@
         else if (frameworkSelected === "3.0") frameworkRun = "netcoreapp3.0";
         else if (frameworkSelected === "3.1") frameworkRun = "netcoreapp3.1";
         else if (frameworkSelected === "5.0") frameworkRun = "net5.0";
+        else if (frameworkSelected === "6.0") frameworkRun = "net6.0";
 
         vscode.postMessage({
             command: 'createProject',
