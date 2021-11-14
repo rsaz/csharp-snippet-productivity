@@ -26,13 +26,14 @@ C# Snippet Productivity
 
 > [Click here](https://github.com/rsaz/csharp-snippet-productivity/blob/main/CHANGELOG.md)
 
-## What's new in 1.2.7
+## What's new in 1.2.8
 
-> - **_Fix_**: Classes, Interfaces, and other types created correctly even when the user type incorrect names.
-> - **_New Features added_**: Added a default folder for project creation. Add this configuration to your settings with your path: `"csharp-snippet-productivity.defaultFolderForProjectCreation": "D:\\"` **{Your path}**
+> - **_New Feature added_**: Project support for C# .NET Core 6.0
 
 ## Current features
 
+> - **_Fix_**: Classes, Interfaces, and other types created correctly even when the user type incorrect names.
+> - **_New Features added_**: Added a default folder for project creation. Add this configuration to your settings with your path: `"csharp-snippet-productivity.defaultFolderForProjectCreation": "D:\\"` **{Your path}**
 > - **_New Features added_**:
 > - **_Add Project to a Solution_** : Capability to add projects to the same solution with a click of a button. You can select a different project framework as well as the template.
 >

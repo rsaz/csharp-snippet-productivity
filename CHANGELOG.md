@@ -5,6 +5,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [1.2.8] - [2021-11-13]
+
+> - **_New Feature added_**: Project support for C# .NET Core 6.0
+
 ## [1.2.7] - [2021-09-04]
 
 - **_Fix_**: Classes, Interfaces, and other types created correctly even when the user type incorrect names.
