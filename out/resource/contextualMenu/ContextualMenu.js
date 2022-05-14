@@ -9,13 +9,13 @@ const os = require("os");
 const findUpGlob = require('find-up-glob');
 const lineByLine = require('n-readlines');
 class ContextualMenu {
-    static init(uri, fileType) {
+    static init(uri, fileType, framework) {
         let pathSelected = uri.fsPath;
         vscode.window.showInputBox({ ignoreFocusOut: true, prompt: 'Type the file name', value: 'New ' + fileType + '.cs' })
             .then((newFileName) => {
             if (typeof (newFileName) === undefined || newFileName === '') {
                 vscode.window.showErrorMessage('Please input a valid name or press Scape to cancel the operation!');
-                return this.init(uri, fileType);
+                return this.init(uri, fileType, framework);
             }
             if (newFileName) {
                 newFileName = newFileName.replace(/\s/g, '');
@@ -55,7 +55,7 @@ class ContextualMenu {
             namespace = namespace.replace(/\s+/g, '_');
             namespace = namespace.replace(/-/g, '_');
             newFilePath = path.basename(newFilePath, '.cs');
-            loadTemplate(fileType, namespace, newFilePath, originalFilePath);
+            loadTemplate(fileType, namespace, newFilePath, originalFilePath, framework);
         });
     }
 }
@@ -85,9 +85,15 @@ function getProjectRootDirOrFilePath(filePath) {
     return projectRootDir;
 }
 // load the template, replace by current values and create the document in the folder selected
-function loadTemplate(templateType, namespace, newFilepath, originalFilePath) {
+function loadTemplate(templateType, namespace, newFilepath, originalFilePath, framework) {
     var _a;
-    let fileTemplate = templateType + '.mdl';
+    let fileTemplate = "";
+    if (framework === "net6.0") {
+        fileTemplate = templateType + '6.mdl';
+    }
+    else {
+        fileTemplate = templateType + '.mdl';
+    }
     vscode.workspace.openTextDocument(((_a = vscode.extensions.getExtension('richardzampieriprog.csharp-snippet-productivity')) === null || _a === void 0 ? void 0 : _a.extensionPath) + '/models/' + fileTemplate)
         .then((doc) => {
         let content = doc.getText();

@@ -11,6 +11,7 @@ import { AddProjectToSolution } from './resource/addProjectToSolution/AddProject
 export class CommandRegister {
     private static _instance: CommandRegister;
     private context!: vscode.ExtensionContext;
+    private framework!: string;
 
     private constructor() {}
     
@@ -25,7 +26,8 @@ export class CommandRegister {
     public initializeCommands(context: vscode.ExtensionContext): void {
         this.context = context;
 
-        this.createProject();
+
+        this.createProject(context);
         this.addProjectToSolution();
         this.menuActivation();
         this.smartCommentsActivation();
@@ -37,27 +39,32 @@ export class CommandRegister {
         smartComment.activateSmartComments();
     }
 
-    private createProject(): void {
+    private createProject(context: vscode.ExtensionContext): void {
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createProject', async ()=> {
-            CreateProjectPanel.createOrShow(this.context.extensionUri);
+            CreateProjectPanel.createOrShow(this.context.extensionUri, this.context);
         }));
     }
 
     private menuActivation(): void {
-        this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createClass', async (uri: vscode.Uri)=> {
-            ContextualMenu.init(uri, 'class');
+        
+        if (this.context.globalState.get("framework") !== undefined) {
+            this.framework = this.context.globalState.get("framework") as string;
+        }
+
+        this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createClass', async (uri: vscode.Uri)=> { 
+            ContextualMenu.init(uri, 'class', this.framework);
         }));
     
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createInterface', async (uri: vscode.Uri)=> {
-            ContextualMenu.init(uri, 'interface');
+            ContextualMenu.init(uri, 'interface', this.framework);
         }));
         
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createStruct', async (uri: vscode.Uri)=> {
-            ContextualMenu.init(uri, 'struct');
+            ContextualMenu.init(uri, 'struct', this.framework);
         }));
         
         this.context.subscriptions.push(vscode.commands.registerCommand('csharp-snippet-productivity.createRecord', async (uri: vscode.Uri)=> {
-            ContextualMenu.init(uri, 'record');
+            ContextualMenu.init(uri, 'record', this.framework);
         }));
     }
 

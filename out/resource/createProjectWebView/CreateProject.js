@@ -50,7 +50,8 @@ class CreateProjectPanel {
             }
         }), null, this._disposables);
     }
-    static createOrShow(extensionUri) {
+    static createOrShow(extensionUri, context) {
+        this.context = context;
         const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
         // If we already have a panel, show it.
         if (CreateProjectPanel.currentPanel) {
@@ -109,6 +110,8 @@ class CreateProjectPanel {
                 yield terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
                 yield terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
             }
+            // setting the current project framework to define the template namespace to be used
+            CreateProjectPanel.context.globalState.update("framework", message.framework);
         });
     }
     getTargetFrameworks(sdksResource) {

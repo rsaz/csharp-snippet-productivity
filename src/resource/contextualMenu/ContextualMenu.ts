@@ -7,15 +7,15 @@ const findUpGlob = require('find-up-glob');
 const lineByLine = require('n-readlines');
 
 class ContextualMenu {
-
-    public static init(uri: vscode.Uri, fileType: string){
+    
+    public static init(uri: vscode.Uri, fileType: string, framework: string){
         let pathSelected: string = uri.fsPath;
       
         vscode.window.showInputBox({ignoreFocusOut: true, prompt: 'Type the file name', value: 'New ' + fileType + '.cs'})
             .then((newFileName) => {
                 if (typeof(newFileName) === undefined || newFileName === '') {
                     vscode.window.showErrorMessage('Please input a valid name or press Scape to cancel the operation!');
-                    return this.init(uri, fileType); 
+                    return this.init(uri, fileType, framework); 
                 }
                 
                 if (newFileName) {
@@ -70,7 +70,7 @@ class ContextualMenu {
 
                 newFilePath = path.basename(newFilePath, '.cs');
 
-                loadTemplate(fileType, namespace, newFilePath, originalFilePath);
+                loadTemplate(fileType, namespace, newFilePath, originalFilePath, framework);
 
             }
         ); 
@@ -106,9 +106,17 @@ function getProjectRootDirOrFilePath(filePath: any){
 }
 
 // load the template, replace by current values and create the document in the folder selected
-function loadTemplate(templateType: string, namespace: string, newFilepath: string, originalFilePath: string){
-    let fileTemplate = templateType + '.mdl';
+function loadTemplate(templateType: string, namespace: string, newFilepath: string, originalFilePath: string, framework: string){
+    
+    let fileTemplate: string = "";
 
+    if (framework === "net6.0") {
+        fileTemplate = templateType + '6.mdl';
+    }
+    else {
+        fileTemplate = templateType + '.mdl';
+    }
+    
     vscode.workspace.openTextDocument(vscode.extensions.getExtension('richardzampieriprog.csharp-snippet-productivity')?.extensionPath + '/models/' + fileTemplate)
         .then((doc: vscode.TextDocument) => {
             let content = doc.getText();

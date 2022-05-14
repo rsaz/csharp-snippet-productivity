@@ -6,6 +6,8 @@ import * as fs from "fs";
 export class CreateProjectPanel {
 
   public static currentPanel: CreateProjectPanel | undefined;
+  private static context: vscode.ExtensionContext;
+
   private filepath: any = "";
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
@@ -56,7 +58,9 @@ export class CreateProjectPanel {
       );
   }
 
-  public static createOrShow(extensionUri: vscode.Uri) {
+  public static createOrShow(extensionUri: vscode.Uri, context: vscode.ExtensionContext): void {
+
+    this.context = context;
 
     const column = vscode.window.activeTextEditor? vscode.window.activeTextEditor.viewColumn : undefined;
 
@@ -128,6 +132,8 @@ export class CreateProjectPanel {
         await terminal.sendText("dotnet sln "+"\'"+this.filepath+"\\"+message.solution+"\\"+message.solution+".sln"+"\'"+" add "+"\'"+this.filepath+"\\"+message.solution+"\\"+message.project+"\\"+message.project+".csproj"+"\'");
         await terminal.sendText("code "+"\'"+this.filepath+"\\"+message.solution+"\'"+" -r");
       }
+      // setting the current project framework to define the template namespace to be used
+      CreateProjectPanel.context.globalState.update("framework", message.framework);
      }
 
   private getTargetFrameworks(sdksResource:vscode.Uri): string[] {
