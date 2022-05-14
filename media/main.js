@@ -22,7 +22,7 @@
     });
     
     function fieldValidation() {
-        if (project.value === "" || solution.value === "" || filePath.value === "") { 
+        if (project.value === "" || solution.value === "") { 
             buttonCreateProject.disabled = true;
         } else {
             buttonCreateProject.disabled = false;
@@ -35,8 +35,8 @@
     });
 
     project.addEventListener('change', () => {
-        fieldValidation();
         solution.value = project.value;
+        fieldValidation();
     });
 
     solution.addEventListener('keyup', () => {
