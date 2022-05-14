@@ -26,6 +26,10 @@ C# Snippet Productivity
 
 > [Click here](https://github.com/rsaz/csharp-snippet-productivity/blob/main/CHANGELOG.md)
 
+## What's new in 1.2.9
+> - **_New Feature added_**: Scoped namespaces in the .NET 6.0 
+> - **_Improvement_**: Project creation highlighting the `create project button` after the project name is typed and tab is pressed.
+
 ## What's new in 1.2.8
 
 > - **_New Feature added_**: Project support for C# .NET Core 6.0

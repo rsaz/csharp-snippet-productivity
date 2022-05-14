@@ -5,6 +5,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [1.2.9] - [2022-05-14]
+
+> - **_New Feature added_**: Scoped namespaces in the .NET 6.0 
+> - **_Improvement_**: Project creation highlighting the `create project button` after the project name is typed and tab is pressed.
+
 ## [1.2.8] - [2021-11-13]
 
 > - **_New Feature added_**: Project support for C# .NET Core 6.0
