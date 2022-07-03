@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateProjectPanel = void 0;
 const vscode = require("vscode");
 const GetNonce_1 = require("./GetNonce");
+const path = require("path");
 const fs = require("fs");
 class CreateProjectPanel {
     // constructor
@@ -19,11 +20,12 @@ class CreateProjectPanel {
         this.filepath = "";
         this._disposables = [];
         this._sdks = [];
-        this._projectName = "";
         this._panel = panel;
         this._extensionUri = extensionUri;
         this._defaultFolder = vscode.workspace.getConfiguration('csharp-snippet-productivity').get('defaultFolderForProjectCreation');
         this.filepath = this._defaultFolder;
+        this._terminal = vscode.window.activeTerminal === undefined ? vscode.window.createTerminal() : vscode.window.activeTerminal;
+        this._terminal.show();
         // Set the Webview initial html content
         this._update();
         // OnPanel Close
@@ -67,6 +69,8 @@ class CreateProjectPanel {
                 vscode.Uri.joinPath(extensionUri, "out/compiled")
             ],
         });
+        // adding panel icon
+        panel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, "media", "addProjectIcon.png"));
         CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
     }
     static kill() {
@@ -90,25 +94,28 @@ class CreateProjectPanel {
     }
     projectCreation(message) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (fs.existsSync(this.filepath + "\\" + message.solution)) {
+                vscode.window.showErrorMessage("Solution folder already exist");
+                return;
+            }
             if (message.template === 'grpc') {
-                const terminal = vscode.window.createTerminal();
-                terminal.show(true);
-                yield terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
-                yield terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
-                yield terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
-                yield terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --force");
-                yield terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
-                yield terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
+                this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
+                this._terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
+                this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
+                this._terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --force");
+                this._terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
+                this._terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
+            }
+            else if (message.template === 'minwebapi') {
+                console.log("min web api");
             }
             else {
-                const terminal = vscode.window.createTerminal();
-                terminal.show(true);
-                yield terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
-                yield terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
-                yield terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
-                yield terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --framework " + message.framework + " --force");
-                yield terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
-                yield terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
+                this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
+                this._terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
+                this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
+                this._terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --framework " + message.framework + " --force");
+                this._terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
+                this._terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
             }
             // setting the current project framework to define the template namespace to be used
             CreateProjectPanel.context.globalState.update("framework", message.framework);
@@ -138,14 +145,14 @@ class CreateProjectPanel {
         return sdks;
     }
     writeSDKOnFile(sdkFile) {
-        const terminal = vscode.window.createTerminal();
         const os = process.platform;
         if (os === 'win32') {
-            terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
+            this._terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
         }
         else {
-            terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
+            this._terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
         }
+        this._terminal.sendText("clear");
     }
     _update(templateName = 'Select Template', template = 'console', project = '', solution = '', framework = '') {
         return __awaiter(this, void 0, void 0, function* () {
