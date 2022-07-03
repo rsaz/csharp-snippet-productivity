@@ -127,8 +127,21 @@ export class CreateProjectPanel {
       this._terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --force");
       this._terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
       this._terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
+
     } else if (message.template === 'minwebapi') {
-      console.log("min web api");
+
+      if (message.framework !== "net6.0") {
+        vscode.window.showWarningMessage("Please select net6.0 for Minimal WebAPI");
+        return;
+      }
+
+      this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
+      this._terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
+      this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
+      this._terminal.sendText("dotnet new webapi -minimal --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --framework " + message.framework + " --force");
+      this._terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
+      this._terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
+
     } else {
       this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
       this._terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
@@ -234,8 +247,12 @@ export class CreateProjectPanel {
     <option value="react">ASP.NET Core MVC React SPA</option>
     <option value="reactredux">ASP.NET Core MVC React/Redux SPA</option>
     <option value="webapi">ASP.NET Core Web API</option>
+    <option value="minwebapi">Minimal Web API</option>
     <option value="grpc">ASP.NET Core GRPC Services</option>
     <option value="razorclasslib">Razor Class Library</option>
+    <option value="mstest">MSTest Project</option>
+    <option value="nunit">NUnit Test Project</option>
+    <option value="xunit">xUnit Test Project</option>
   </select>
   </br>
   </br>
