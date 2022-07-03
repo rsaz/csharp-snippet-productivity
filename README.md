@@ -26,8 +26,15 @@ C# Snippet Productivity
 
 > [Click here](https://github.com/rsaz/csharp-snippet-productivity/blob/main/CHANGELOG.md)
 
+## What's new in 1.3.0
+
+> - **_New Feature added_**: Minimal Web API, MStest, xUnit, NUnit project template added.
+> - **_Fix_**: Creating Solution with the same name in the same directory.
+> - **_Improvement_**: Extension loading time decreased.
+
 ## What's new in 1.2.9
-> - **_New Feature added_**: Scoped namespaces in the .NET 6.0 
+
+> - **_New Feature added_**: Scoped namespaces in the .NET 6.0
 > - **_Improvement_**: Project creation highlighting the `create project button` after the project name is typed and tab is pressed.
 
 ## What's new in 1.2.8

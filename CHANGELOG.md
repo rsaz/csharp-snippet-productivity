@@ -5,9 +5,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [1.3.0] - [2022-07-03]
+
+> - **_New Feature added_**: Minimal Web API, MStest, xUnit, NUnit project template added.
+> - **_Fix_**: Creating Solution with the same name in the same directory.
+> - **_Fix_**: find-parent-dir dependency updated to remove the error message from vscode.
+
 ## [1.2.9] - [2022-05-14]
 
-> - **_New Feature added_**: Scoped namespaces in the .NET 6.0 
+> - **_New Feature added_**: Scoped namespaces in the .NET 6.0
 > - **_Improvement_**: Project creation highlighting the `create project button` after the project name is typed and tab is pressed.
 
 ## [1.2.8] - [2021-11-13]
