@@ -171,12 +171,22 @@
 	"-> for loop": {
 		"prefix": "for",
 		"body": [
-			"for (var ${1:i} = 0; $1 < ${2:length}; $1++)",
+			"for (var ${1:i} = ${2:0}; $1 < ${3:length}; $1++)",
 			"{",
 			"\t$0",
 			"}"
 		],
 		"description": "Creates a for loop"
+	},
+	"-> reverse for loop": {
+		"prefix": "forr",
+		"body": [
+			"for (int ${1:i} = ${2:length}; ${1:i} >= ${3:0} ; ${1:i}--)",
+			"{",
+			"\t$0",
+			"}"
+		],
+		"description": "Creates a reverse for loop"
 	},
 	"-> foreach statement": {
 		"prefix": "foreach",
