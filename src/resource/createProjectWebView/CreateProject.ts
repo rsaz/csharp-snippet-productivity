@@ -313,6 +313,8 @@ export class CreateProjectPanel {
   }
 
   private static async update(
+    projectGroup: any = "api",
+    projectGroupName: any = "Select Project Type",
     templateName: any = "Select Template",
     template: any = "console",
     project: any = "",
@@ -329,6 +331,8 @@ export class CreateProjectPanel {
 
     this._panel.webview.html = this.getHtmlForWebview(
       webview,
+      projectGroup,
+      projectGroupName,
       templateName,
       template,
       project,
@@ -339,6 +343,8 @@ export class CreateProjectPanel {
 
   private static getHtmlForWebview(
     webview: vscode.Webview,
+    projectGroup: any,
+    projectGroupName: any,
     templateName: any,
     template: any,
     project: any,
@@ -380,28 +386,34 @@ export class CreateProjectPanel {
   <h1>Create a new Solution or Project</h1>
   <br/>
   <br/>
+  <h3>Select the project type</h3>
+    <select id="project-group-select" name="project-group">
+      <option value="${projectGroup}" selected="selected">${
+      projectGroupName === "" ? "Select Project Type" : projectGroupName
+    }</option>
+      <option value="api">API</option>
+      <option value="blazor">Blazor</option>
+      <option value="cloud">Cloud</option>
+      <option value="console">Console</option>
+      <option value="desktop">Desktop</option>
+      <option value="extensions">Extensions</option>
+      <option value="game">Game</option>
+      <option value="iot">IoT</option>
+      <opt value="lib">Libraries</opt>
+      <option value="machinelearning">Machine Learning</option>
+      <option value="maui">MAUI</option>
+      <option value="mobile">Mobile</option>
+      <option value="test">Test</option>
+      <option value="web">Web</option>      
+    </select>
+  <br/>
+  <br/>
   <h3>Select the project template</h3>
   <select id="custom-select" name="project-type">
     <option value="${template}" selected="selected">${
       templateName === "" ? "Select Template" : templateName
     }</option>
-    <option value="blazorserver">Blazor Server App</option>
-    <option value="blazorwasm">Blazor WebAssembly App</option>
-    <option value="console">Console Application</option>
-    <option value="classlib">Class Library</option>
-    <option value="web">ASP.NET Core Empty</option>
-    <option value="mvc">ASP.NET Core MVC</option>
-    <option value="webapp">ASP.NET Core MVC Razor Page</option>
-    <option value="angular">ASP.NET Core MVC Angular SPA</option>
-    <option value="react">ASP.NET Core MVC React SPA</option>
-    <option value="reactredux">ASP.NET Core MVC React/Redux SPA</option>
-    <option value="webapi">ASP.NET Core Web API</option>
-    <option value="minwebapi">Minimal Web API</option>
-    <option value="grpc">ASP.NET Core GRPC Services</option>
-    <option value="razorclasslib">Razor Class Library</option>
-    <option value="mstest">MSTest Project</option>
-    <option value="nunit">NUnit Test Project</option>
-    <option value="xunit">xUnit Test Project</option>
+    <!-- Dynamic templates will be added here -->
   </select>
   </br>
   </br>

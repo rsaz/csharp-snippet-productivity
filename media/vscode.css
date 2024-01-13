@@ -91,7 +91,8 @@ textarea::placeholder {
 }
 
 /* custom select */
-#custom-select {
+#custom-select,
+#project-group-select {
   width: 230px;
   height: 30px;
 }
@@ -109,6 +110,7 @@ textarea::placeholder {
 #inputLocal {
   width: 500px;
   height: 30px;
+  background-color: #434443;
 }
 
 #selectFolder {
@@ -119,11 +121,15 @@ textarea::placeholder {
 #projectName {
   width: 500px;
   height: 30px;
+  background-color: #434443;
+  color: white;
 }
 
 #solution {
   width: 500px;
   height: 30px;
+  background-color: #434443;
+  color: white;
 }
 
 #forminline {
