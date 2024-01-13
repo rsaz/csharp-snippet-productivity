@@ -27,7 +27,7 @@ export class CreateProjectPanel {
     // If we already have a panel, show it.
     if (CreateProjectPanel._panel) {
       CreateProjectPanel._panel.reveal(column);
-      CreateProjectPanel._update();
+      CreateProjectPanel.update();
       return;
     }
 
@@ -92,7 +92,7 @@ export class CreateProjectPanel {
             vscode.window.showOpenDialog(options).then((fileUri) => {
               if (fileUri && fileUri[0]) {
                 this._filepath = fileUri[0].fsPath;
-                this._update(
+                this.update(
                   message.templateName,
                   message.template,
                   message.project,
@@ -109,16 +109,7 @@ export class CreateProjectPanel {
     );
 
     // Set the Webview initial html content
-    this._update();
-  }
-
-  private static kill() {
-    CreateProjectPanel._panel?.dispose();
-    CreateProjectPanel._panel = undefined as any;
-  }
-
-  private static revive(panel: vscode.WebviewPanel) {
-    CreateProjectPanel.defaultConstructor(panel);
+    this.update();
   }
 
   private static dispose() {
@@ -321,7 +312,7 @@ export class CreateProjectPanel {
     CreateProjectPanel.context.globalState.update("framework", message.framework);
   }
 
-  private static async _update(
+  private static async update(
     templateName: any = "Select Template",
     template: any = "console",
     project: any = "",
@@ -336,7 +327,7 @@ export class CreateProjectPanel {
     );
     this._sdks = getTargetFrameworks(sdksResource);
 
-    this._panel.webview.html = this._getHtmlForWebview(
+    this._panel.webview.html = this.getHtmlForWebview(
       webview,
       templateName,
       template,
@@ -346,7 +337,7 @@ export class CreateProjectPanel {
     );
   }
 
-  private static _getHtmlForWebview(
+  private static getHtmlForWebview(
     webview: vscode.Webview,
     templateName: any,
     template: any,
