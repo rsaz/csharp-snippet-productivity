@@ -1,32 +1,75 @@
-import * as vscode from "vscode";
-import { getNonce } from "./GetNonce";
-import * as path from 'path';
 import * as fs from "fs";
+import * as path from "path";
+import * as vscode from "vscode";
+import { getTargetFrameworks } from "../../utils/sdk.provider";
+import { getNonce } from "./GetNonce";
 
 export class CreateProjectPanel {
-
-  public static currentPanel: CreateProjectPanel | undefined;
   private static context: vscode.ExtensionContext;
+  private static _filepath: any = "";
+  private static _panel: vscode.WebviewPanel;
+  private static _disposables: vscode.Disposable[] = [];
+  private static _sdks: string[] = [];
+  private static _defaultFolder: vscode.WorkspaceConfiguration | undefined;
+  private static _terminal: vscode.Terminal;
 
-  private filepath: any = "";
-  private readonly _panel: vscode.WebviewPanel;
-  private readonly _extensionUri: vscode.Uri;
-  private _disposables: vscode.Disposable[] = [];
-  private _sdks: string[] = [];
-  private _defaultFolder: vscode.WorkspaceConfiguration | undefined;
-  private _terminal: vscode.Terminal;
+  // To avoid direct instantiation use the createOrShow method
+  private constructor() {}
 
-  // constructor
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+  // Main method to create or show the panel
+  public static createOrShow(context: vscode.ExtensionContext): void {
+    this.context = context;
+
+    const column = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.viewColumn
+      : undefined;
+
+    // If we already have a panel, show it.
+    if (CreateProjectPanel._panel) {
+      CreateProjectPanel._panel.reveal(column);
+      CreateProjectPanel._update();
+      return;
+    }
+
+    // Otherwise, create a new panel.
+    const panel = vscode.window.createWebviewPanel(
+      "create-project",
+      "Create Project",
+      column || vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          vscode.Uri.joinPath(context.extensionUri, "media"),
+          vscode.Uri.joinPath(context.extensionUri, "out/compiled"),
+        ],
+      }
+    );
+
+    // adding panel icon
+    panel.iconPath = vscode.Uri.file(
+      path.join(this.context.extensionPath, "media", "addProjectIcon.png")
+    );
+
+    CreateProjectPanel.defaultConstructor(panel);
+  }
+
+  private static async defaultConstructor(panel: vscode.WebviewPanel) {
     this._panel = panel;
-    this._extensionUri = extensionUri;
-    this._defaultFolder = vscode.workspace.getConfiguration('csharp-snippet-productivity').get('defaultFolderForProjectCreation');
-    this.filepath = this._defaultFolder;
-    this._terminal = vscode.window.activeTerminal === undefined ? vscode.window.createTerminal() : vscode.window.activeTerminal;
-    this._terminal.show();
 
-    // Set the Webview initial html content
-    this._update();
+    this._defaultFolder = vscode.workspace
+      .getConfiguration("csharp-snippet-productivity")
+      .get("defaultFolderForProjectCreation");
+
+    if (!this._defaultFolder) {
+      vscode.window.showInformationMessage("Please set a default folder for project creation");
+    }
+
+    this._filepath = this._defaultFolder;
+    this._terminal =
+      vscode.window.activeTerminal === undefined
+        ? vscode.window.createTerminal()
+        : vscode.window.activeTerminal;
+    this._terminal.show();
 
     // OnPanel Close
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -41,15 +84,21 @@ export class CreateProjectPanel {
           case "selectDirectory":
             const options: vscode.OpenDialogOptions = {
               canSelectMany: false,
-              openLabel: 'Select',
+              openLabel: "Select",
               canSelectFiles: false,
-              canSelectFolders: true
+              canSelectFolders: true,
             };
 
-            vscode.window.showOpenDialog(options).then(fileUri => {
+            vscode.window.showOpenDialog(options).then((fileUri) => {
               if (fileUri && fileUri[0]) {
-                this.filepath = fileUri[0].fsPath;
-                this._update(message.templateName, message.template, message.project, message.solution, message.framework);
+                this._filepath = fileUri[0].fsPath;
+                this._update(
+                  message.templateName,
+                  message.template,
+                  message.project,
+                  message.solution,
+                  message.framework
+                );
               }
             });
             return;
@@ -58,52 +107,25 @@ export class CreateProjectPanel {
       null,
       this._disposables
     );
+
+    // Set the Webview initial html content
+    this._update();
   }
 
-  public static createOrShow(extensionUri: vscode.Uri, context: vscode.ExtensionContext): void {
-
-    this.context = context;
-
-    const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
-
-    // If we already have a panel, show it.
-    if (CreateProjectPanel.currentPanel) {
-      CreateProjectPanel.currentPanel._panel.reveal(column);
-      CreateProjectPanel.currentPanel._update();
-      return;
-    }
-
-    // Otherwise, create a new panel.
-    const panel = vscode.window.createWebviewPanel('create-project', "Create Project", column || vscode.ViewColumn.One,
-      {
-        enableScripts: true,
-        localResourceRoots: [
-          vscode.Uri.joinPath(extensionUri, "media"),
-          vscode.Uri.joinPath(extensionUri, "out/compiled")
-        ],
-      }
-    );
-
-    // adding panel icon
-    panel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, "media", "addProjectIcon.png"));
-
-    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
+  private static kill() {
+    CreateProjectPanel._panel?.dispose();
+    CreateProjectPanel._panel = undefined as any;
   }
 
-  public static kill() {
-    CreateProjectPanel.currentPanel?.dispose();
-    CreateProjectPanel.currentPanel = undefined;
+  private static revive(panel: vscode.WebviewPanel) {
+    CreateProjectPanel.defaultConstructor(panel);
   }
 
-  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, newFileName: string) {
-    CreateProjectPanel.currentPanel = new CreateProjectPanel(panel, extensionUri);
-  }
-
-  public dispose() {
-    CreateProjectPanel.currentPanel = undefined;
-
+  private static dispose() {
     // Clean up our resources
     this._panel.dispose();
+
+    CreateProjectPanel._panel = undefined as any;
 
     while (this._disposables.length) {
       const x = this._disposables.pop();
@@ -113,105 +135,237 @@ export class CreateProjectPanel {
     }
   }
 
-  private async projectCreation(message: any) {
-
-    if (fs.existsSync(this.filepath + "\\" + message.solution)) {
+  private static async projectCreation(message: any) {
+    if (fs.existsSync(this._filepath + "\\" + message.solution)) {
       vscode.window.showErrorMessage("Solution folder already exist");
       return;
     }
 
-    if (message.template === 'grpc') {
-      this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
-      this._terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
-      this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
-      this._terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --force");
-      this._terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
-      this._terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
-
-    } else if (message.template === 'minwebapi') {
-
+    if (message.template === "grpc") {
+      this._terminal.sendText("mkdir " + "'" + this._filepath + "\\" + message.solution + "'");
+      this._terminal.sendText(
+        "dotnet new sln -n " +
+          message.solution +
+          " -o " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "'" +
+          " --force"
+      );
+      this._terminal.sendText(
+        "mkdir " + "'" + this._filepath + "\\" + message.solution + "\\" + message.project + "'"
+      );
+      this._terminal.sendText(
+        "dotnet new " +
+          message.template +
+          " --language c# -n " +
+          message.project +
+          " -o " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.project +
+          "'" +
+          " --force"
+      );
+      this._terminal.sendText(
+        "dotnet sln " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.solution +
+          ".sln" +
+          "'" +
+          " add " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.project +
+          "\\" +
+          message.project +
+          ".csproj" +
+          "'"
+      );
+      this._terminal.sendText(
+        "code " + "'" + this._filepath + "\\" + message.solution + "'" + " -r"
+      );
+    } else if (message.template === "minwebapi") {
       if (message.framework !== "net6.0") {
         vscode.window.showWarningMessage("Please select net6.0 for Minimal WebAPI");
         return;
       }
 
-      this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
-      this._terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
-      this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
-      this._terminal.sendText("dotnet new webapi -minimal --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --framework " + message.framework + " --force");
-      this._terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
-      this._terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
-
+      this._terminal.sendText("mkdir " + "'" + this._filepath + "\\" + message.solution + "'");
+      this._terminal.sendText(
+        "dotnet new sln -n " +
+          message.solution +
+          " -o " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "'" +
+          " --force"
+      );
+      this._terminal.sendText(
+        "mkdir " + "'" + this._filepath + "\\" + message.solution + "\\" + message.project + "'"
+      );
+      this._terminal.sendText(
+        "dotnet new webapi -minimal --language c# -n " +
+          message.project +
+          " -o " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.project +
+          "'" +
+          " --framework " +
+          message.framework +
+          " --force"
+      );
+      this._terminal.sendText(
+        "dotnet sln " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.solution +
+          ".sln" +
+          "'" +
+          " add " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.project +
+          "\\" +
+          message.project +
+          ".csproj" +
+          "'"
+      );
+      this._terminal.sendText(
+        "code " + "'" + this._filepath + "\\" + message.solution + "'" + " -r"
+      );
     } else {
-      this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\'");
-      this._terminal.sendText("dotnet new sln -n " + message.solution + " -o " + "\'" + this.filepath + "\\" + message.solution + "\'" + " --force");
-      this._terminal.sendText("mkdir " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'");
-      this._terminal.sendText("dotnet new " + message.template + " --language c# -n " + message.project + " -o " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\'" + " --framework " + message.framework + " --force");
-      this._terminal.sendText("dotnet sln " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.solution + ".sln" + "\'" + " add " + "\'" + this.filepath + "\\" + message.solution + "\\" + message.project + "\\" + message.project + ".csproj" + "\'");
-      this._terminal.sendText("code " + "\'" + this.filepath + "\\" + message.solution + "\'" + " -r");
+      this._terminal.sendText("mkdir " + "'" + this._filepath + "\\" + message.solution + "'");
+      this._terminal.sendText(
+        "dotnet new sln -n " +
+          message.solution +
+          " -o " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "'" +
+          " --force"
+      );
+      this._terminal.sendText(
+        "mkdir " + "'" + this._filepath + "\\" + message.solution + "\\" + message.project + "'"
+      );
+      this._terminal.sendText(
+        "dotnet new " +
+          message.template +
+          " --language c# -n " +
+          message.project +
+          " -o " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.project +
+          "'" +
+          " --framework " +
+          message.framework +
+          " --force"
+      );
+      this._terminal.sendText(
+        "dotnet sln " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.solution +
+          ".sln" +
+          "'" +
+          " add " +
+          "'" +
+          this._filepath +
+          "\\" +
+          message.solution +
+          "\\" +
+          message.project +
+          "\\" +
+          message.project +
+          ".csproj" +
+          "'"
+      );
+      this._terminal.sendText(
+        "code " + "'" + this._filepath + "\\" + message.solution + "'" + " -r"
+      );
     }
     // setting the current project framework to define the template namespace to be used
     CreateProjectPanel.context.globalState.update("framework", message.framework);
   }
 
-  private getTargetFrameworks(sdksResource: vscode.Uri): string[] {
-
-    // Cleaning the sdk's folder path
-    let sdkFile: string = String(sdksResource.fsPath);
-    sdkFile.replace('/', '\\');
-    sdkFile = sdkFile.substring(0, sdkFile.length);
-
-    // clean file
-    fs.truncate(sdksResource.fsPath, 0, () => { });
-
-    this.writeSDKOnFile(sdkFile);
-
-    const sdksList: string = fs.readFileSync(sdksResource.fsPath, 'utf8');
-    let lines: string[] = sdksList.split('\n');
-    let sdks: string[] = [];
-
-    lines.forEach((line: string) => {
-      let lineUpdated: string = line.replace(/\s+/g, '');
-      lineUpdated = lineUpdated.replace(/[^a-z0-9A-Z.]/g, '');
-      let sdk: string = lineUpdated.substring(0, 3);
-      if (sdk) {
-        sdks.push(sdk);
-      }
-    });
-
-    // Eliminate duplicates
-    sdks = sdks.filter((value, index, self) => self.indexOf(value) === index);
-
-    return sdks;
-  }
-
-  private writeSDKOnFile(sdkFile: string) {
-    const os = process.platform;
-    if (os === 'win32') { this._terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`); }
-    else { this._terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`); }
-    this._terminal.sendText("clear");
-  }
-
-  private async _update(templateName: any = 'Select Template', template: any = 'console', project: any = '', solution: any = '', framework: any = '') {
-
+  private static async _update(
+    templateName: any = "Select Template",
+    template: any = "console",
+    project: any = "",
+    solution: any = "",
+    framework: any = ""
+  ) {
     const webview = this._panel.webview;
 
     // list of sdk's
-    const sdksResource: vscode.Uri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'sdks.txt'));
-    this._sdks = this.getTargetFrameworks(sdksResource);
+    const sdksResource: vscode.Uri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this.context.extensionUri, "media", "sdks.txt")
+    );
+    this._sdks = getTargetFrameworks(sdksResource);
 
-    this._panel.webview.html = this._getHtmlForWebview(webview, templateName, template, project, solution, framework);
+    this._panel.webview.html = this._getHtmlForWebview(
+      webview,
+      templateName,
+      template,
+      project,
+      solution,
+      framework
+    );
   }
 
-  private _getHtmlForWebview(webview: vscode.Webview, templateName: any, template: any, project: any, solution: any, framework: any) {
-
+  private static _getHtmlForWebview(
+    webview: vscode.Webview,
+    templateName: any,
+    template: any,
+    project: any,
+    solution: any,
+    framework: any
+  ) {
     // main script integration
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
+      vscode.Uri.joinPath(this.context.extensionUri, "media", "main.js")
+    );
 
     // Local path to css styles
-    const styleResetPath = vscode.Uri.joinPath(this._extensionUri, "media", "reset.css");
-    const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css");
+    const styleResetPath = vscode.Uri.joinPath(this.context.extensionUri, "media", "reset.css");
+    const stylesPathMainPath = vscode.Uri.joinPath(
+      this.context.extensionUri,
+      "media",
+      "vscode.css"
+    );
 
     // Uri to load styles into webview
     const stylesResetUri = webview.asWebviewUri(styleResetPath);
@@ -224,7 +378,9 @@ export class CreateProjectPanel {
     <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${
+    webview.cspSource
+  }; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="${stylesResetUri}" rel="stylesheet">
   <link href="${stylesMainUri}" rel="stylesheet">       
@@ -235,7 +391,9 @@ export class CreateProjectPanel {
   <br/>
   <h3>Select the project template</h3>
   <select id="custom-select" name="project-type">
-    <option value="${template}" selected="selected">${(templateName === '') ? 'Select Template' : templateName}</option>
+    <option value="${template}" selected="selected">${
+      templateName === "" ? "Select Template" : templateName
+    }</option>
     <option value="blazorserver">Blazor Server App</option>
     <option value="blazorwasm">Blazor WebAssembly App</option>
     <option value="console">Console Application</option>
@@ -261,7 +419,9 @@ export class CreateProjectPanel {
   <br />
   <label for="location">Location:</label>
   <div id="forminline">
-    <input id="inputLocal" value="${this.filepath}" type="text" name="location" required placeholder="Select the location to save your project">
+    <input id="inputLocal" value="${
+      this._filepath
+    }" type="text" name="location" required placeholder="Select the location to save your project">
     <button id="selectFolder">...</button>
   </div>
   </br>
@@ -271,7 +431,7 @@ export class CreateProjectPanel {
   <label for="framework">Framework</label>
   <br />
   <select id="custom-select2" name="framework">
-    ${this._sdks.map((sdk: string) => `<option value="${sdk}">${sdk}</option>`).join('')}
+    ${this._sdks.map((sdk: string) => `<option value="${sdk}">${sdk}</option>`).join("")}
   </select>
   <button id="create-project-button">Create Project</button>
   <script nonce="${nonce}" src="${scriptUri}"></script>

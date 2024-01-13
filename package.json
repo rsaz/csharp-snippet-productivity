@@ -1,252 +1,246 @@
 {
-    "name": "csharp-snippet-productivity",
-    "displayName": "C# Toolbox of Productivity",
-    "description": "The complete set of tools for C# development",
-    "version": "1.3.0",
-    "icon": "icon.png",
-    "publisher": "richardzampieriprog",
-    "license": "SEE LICENSE IN LICENSE.md",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/rsaz/csharp-snippet-productivity"
-    },
-    "engines": {
-        "vscode": "^1.53.0"
-    },
-    "categories": [
-        "Programming Languages",
-        "Snippets",
-        "Formatters"
+  "name": "csharp-snippet-productivity",
+  "displayName": "C# Toolbox of Productivity",
+  "description": "The complete set of tools for C# development",
+  "version": "1.3.0",
+  "icon": "icon.png",
+  "publisher": "richardzampieriprog",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rsaz/csharp-snippet-productivity"
+  },
+  "engines": {
+    "vscode": "^1.53.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Formatters"
+  ],
+  "keywords": [
+    ".NET",
+    ".NET Core",
+    "C#",
+    "Visual Studio",
+    "snippet",
+    "productivity",
+    "keybindings"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "activationEvents": [
+    "onLanguage:csharp",
+    "onLanguage:markdown",
+    "onLanguage:plaintext"
+  ],
+  "contributes": {
+    "snippets": [
+      {
+        "language": "csharp",
+        "path": "./snippets/general.json"
+      },
+      {
+        "language": "csharp",
+        "path": "./snippets/documentxml.json"
+      },
+      {
+        "language": "csharp",
+        "path": "./snippets/designpattern.json"
+      }
     ],
-    "keywords": [
-        ".NET",
-        ".NET Core",
-        "C#",
-        "Visual Studio",
-        "snippet",
-        "productivity",
-        "keybindings"
+    "commands": [
+      {
+        "command": "csharp-snippet-productivity.createProject",
+        "title": "Create Project",
+        "category": "C# Toolbox"
+      },
+      {
+        "command": "csharp-snippet-productivity.createClass",
+        "title": "Create Class"
+      },
+      {
+        "command": "csharp-snippet-productivity.createInterface",
+        "title": "Create Interface"
+      },
+      {
+        "command": "csharp-snippet-productivity.createStruct",
+        "title": "Create Struct"
+      },
+      {
+        "command": "csharp-snippet-productivity.createRecord",
+        "title": "Create Record"
+      },
+      {
+        "command": "csharp-snippet-productivity.addProjectToSolution",
+        "title": "Add Project"
+      }
     ],
-    "extensionKind": [
-        "ui"
-    ],
-    "activationEvents": [
-        "onLanguage:csharp",
-        "onLanguage:markdown",
-        "onLanguage:plaintext",
-        "onCommand:csharp-snippet-productivity.createProject",
-        "onCommand:csharp-snippet-productivity.createClass",
-        "onCommand:csharp-snippet-productivity.createInterface",
-        "onCommand:csharp-snippet-productivity.createStruct",
-        "onCommand:csharp-snippet-productivity.createRecord",
-        "onCommand:csharp-snippet-productivity.addProjectToSolution"
-    ],
-    "contributes": {
-        "snippets": [
-            {
-                "language": "csharp",
-                "path": "./snippets/general.json"
-            },
-            {
-                "language": "csharp",
-                "path": "./snippets/documentxml.json"
-            },
-            {
-                "language": "csharp",
-                "path": "./snippets/designpattern.json"
-            }
-        ],
-        "commands": [
-            {
-                "command": "csharp-snippet-productivity.createProject",
-                "title": "Create Project",
-                "category": "C# Toolbox"
-            },
-            {
-                "command": "csharp-snippet-productivity.createClass",
-                "title": "Create Class"
-            },
-            {
-                "command": "csharp-snippet-productivity.createInterface",
-                "title": "Create Interface"
-            },
-            {
-                "command": "csharp-snippet-productivity.createStruct",
-                "title": "Create Struct"
-            },
-            {
-                "command": "csharp-snippet-productivity.createRecord",
-                "title": "Create Record"
-            },
-            {
-                "command": "csharp-snippet-productivity.addProjectToSolution",
-                "title": "Add Project"
-            }
-        ],
-        "menus": {
-            "explorer/context": [
-                {
-                    "submenu": "cSharp.subMenu",
-                    "group": "navigation@-1"
-                }
-            ],
-            "cSharp.subMenu": [
-                {
-                    "command": "csharp-snippet-productivity.createClass"
-                },
-                {
-                    "command": "csharp-snippet-productivity.createInterface"
-                },
-                {
-                    "command": "csharp-snippet-productivity.createStruct"
-                },
-                {
-                    "command": "csharp-snippet-productivity.createRecord"
-                },
-                {
-                    "command": "csharp-snippet-productivity.addProjectToSolution"
-                }
-            ],
-            "commandPalette": [
-                {
-                    "command": "csharp-snippet-productivity.createProject",
-                    "when": "true"
-                },
-                {
-                    "command": "csharp-snippet-productivity.createClass",
-                    "when": "false"
-                },
-                {
-                    "command": "csharp-snippet-productivity.createInterface",
-                    "when": "false"
-                },
-                {
-                    "command": "csharp-snippet-productivity.createStruct",
-                    "when": "false"
-                },
-                {
-                    "command": "csharp-snippet-productivity.createRecord",
-                    "when": "false"
-                },
-                {
-                    "command": "csharp-snippet-productivity.addProjectToSolution",
-                    "when": "false"
-                }
-            ]
-        },
-        "submenus": [
-            {
-                "id": "cSharp.subMenu",
-                "label": "C# Toolbox: Options"
-            }
-        ],
-        "configuration": {
-            "title": "C# Toolbox of Productivity",
-            "properties": {
-                "csharp-snippet-productivity.defaultFolderForProjectCreation": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "description": "Set the default folder for project creation",
-                    "default": null
-                },
-                "csharp-snippet-productivity.multilineComments": {
-                    "type": "boolean",
-                    "description": "Whether the multiline comment highlighter should be active",
-                    "default": true
-                },
-                "csharp-snippet-productivity.highlightPlainText": {
-                    "type": "boolean",
-                    "description": "Whether the plaintext comment highlighter should be active",
-                    "default": false
-                },
-                "csharp-snippet-productivity.tags": {
-                    "type": "array",
-                    "description": "Colored comments. Select your favorite colors. Changes require a restart of VS Code to take effect",
-                    "default": [
-                        {
-                            "tag": "bug",
-                            "color": "#FF2D00",
-                            "strikethrough": false,
-                            "underline": false,
-                            "backgroundColor": "transparent",
-                            "bold": false,
-                            "italic": false
-                        },
-                        {
-                            "tag": "research",
-                            "color": "#3498DB",
-                            "strikethrough": false,
-                            "underline": false,
-                            "backgroundColor": "transparent",
-                            "bold": false,
-                            "italic": false
-                        },
-                        {
-                            "tag": "//",
-                            "color": "#474747",
-                            "strikethrough": true,
-                            "underline": false,
-                            "backgroundColor": "transparent",
-                            "bold": false,
-                            "italic": false
-                        },
-                        {
-                            "tag": "todo",
-                            "color": "#FF8C00",
-                            "strikethrough": false,
-                            "underline": false,
-                            "backgroundColor": "transparent",
-                            "bold": false,
-                            "italic": false
-                        },
-                        {
-                            "tag": "review",
-                            "color": "#B429A9",
-                            "strikethrough": false,
-                            "underline": false,
-                            "backgroundColor": "transparent",
-                            "bold": false,
-                            "italic": false
-                        }
-                    ]
-                }
-            }
+    "menus": {
+      "explorer/context": [
+        {
+          "submenu": "cSharp.subMenu",
+          "group": "navigation@-1"
         }
+      ],
+      "cSharp.subMenu": [
+        {
+          "command": "csharp-snippet-productivity.createClass"
+        },
+        {
+          "command": "csharp-snippet-productivity.createInterface"
+        },
+        {
+          "command": "csharp-snippet-productivity.createStruct"
+        },
+        {
+          "command": "csharp-snippet-productivity.createRecord"
+        },
+        {
+          "command": "csharp-snippet-productivity.addProjectToSolution"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "csharp-snippet-productivity.createProject",
+          "when": "true"
+        },
+        {
+          "command": "csharp-snippet-productivity.createClass",
+          "when": "false"
+        },
+        {
+          "command": "csharp-snippet-productivity.createInterface",
+          "when": "false"
+        },
+        {
+          "command": "csharp-snippet-productivity.createStruct",
+          "when": "false"
+        },
+        {
+          "command": "csharp-snippet-productivity.createRecord",
+          "when": "false"
+        },
+        {
+          "command": "csharp-snippet-productivity.addProjectToSolution",
+          "when": "false"
+        }
+      ]
     },
-    "galleryBanner": {
-        "color": "#e3f4ff",
-        "theme": "light"
-    },
-    "main": "./out/extension.js",
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile && npm run lint",
-        "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js",
-        "package": "vsce package"
-    },
-    "devDependencies": {
-        "@types/find-parent-dir": "^0.3.0",
-        "@types/glob": "^7.1.3",
-        "@types/mocha": "^8.0.4",
-        "@types/node": "^18.0.0",
-        "@types/vscode": "^1.53.0",
-        "@typescript-eslint/eslint-plugin": "^4.14.1",
-        "@typescript-eslint/parser": "^4.14.1",
-        "eslint": "^7.19.0",
-        "glob": "^7.1.6",
-        "mocha": "^8.2.1",
-        "typescript": "^4.1.3",
-        "vscode-test": "^1.5.0"
-    },
-    "dependencies": {
-        "find-parent-dir": "^0.3.1",
-        "find-up-glob": "^1.0.0",
-        "n-readlines": "^1.0.1",
-        "os": "^0.1.1"
+    "submenus": [
+      {
+        "id": "cSharp.subMenu",
+        "label": "C# Toolbox: Options"
+      }
+    ],
+    "configuration": {
+      "title": "C# Toolbox of Productivity",
+      "properties": {
+        "csharp-snippet-productivity.defaultFolderForProjectCreation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Set the default folder for project creation",
+          "default": null
+        },
+        "csharp-snippet-productivity.multilineComments": {
+          "type": "boolean",
+          "description": "Whether the multiline comment highlighter should be active",
+          "default": true
+        },
+        "csharp-snippet-productivity.highlightPlainText": {
+          "type": "boolean",
+          "description": "Whether the plaintext comment highlighter should be active",
+          "default": false
+        },
+        "csharp-snippet-productivity.tags": {
+          "type": "array",
+          "description": "Colored comments. Select your favorite colors. Changes require a restart of VS Code to take effect",
+          "default": [
+            {
+              "tag": "bug",
+              "color": "#FF2D00",
+              "strikethrough": false,
+              "underline": false,
+              "backgroundColor": "transparent",
+              "bold": false,
+              "italic": false
+            },
+            {
+              "tag": "research",
+              "color": "#3498DB",
+              "strikethrough": false,
+              "underline": false,
+              "backgroundColor": "transparent",
+              "bold": false,
+              "italic": false
+            },
+            {
+              "tag": "//",
+              "color": "#474747",
+              "strikethrough": true,
+              "underline": false,
+              "backgroundColor": "transparent",
+              "bold": false,
+              "italic": false
+            },
+            {
+              "tag": "todo",
+              "color": "#FF8C00",
+              "strikethrough": false,
+              "underline": false,
+              "backgroundColor": "transparent",
+              "bold": false,
+              "italic": false
+            },
+            {
+              "tag": "review",
+              "color": "#B429A9",
+              "strikethrough": false,
+              "underline": false,
+              "backgroundColor": "transparent",
+              "bold": false,
+              "italic": false
+            }
+          ]
+        }
+      }
     }
+  },
+  "galleryBanner": {
+    "color": "#e3f4ff",
+    "theme": "light"
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/find-parent-dir": "^0.3.3",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "typescript": "^5.3.3",
+    "vscode-test": "^1.5.0"
+  },
+  "dependencies": {
+    "find-parent-dir": "^0.3.1",
+    "find-up-glob": "^1.0.0",
+    "n-readlines": "^1.0.1",
+    "os": "^0.1.2"
+  }
 }

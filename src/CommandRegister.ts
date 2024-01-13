@@ -30,7 +30,7 @@ export class CommandRegister {
    */
   public initializeCommands(): void {
     this.registerCommand("csharp-snippet-productivity.createProject", async () => {
-      CreateProjectPanel.createOrShow(this.context.extensionUri, this.context);
+      CreateProjectPanel.createOrShow(this.context);
     });
 
     this.registerCommand(
