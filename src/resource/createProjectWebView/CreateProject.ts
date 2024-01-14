@@ -137,6 +137,8 @@ export class CreateProjectPanel {
     }
 
     private static async projectCreation(message: Message) {
+        message.filepath = this._filepath;
+
         if (fs.existsSync(this._filepath + "\\" + message.solution)) {
             vscode.window.showErrorMessage("Solution folder already exist");
             return;
