@@ -89,13 +89,19 @@ export class MinWebApiCommand extends Command {
 export class DefaultCommand extends Command {
     execute() {
         if (!this.isFrameworkCompatible()) {
+            // Format list of compatible frameworks
+            const compatibleFrameworks = TEMPLATE_COMPATIBILITY[this.message.template]
+                .map((f) => `'${f.substring(3)}'`)
+                .join(", ");
+
             vscode.window.showWarningMessage(
-                `Please select a compatible framework for ${this.message.template}`
+                `Please select a compatible framework for ${this.message.template} - [${
+                    compatibleFrameworks || "None"
+                }]`
             );
             return;
         }
 
-        console.log("Default command: ", this.message);
         this.executeCommonCommands();
         this.terminal.sendText(
             `dotnet new ${this.message.template} -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework} --force`
