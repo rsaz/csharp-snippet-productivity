@@ -3,11 +3,12 @@
         "prefix": "singleton",
         "body": [
             "// class Singleton {",
-            "//\t\tprivate static Singleton _instance",
+            "//\t\tprivate static Singleton _instance = null;",
             "//\t\tpublic static Singleton GetInstance() {",
             "//\t\t\tif (_instance == null) {",
             "//\t\t\t\t_instance = new Singleton();",
-            "// return _instance;",
+            "//\t\treturn _instance;",
+            "//\t\t}",
             "//}"
         ],
         "description": "Creational design pattern singleton"
