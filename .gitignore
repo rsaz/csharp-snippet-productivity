@@ -11,3 +11,7 @@ test/**
 **/tsconfig.json
 **/.eslintrc.json
 **/*.map
+
+# Ignore lock files
+yarn.lock
+package-lock.json
