@@ -137,7 +137,12 @@ export class CreateProjectPanel {
     }
 
     private static async projectCreation(message: Message) {
+        // Adjust filepath from the default or selection
         message.filepath = this._filepath;
+
+        // Remove spaces from project and solution names
+        message.solution = message.solution.replace(/\s+/g, "");
+        message.project = message.project.replace(/\s+/g, "");
 
         if (fs.existsSync(this._filepath + "\\" + message.solution)) {
             vscode.window.showErrorMessage("Solution folder already exist");
