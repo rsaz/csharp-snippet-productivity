@@ -19,6 +19,12 @@
     document.addEventListener("DOMContentLoaded", function (event) {
         buttonCreateProject.disabled = "true";
         buttonCreateProject.style.backgroundColor = "#3C3C3C";
+
+        // Event listener for project group selection
+        projectGroupSelect.addEventListener("change", function () {
+            loadTemplateSelect(this.value, "");
+        });
+
         fieldValidation();
     });
 
@@ -105,8 +111,8 @@
         ],
     };
 
-    // Update template select based on selected project group
-    function updateTemplateSelect(group) {
+    // Load template select based on selected project group
+    function loadTemplateSelect(group, selectedTemplate) {
         template.innerHTML = ""; // Clear existing options
 
         // Add default 'Select Template' option
@@ -122,20 +128,22 @@
                 const option = document.createElement("option");
                 option.value = tmpl.shortName;
                 option.textContent = tmpl.templateName;
+                if (tmpl.shortName === selectedTemplate) option.selected = true;
                 template.appendChild(option);
             });
         }
     }
 
-    // Event listener for project group selection
-    projectGroupSelect.addEventListener("change", function () {
-        updateTemplateSelect(this.value);
-    });
+    // Receive message from the extension
+    window.addEventListener("message", (event) => {
+        const message = event.data; // The JSON data our extension sent
 
-    // Initialize the template select with the default or initial project group
-    document.addEventListener("DOMContentLoaded", function () {
-        updateTemplateSelect(""); // Initialize with default option
-        fieldValidation();
+        switch (message.command) {
+            case "updateState":
+                projectGroupSelect.value = message.projectGroup;
+                loadTemplateSelect(message.projectGroup, message.selectedTemplate);
+                break;
+        }
     });
     /* Project group select End of Implementation */
 
@@ -190,6 +198,8 @@
         solution.focus();
         vscode.postMessage({
             command: "selectDirectory",
+            projectGroupSelect:
+                projectGroupSelect.options[projectGroupSelect.selectedIndex].textContent,
             templateName: template.options[template.selectedIndex].text,
             template: template.options[template.selectedIndex].value,
             project: project.value,

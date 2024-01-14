@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 export type Message = {
+    command: string;
     filepath: string;
     solution: string;
     project: string;
@@ -51,6 +52,10 @@ export class Command {
     }
 
     isFrameworkCompatible() {
+        // Verify if template is not undefined
+        if (!this.message.template || !(this.message.template in TEMPLATE_COMPATIBILITY)) {
+            return true;
+        }
         return TEMPLATE_COMPATIBILITY[this.message.template].includes(this.message.framework);
     }
 }
@@ -90,6 +95,7 @@ export class DefaultCommand extends Command {
             return;
         }
 
+        console.log("Default command: ", this.message);
         this.executeCommonCommands();
         this.terminal.sendText(
             `dotnet new ${this.message.template} -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework} --force`

@@ -80,7 +80,7 @@ export class CreateProjectPanel {
         this._panel.webview.onDidReceiveMessage(
             async (message) => {
                 switch (message.command) {
-                    case "createProject": //console
+                    case "createProject":
                         await this.projectCreation(message);
                         return;
 
@@ -91,11 +91,12 @@ export class CreateProjectPanel {
                             canSelectFiles: false,
                             canSelectFolders: true,
                         };
-
                         vscode.window.showOpenDialog(options).then((fileUri) => {
                             if (fileUri && fileUri[0]) {
                                 this._filepath = fileUri[0].fsPath;
                                 this.update(
+                                    message.projectGroupSelect,
+                                    message.projectGroupSelect,
                                     message.templateName,
                                     message.template,
                                     message.project,
@@ -103,6 +104,12 @@ export class CreateProjectPanel {
                                     message.framework
                                 );
                             }
+                        });
+
+                        this._panel.webview.postMessage({
+                            command: "updateState",
+                            projectGroupSelect: message.projectGroupSelect,
+                            selectedTemplate: message.template,
                         });
                         return;
                 }
@@ -143,8 +150,8 @@ export class CreateProjectPanel {
     }
 
     private static async update(
-        projectGroup: any = "api",
         projectGroupName: any = "Select Project Type",
+        projectGroup: any = "api",
         templateName: any = "Select Template",
         template: any = "console",
         project: any = "",
@@ -161,8 +168,8 @@ export class CreateProjectPanel {
 
         this._panel.webview.html = this.getHtmlForWebview(
             webview,
-            projectGroup,
             projectGroupName,
+            projectGroup,
             templateName,
             template,
             project,
@@ -173,8 +180,8 @@ export class CreateProjectPanel {
 
     private static getHtmlForWebview(
         webview: vscode.Webview,
-        projectGroup: any,
         projectGroupName: any,
+        projectGroup: any,
         templateName: any,
         template: any,
         project: any,
@@ -200,6 +207,15 @@ export class CreateProjectPanel {
 
         // Use a nonce to only allow specific scripts to be run
         const nonce = getNonce();
+
+        // Post message transformation before sending to the webview
+        const frameworkPostMessage = this._sdks
+            .map((sdk: string) => {
+                return `<option value="${sdk}"${
+                    sdk === framework ? "selected" : ""
+                }>${sdk}</option>`;
+            })
+            .join("");
 
         return `<!DOCTYPE html>
     <html lang="en">
@@ -240,10 +256,8 @@ export class CreateProjectPanel {
   <br/>
   <h3>Select the project template</h3>
   <select id="custom-select" name="project-type">
-    <option value="${template}" selected="selected">${
-            templateName === "" ? "Select Template" : templateName
-        }</option>
-    <!-- Dynamic templates will be added here -->
+    <option value="${template}" selected="selected">${templateName}</option>
+  <!-- Dynamic templates will be added here -->
   </select>
   </br>
   </br>
@@ -264,7 +278,7 @@ export class CreateProjectPanel {
   <label for="framework">Framework</label>
   <br />
   <select id="custom-select2" name="framework">
-    ${this._sdks.map((sdk: string) => `<option value="${sdk}">${sdk}</option>`).join("")}
+    ${frameworkPostMessage}
   </select>
   <button id="create-project-button">Create Project</button>
   <script nonce="${nonce}" src="${scriptUri}"></script>
