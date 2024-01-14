@@ -39,13 +39,7 @@
   <label for="framework">Framework</label>
   <br />
   <select id="custom-select2" name="framework">
-    <option value="netcoreapp2.0">2.0</option>
-    <option value="netcoreapp2.1">2.1</option>
-    <option value="netcoreapp2.2">2.2</option>
-    <option value="netcoreapp3.0">3.0</option>
-    <option value="netcoreapp3.1">3.1</option>
-    <option value="net5.0" selected="selected">5.0</option>
-    <option value="net6.0" selected="selected">6.0</option>
+    {{sdkOptions}}
   </select>
   <button id="create-project-button">Create Project</button>
   <script nonce="{{nonce}}" src="{{script}}"></script>
