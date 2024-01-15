@@ -5,6 +5,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [2.0.1] - [2024-01-14]
+
+## What's new in 2.0.1
+
+> -   **_Fix_**: Fixed issues related to design patterns snippets. Added a more modern code approach to the snippets.
+
 ## [2.0.0] - [2024-01-14]
 
 ## What's new in 2.0.0
