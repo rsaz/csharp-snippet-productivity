@@ -26,6 +26,10 @@ C# Snippet Productivity
 
 > [Click here](https://github.com/rsaz/csharp-snippet-productivity/blob/main/CHANGELOG.md)
 
+## What's new in 2.0.1
+
+> -   **_Fix_**: Fixed issues related to design patterns snippets. Added a more modern code approach to the snippets.
+
 ## What's new in 2.0.0
 
 > -   **_All Project Types_**: Added support for all project types and templates under project creation.
