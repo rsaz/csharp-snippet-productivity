@@ -58,30 +58,72 @@
             },
             {
                 "command": "csharp-snippet-productivity.createClass",
-                "title": "Create Class"
+                "title": "Create Class",
+                "category": "C# Toolbox"
             },
             {
                 "command": "csharp-snippet-productivity.createInterface",
-                "title": "Create Interface"
+                "title": "Create Interface",
+                "category": "C# Toolbox"
             },
             {
                 "command": "csharp-snippet-productivity.createStruct",
-                "title": "Create Struct"
+                "title": "Create Struct",
+                "category": "C# Toolbox"
             },
             {
                 "command": "csharp-snippet-productivity.createRecord",
-                "title": "Create Record"
+                "title": "Create Record",
+                "category": "C# Toolbox"
             },
             {
                 "command": "csharp-snippet-productivity.addProjectToSolution",
-                "title": "Add Project"
+                "title": "Add Project",
+                "category": "C# Toolbox"
+            },
+            {
+                "command": "csharp-snippet-productivity.scaffoldResources",
+                "title": "Scaffold Resources",
+                "category": "C# Toolbox"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "csharp-snippet-productivity.createProject",
+                "key": "ctrl+alt+p ctrl+alt+p",
+                "when": "editorTextFocus && !editorReadonly"
+            },
+            {
+                "command": "csharp-snippet-productivity.createClass",
+                "key": "ctrl+alt+p ctrl+alt+c",
+                "when": "editorTextFocus && !editorReadonly"
+            },
+            {
+                "command": "csharp-snippet-productivity.createInterface",
+                "key": "ctrl+alt+p ctrl+alt+i",
+                "when": "editorTextFocus && !editorReadonly"
+            },
+            {
+                "command": "csharp-snippet-productivity.createStruct",
+                "key": "ctrl+alt+p ctrl+alt+s",
+                "when": "editorTextFocus && !editorReadonly"
+            },
+            {
+                "command": "csharp-snippet-productivity.createRecord",
+                "key": "ctrl+alt+p ctrl+alt+r",
+                "when": "editorTextFocus && !editorReadonly"
+            },
+            {
+                "command": "csharp-snippet-productivity.scaffoldResources",
+                "key": "ctrl+alt+p ctrl+alt+e",
+                "when": "editorTextFocus && !editorReadonly"
             }
         ],
         "menus": {
             "explorer/context": [
                 {
                     "submenu": "cSharp.subMenu",
-                    "group": "navigation@-1"
+                    "group": "navigation@1"
                 }
             ],
             "cSharp.subMenu": [
@@ -99,6 +141,9 @@
                 },
                 {
                     "command": "csharp-snippet-productivity.addProjectToSolution"
+                },
+                {
+                    "command": "csharp-snippet-productivity.scaffoldResources"
                 }
             ],
             "commandPalette": [
@@ -108,23 +153,27 @@
                 },
                 {
                     "command": "csharp-snippet-productivity.createClass",
-                    "when": "false"
+                    "when": "true"
                 },
                 {
                     "command": "csharp-snippet-productivity.createInterface",
-                    "when": "false"
+                    "when": "true"
                 },
                 {
                     "command": "csharp-snippet-productivity.createStruct",
-                    "when": "false"
+                    "when": "true"
                 },
                 {
                     "command": "csharp-snippet-productivity.createRecord",
-                    "when": "false"
+                    "when": "true"
                 },
                 {
                     "command": "csharp-snippet-productivity.addProjectToSolution",
-                    "when": "false"
+                    "when": "true"
+                },
+                {
+                    "command": "csharp-snippet-productivity.scaffoldResources",
+                    "when": "true"
                 }
             ]
         },
