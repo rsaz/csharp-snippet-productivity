@@ -143,6 +143,12 @@ export class Panel {
                 message.project +
                 ".csproj"
         );
+
+        // Close the WebView after the project is created
+        if (this._webViewPanel) {
+            this._webViewPanel.dispose();
+            this._webViewPanel = undefined;
+        }
     }
 
     private getNonce() {

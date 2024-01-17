@@ -90,33 +90,36 @@
         "keybindings": [
             {
                 "command": "csharp-snippet-productivity.createProject",
-                "key": "ctrl+alt+p ctrl+alt+p",
-                "when": "editorTextFocus && !editorReadonly"
+                "key": "ctrl+alt+/ p"
+            },
+            {
+                "command": "csharp-snippet-productivity.addProjectToSolution",
+                "key": "ctrl+alt+/ a"
             },
             {
                 "command": "csharp-snippet-productivity.createClass",
-                "key": "ctrl+alt+p ctrl+alt+c",
-                "when": "editorTextFocus && !editorReadonly"
+                "key": "ctrl+alt+/ c",
+                "when": "!editorReadonly"
             },
             {
                 "command": "csharp-snippet-productivity.createInterface",
-                "key": "ctrl+alt+p ctrl+alt+i",
-                "when": "editorTextFocus && !editorReadonly"
+                "key": "ctrl+alt+/ i",
+                "when": "!editorReadonly"
             },
             {
                 "command": "csharp-snippet-productivity.createStruct",
-                "key": "ctrl+alt+p ctrl+alt+s",
-                "when": "editorTextFocus && !editorReadonly"
+                "key": "ctrl+alt+/ s",
+                "when": "!editorReadonly"
             },
             {
                 "command": "csharp-snippet-productivity.createRecord",
-                "key": "ctrl+alt+p ctrl+alt+r",
-                "when": "editorTextFocus && !editorReadonly"
+                "key": "ctrl+alt+/ r",
+                "when": "!editorReadonly"
             },
             {
                 "command": "csharp-snippet-productivity.scaffoldResources",
-                "key": "ctrl+alt+p ctrl+alt+e",
-                "when": "editorTextFocus && !editorReadonly"
+                "key": "ctrl+alt+/ ctrl+e",
+                "when": "!editorReadonly"
             }
         ],
         "menus": {
