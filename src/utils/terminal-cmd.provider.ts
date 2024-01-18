@@ -9,11 +9,11 @@ export type Message = {
     framework: string;
 };
 
-type TemplateCompatibility = {
+export type TemplateCompatibility = {
     [key: string]: string[];
 };
 
-const TEMPLATE_COMPATIBILITY: TemplateCompatibility = {
+export const TEMPLATE_COMPATIBILITY: TemplateCompatibility = {
     react: ["net5.0", "net6.0", "net7.0"],
     // add other templates here
 };
