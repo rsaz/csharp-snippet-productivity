@@ -34,6 +34,12 @@ C# Snippet Productivity
 
 Observations:
 
+```diff
+- Not all templates from Project Creation are tested and validated. Please report any issues with the following information to help us to improve the extension:
+- - Template Name
+- - Template Framework
+```
+
 The commands available in the context menu follow a different workflow than the commands available in the command palette. The commands in the context menu will create the project or resource in the same clicked folder.
 
 The commands in the command palette will ask the user to select the project, create or select the folder, and then create the project.
