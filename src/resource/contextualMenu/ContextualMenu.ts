@@ -8,30 +8,45 @@ const lineByLine = require("n-readlines");
 
 class ContextualMenu {
     public static async init(uri: vscode.Uri, fileType: string, framework: string) {
-        // Ensure that a project is selected
-        const projectRoot = await selectProject();
+        let pathSelected = "";
+        let projectRoot: string | undefined;
 
-        if (!projectRoot) {
-            vscode.window.showErrorMessage("No project selected");
-            return;
+        // If the command is called from the explorer context menu (true) or from the editor context menu (false)
+        const formContextMenu = !!uri;
+
+        if (formContextMenu && uri) {
+            pathSelected = uri.fsPath;
+            projectRoot = getProjectRootDirOrFilePath(pathSelected);
+
+            if (!projectRoot) {
+                vscode.window.showErrorMessage("No project selected");
+                return;
+            }
+        } else {
+            projectRoot = await selectProject();
+
+            if (!projectRoot) {
+                vscode.window.showErrorMessage("No project selected");
+                return;
+            }
+
+            // Open folder picker at the root of the selected project
+            const selectedFolder = await vscode.window.showOpenDialog({
+                canSelectFolders: true,
+                canSelectFiles: false,
+                canSelectMany: false,
+                defaultUri: vscode.Uri.file(projectRoot),
+                openLabel: "Select folder",
+            });
+
+            if (!selectedFolder || selectedFolder.length === 0) {
+                vscode.window.showErrorMessage("No folder selected");
+                return;
+            }
+            pathSelected = selectedFolder[0].fsPath;
         }
 
-        // Open folder picker at the root of the selected project
-        const selectedFolder = await vscode.window.showOpenDialog({
-            canSelectFolders: true,
-            canSelectFiles: false,
-            canSelectMany: false,
-            defaultUri: vscode.Uri.file(projectRoot),
-            openLabel: "Select folder",
-        });
-
-        if (!selectedFolder || selectedFolder.length === 0) {
-            vscode.window.showErrorMessage("No folder selected");
-            return;
-        }
-
-        const pathSelected = selectedFolder[0].fsPath;
-
+        // Resource creation
         vscode.window
             .showInputBox({
                 ignoreFocusOut: true,
@@ -71,39 +86,41 @@ class ContextualMenu {
 
                 let rootNamespace: any = checkRootNameOnCsproj(newFilePath);
 
-                // Review: removing trailing separator. Check if works in other OS languages
-                rootDir =
-                    rootDir[rootDir.length - 1] === path.sep
-                        ? rootDir.substring(0, rootDir.length - 1)
-                        : rootDir;
+                if (rootDir !== undefined) {
+                    rootDir =
+                        rootDir[rootDir.length - 1] === path.sep
+                            ? rootDir.substring(0, rootDir.length - 1)
+                            : rootDir;
 
-                let projRootDir = rootDir.substring(rootDir.lastIndexOf(path.sep) + 1);
-                let childFilePath = newFilePath.substring(newFilePath.lastIndexOf(projRootDir));
+                    let projRootDir = rootDir.substring(rootDir.lastIndexOf(path.sep) + 1);
 
-                if (rootNamespace !== null) {
-                    childFilePath = childFilePath.replace(
-                        childFilePath.substring(0, childFilePath.indexOf("\\")),
-                        rootNamespace
-                    );
+                    let childFilePath = newFilePath.substring(newFilePath.lastIndexOf(projRootDir));
+
+                    if (rootNamespace !== null) {
+                        childFilePath = childFilePath.replace(
+                            childFilePath.substring(0, childFilePath.indexOf("\\")),
+                            rootNamespace
+                        );
+                    }
+
+                    // set the regex pattern for path structure
+                    let pathSepRegEX = /\//g;
+                    if (os.platform() === "win32") {
+                        pathSepRegEX = /\\/g;
+                    }
+
+                    // replace \\ for . in following the namespace convention
+                    let namespace = path.dirname(childFilePath);
+                    namespace = namespace.replace(pathSepRegEX, ".");
+
+                    // replace file name empty space or dash by underscore
+                    namespace = namespace.replace(/\s+/g, "_");
+                    namespace = namespace.replace(/-/g, "_");
+
+                    newFilePath = path.basename(newFilePath, ".cs");
+
+                    loadTemplate(fileType, namespace, newFilePath, originalFilePath, framework);
                 }
-
-                // set the regex pattern for path structure
-                let pathSepRegEX = /\//g;
-                if (os.platform() === "win32") {
-                    pathSepRegEX = /\\/g;
-                }
-
-                // replace \\ for . in following the namespace convention
-                let namespace = path.dirname(childFilePath);
-                namespace = namespace.replace(pathSepRegEX, ".");
-
-                // replace file name empty space or dash by underscore
-                namespace = namespace.replace(/\s+/g, "_");
-                namespace = namespace.replace(/-/g, "_");
-
-                newFilePath = path.basename(newFilePath, ".cs");
-
-                loadTemplate(fileType, namespace, newFilePath, originalFilePath, framework);
             });
     }
 }
@@ -123,13 +140,13 @@ function correctFileNameExtension(fileName: any) {
 }
 
 // function to detect the root directory where the .csproj is included
-function getProjectRootDirOrFilePath(filePath: any) {
+function getProjectRootDirOrFilePath(filePath: any): string | undefined {
     var projectRootDir = parentFinder.sync(path.dirname(filePath), "project.json");
     if (projectRootDir === null) {
         let csProjFiles = findUpGlob.sync("*.csproj", { cwd: path.dirname(filePath) });
 
         if (csProjFiles === null) {
-            return null;
+            return undefined;
         }
         projectRootDir = path.dirname(csProjFiles[0]);
     }
