@@ -5,6 +5,31 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [2.1.1] - [2024-01-18]
+
+## What's new in 2.1.1
+
+> -   **_New Feature added_**: Added all current scaffold commands from context menu available in the command palette.
+> -   **_New Feature added_**: Added template validation against the .NET SDK installed on the machine.
+> -   **_Fix_**: Adjusted the AddProject command to work with the new template validation and project group selection.
+
+Observations:
+
+The commands available in the context menu follow a different workflow than the commands available in the command palette. The commands in the context menu will create the project or resource in the same clicked folder.
+
+The commands in the command palette will ask the user to select the project, create or select the folder, and then create the project.
+
+Expect a different interaction when using the commands in the context menu and the command palette.
+
+All commands are available via shortcut keys. You can find the shortcut keys in the command palette.
+
+-   `Ctrl + alt + /` + `p` - Create Project
+-   `Ctrl + alt + /` + `c` - Create Class
+-   `Ctrl + alt + /` + `i` - Create Interface
+-   `Ctrl + alt + /` + `r` - Create Record
+-   `Ctrl + alt + /` + `s` - Create Struct
+-   `Ctrl + alt + /` + `a` - Add Project to Solution
+
 ## [2.0.1] - [2024-01-14]
 
 ## What's new in 2.0.1
