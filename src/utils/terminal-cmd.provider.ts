@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from "vscode";
 
 export type Message = {
@@ -9,13 +10,46 @@ export type Message = {
     framework: string;
 };
 
-type TemplateCompatibility = {
+export type TemplateCompatibility = {
     [key: string]: string[];
 };
 
-const TEMPLATE_COMPATIBILITY: TemplateCompatibility = {
+export const TEMPLATE_COMPATIBILITY: TemplateCompatibility = {
     react: ["net5.0", "net6.0", "net7.0"],
-    // add other templates here
+    maui: ["net7.0", "net8.0"],
+    "maui-blazor": ["net7.0", "net8.0"],
+    mauilib: ["net7.0", "net8.0"],
+    "maui-page-csharp": ["net7.0", "net8.0"],
+    "maui-page-xaml": ["net7.0", "net8.0"],
+    "maui-view-csharp": ["net7.0", "net8.0"],
+    "maui-view-xaml": ["net7.0", "net8.0"],
+    "maui-dict-xaml": ["net7.0", "net8.0"],
+    android: ["net6.0", "net7.0", "net8.0"],
+    androidlib: ["net6.0", "net7.0", "net8.0"],
+    webapi: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    webapiaot: ["net7.0", "net8.0"],
+    apicontroller: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    blazorserver: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    "blazorserver-empty": ["net5.0", "net6.0", "net7.0", "net8.0"],
+    blazor: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    "blazorwasm-empty": ["net5.0", "net6.0", "net7.0", "net8.0"],
+    blazorwasm: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    classlib: ["netstandard2.0", "netstandard2.1", "net5.0", "net6.0", "net7.0", "net8.0"],
+    console: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    grpc: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    mvc: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    webapp: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    angular: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    ios: ["net6.0", "net7.0", "net8.0"],
+    ioslib: ["net6.0", "net7.0", "net8.0"],
+    mstest: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    "mstest-playwright": ["net6.0", "net7.0", "net8.0"],
+    nunit: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    "nunit-playwright": ["net6.0", "net7.0", "net8.0"],
+    xunit: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    winforms: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    wpf: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    // ... Add more templates as needed
 };
 
 export class Command {

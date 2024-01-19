@@ -10,6 +10,7 @@ import {
 import * as path from "path";
 import * as fs from "fs";
 import { getTargetFrameworks } from "../../utils/sdk.provider";
+import { CommandFactory, TEMPLATE_COMPATIBILITY } from "../../utils/terminal-cmd.provider";
 
 type FrameworkCommand = {
     [key: string]: string;
@@ -119,6 +120,26 @@ export class Panel {
 
         const terminal = window.createTerminal();
         terminal.show(true);
+
+        if (!isFrameworkCompatible(message)) {
+            // Format list of compatible frameworks
+            const compatibleFrameworks = TEMPLATE_COMPATIBILITY[message.template]
+                .map((f) => `'${f.substring(3)}'`)
+                .join(", ");
+
+            window.showWarningMessage(
+                `Please select a compatible framework for ${message.template} - [${
+                    compatibleFrameworks || "None"
+                }]`
+            );
+
+            setTimeout(() => {
+                terminal.dispose();
+            }, 5000);
+
+            return;
+        }
+
         terminal.sendText(
             "dotnet new " +
                 message.template +
@@ -143,6 +164,16 @@ export class Panel {
                 message.project +
                 ".csproj"
         );
+
+        setTimeout(() => {
+            terminal.dispose();
+        }, 5000);
+
+        // Close the WebView after the project is created
+        if (this._webViewPanel) {
+            this._webViewPanel.dispose();
+            this._webViewPanel = undefined;
+        }
     }
 
     private getNonce() {
@@ -233,4 +264,12 @@ export class Panel {
         }
         return html.toString();
     }
+}
+
+function isFrameworkCompatible(message: any) {
+    // Verify if template is not undefined
+    if (!message.template || !(message.template in TEMPLATE_COMPATIBILITY)) {
+        return true;
+    }
+    return TEMPLATE_COMPATIBILITY[message.template].includes(message.framework);
 }
