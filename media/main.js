@@ -28,6 +28,17 @@
     const httpsCheckbox = document.getElementById("https-checkbox");
     const dockerCheckbox = document.getElementById("docker-checkbox");
 
+    // Hide solution input and location input for Add Project
+    if (solutionInput) {
+        solutionInput.parentElement.style.display = "none";
+    }
+    if (locationInput) {
+        locationInput.parentElement.style.display = "none";
+    }
+    if (selectFolderButton) {
+        selectFolderButton.style.display = "none";
+    }
+
     // Project templates configuration
     const projectGroupToTemplates = {
         api: [
@@ -50,6 +61,40 @@
                 shortName: "apicontroller",
                 description: "A template for creating an API Controller",
                 tags: ["API", "Controller"],
+            },
+        ],
+        lib: [
+            {
+                templateName: "Class Library",
+                shortName: "classlib",
+                description:
+                    "A project for creating a class library that targets .NET",
+                tags: ["Library", "Class", "Cross-platform"],
+            },
+            {
+                templateName: ".NET MAUI Class Library",
+                shortName: "mauilib",
+                description: "A project for creating a .NET MAUI class library",
+                tags: ["Library", "MAUI", "Mobile"],
+            },
+            {
+                templateName: "Razor Class Library",
+                shortName: "razorclasslib",
+                description: "A project for creating a Razor class library",
+                tags: ["Library", "Razor", "Web"],
+            },
+            {
+                templateName: "Windows Forms Class Library",
+                shortName: "winformslib",
+                description:
+                    "A project for creating a Windows Forms class library",
+                tags: ["Library", "Windows Forms", "Desktop"],
+            },
+            {
+                templateName: "WPF Class Library",
+                shortName: "wpflib",
+                description: "A project for creating a WPF class library",
+                tags: ["Library", "WPF", "Desktop"],
             },
         ],
         blazor: [
@@ -118,138 +163,122 @@
         // ... other template groups ...
     };
 
-    // Initialize the UI
-    function init() {
-        updateTemplateGrid();
-        createFrameworkOptions();
+    // Initialize the wizard
+    document.addEventListener("DOMContentLoaded", function () {
+        updateWizardState();
+        populateTemplates();
+        populateFrameworks();
         setupEventListeners();
-    }
+        validateForm();
+    });
 
-    // Event Listeners
-    function setupEventListeners() {
-        prevButton.addEventListener("click", () => navigateStep(-1));
-        nextButton.addEventListener("click", () => navigateStep(1));
-        createButton.addEventListener("click", createProject);
-
-        projectGroupSelect.addEventListener("change", () => {
-            updateTemplateGrid();
+    function updateWizardState() {
+        // Update step indicators
+        wizardSteps.forEach((step, index) => {
+            if (index + 1 === currentStep) {
+                step.classList.add("active");
+            } else {
+                step.classList.remove("active");
+            }
         });
 
-        templateSearch.addEventListener("input", (e) => {
-            filterTemplates(e.target.value);
+        // Update page visibility
+        wizardPages.forEach((page, index) => {
+            if (index + 1 === currentStep) {
+                page.classList.add("active");
+            } else {
+                page.classList.remove("active");
+            }
         });
 
-        projectNameInput.addEventListener("input", (e) => {
-            solutionInput.value = e.target.value;
-            validateForm();
-        });
-
-        solutionInput.addEventListener("input", validateForm);
-
-        selectFolderButton.addEventListener("click", () => {
-            vscode.postMessage({
-                command: "selectDirectory",
-                projectGroupSelect: projectGroupSelect.value,
-                template: selectedTemplate?.shortName || "",
-            });
-        });
-    }
-
-    // Template Grid
-    function updateTemplateGrid() {
-        const group = projectGroupSelect.value;
-        const templates =
-            group === "all"
-                ? Object.values(projectGroupToTemplates).flat()
-                : projectGroupToTemplates[group] || [];
-
-        templateGrid.innerHTML = templates
-            .map((template) => createTemplateCard(template))
-            .join("");
-
-        // Add click handlers to template cards
-        document.querySelectorAll(".template-card").forEach((card) => {
-            card.addEventListener("click", () => {
-                const templateShortName = card.dataset.template;
-                selectTemplate(templateShortName);
-
-                // Update visual selection
-                document.querySelectorAll(".template-card").forEach((c) => {
-                    c.classList.toggle(
-                        "selected",
-                        c.dataset.template === templateShortName
-                    );
-                });
-            });
-        });
-    }
-
-    function createTemplateCard(template) {
-        // Determine which icon to use
-        let iconKey = template.shortName;
-        if (template.shortName.includes("webapi")) {
-            iconKey = "webapi";
-        } else if (template.shortName.includes("blazor")) {
-            iconKey = "blazor";
-        } else if (template.shortName.includes("web")) {
-            iconKey = "web";
-        } else if (template.shortName.includes("lib")) {
-            iconKey = "classlib";
-        } else if (template.tags.includes("Test")) {
-            iconKey = "test";
-        }
-
-        const icon = templateIcons[iconKey] || templateIcons.default;
-
-        return `
-            <div class="template-card ${
-                selectedTemplate?.shortName === template.shortName
-                    ? "selected"
-                    : ""
-            }" 
-                 data-template="${template.shortName}">
-                <div class="template-icon">
-                    ${icon}
-                </div>
-                <div class="template-content">
-                    <div class="template-name">${template.templateName}</div>
-                    <div class="template-description">${
-                        template.description
-                    }</div>
-                    <div class="template-tags">
-                        ${template.tags
-                            .map(
-                                (tag) =>
-                                    `<span class="template-tag">${tag}</span>`
-                            )
-                            .join("")}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    function selectTemplate(templateShortName) {
-        const group = projectGroupSelect.value;
-        const templates =
-            group === "all"
-                ? Object.values(projectGroupToTemplates).flat()
-                : projectGroupToTemplates[group] || [];
-
-        selectedTemplate = templates.find(
-            (t) => t.shortName === templateShortName
-        );
-
-        // Enable next button if a template is selected
-        if (currentStep === 1) {
-            nextButton.disabled = !selectedTemplate;
+        // Update button states
+        prevButton.disabled = currentStep === 1;
+        if (currentStep === 3) {
+            nextButton.classList.add("hidden");
+            createButton.classList.remove("hidden");
+        } else {
+            nextButton.classList.remove("hidden");
+            createButton.classList.add("hidden");
         }
 
         validateForm();
     }
 
-    // Framework Selection
-    function createFrameworkOptions() {
+    function validateForm() {
+        let isValid = false;
+
+        switch (currentStep) {
+            case 1:
+                isValid = selectedTemplate !== null;
+                break;
+            case 2:
+                isValid = projectNameInput.value.trim() !== "";
+                break;
+            case 3:
+                isValid = frameworkSelect.value !== "";
+                break;
+            default:
+                isValid = false;
+        }
+
+        if (isValid) {
+            nextButton.classList.remove("disabled");
+            nextButton.disabled = false;
+            createButton.classList.remove("disabled");
+            createButton.disabled = false;
+        } else {
+            nextButton.classList.add("disabled");
+            nextButton.disabled = true;
+            createButton.classList.add("disabled");
+            createButton.disabled = true;
+        }
+
+        return isValid;
+    }
+
+    function populateTemplates() {
+        const group = projectGroupSelect.value;
+        const searchTerm = templateSearch.value.toLowerCase();
+        const templates = projectGroupToTemplates[group] || [];
+
+        const filteredTemplates = templates.filter(
+            (template) =>
+                template.templateName.toLowerCase().includes(searchTerm) ||
+                template.shortName.toLowerCase().includes(searchTerm)
+        );
+
+        templateGrid.innerHTML = filteredTemplates
+            .map(
+                (template) => `
+            <div class="template-card ${
+                selectedTemplate === template.shortName ? "selected" : ""
+            }" 
+                 data-template="${template.shortName}">
+                <div class="template-content">
+                    <div class="template-name">${template.templateName}</div>
+                    <div class="template-description">${
+                        template.description || ""
+                    }</div>
+                </div>
+            </div>
+        `
+            )
+            .join("");
+
+        // Reattach click handlers after repopulating
+        templateGrid.querySelectorAll(".template-card").forEach((card) => {
+            card.addEventListener("click", () => {
+                selectedTemplate = card.dataset.template;
+                templateGrid
+                    .querySelectorAll(".template-card")
+                    .forEach((c) => c.classList.remove("selected"));
+                card.classList.add("selected");
+                validateForm();
+            });
+        });
+    }
+
+    function populateFrameworks() {
         const frameworks = Array.from(frameworkSelect.options).map(
             (option) => ({
                 value: option.value,
@@ -257,20 +286,13 @@
             })
         );
 
-        console.log("Available frameworks:", frameworks);
-
-        const frameworkCards = frameworks
+        frameworkGrid.innerHTML = frameworks
             .map(
                 (framework) => `
             <div class="framework-card ${
                 selectedFramework === framework.value ? "selected" : ""
             }"
                  data-framework="${framework.value}">
-                <div class="framework-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                        <path fill="currentColor" d="M11.7 20H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2v7.3c-.6-.3-1.3-.5-2-.5-2.8 0-5 2.2-5 5 0 .8.2 1.5.5 2.2-.3 0-.5-.1-.8-.1zM7 13c0 .6.4 1 1 1h5.5c.2-.7.5-1.4 1-2H8c-.6 0-1 .4-1 1zm1-3h10c.6 0 1-.4 1-1s-.4-1-1-1H8c-.6 0-1 .4-1 1s.4 1 1 1zm13.3 10.7c-.2.2-.5.3-.7.3-.3 0-.5-.1-.7-.3l-2-2c-.6.4-1.3.6-2 .6-2 0-3.5-1.5-3.5-3.5S15.8 12 17.8 12s3.5 1.5 3.5 3.5c0 .7-.2 1.4-.6 2l2 2c.4.4.4 1 0 1.4zM17.8 14c-.8 0-1.5.7-1.5 1.5s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5-.7-1.5-1.5-1.5z"/>
-                    </svg>
-                </div>
                 <div class="framework-content">
                     <div class="framework-version">${framework.label}</div>
                     <div class="framework-description">Target Framework</div>
@@ -280,236 +302,95 @@
             )
             .join("");
 
-        frameworkGrid.innerHTML = frameworkCards;
-
         // Add click handlers to framework cards
-        document.querySelectorAll(".framework-card").forEach((card) => {
+        frameworkGrid.querySelectorAll(".framework-card").forEach((card) => {
             card.addEventListener("click", () => {
-                selectedFramework = card.dataset.framework;
-                console.log("Framework selected:", selectedFramework);
+                const frameworkValue = card.dataset.framework;
+                selectedFramework = frameworkValue;
+                frameworkSelect.value = frameworkValue;
 
                 // Update visual selection
-                document.querySelectorAll(".framework-card").forEach((c) => {
-                    c.classList.toggle(
-                        "selected",
-                        c.dataset.framework === selectedFramework
+                frameworkGrid
+                    .querySelectorAll(".framework-card")
+                    .forEach((c) =>
+                        c.classList.toggle(
+                            "selected",
+                            c.dataset.framework === frameworkValue
+                        )
                     );
-                });
-                // Update the hidden select element
-                frameworkSelect.value = selectedFramework;
+
                 validateForm();
             });
         });
+    }
 
-        // If we have frameworks but none selected, select the first one
-        if (frameworks.length > 0 && !selectedFramework) {
-            const firstCard = document.querySelector(".framework-card");
-            if (firstCard) {
-                firstCard.click();
+    function setupEventListeners() {
+        // Navigation
+        prevButton.addEventListener("click", () => {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWizardState();
             }
-        }
-    }
-
-    // Navigation
-    function navigateStep(direction) {
-        const newStep = currentStep + direction;
-
-        if (newStep < 1 || newStep > 3) return;
-
-        if (direction > 0 && !validateCurrentStep()) return;
-
-        currentStep = newStep;
-        updateUI();
-    }
-
-    function updateUI() {
-        // Update steps
-        wizardSteps.forEach((step) => {
-            const stepNum = parseInt(step.dataset.step);
-            step.classList.toggle("active", stepNum === currentStep);
         });
 
-        // Update pages
-        wizardPages.forEach((page, index) => {
-            page.classList.toggle("active", index + 1 === currentStep);
-        });
-
-        // Update buttons
-        prevButton.disabled = currentStep === 1;
-        nextButton.style.display = currentStep === 3 ? "none" : "block";
-        createButton.style.display = currentStep === 3 ? "block" : "none";
-
-        // Validate form for current step
-        validateForm();
-    }
-
-    // Validation
-    function validateCurrentStep() {
-        switch (currentStep) {
-            case 1:
-                if (!selectedTemplate) {
-                    vscode.postMessage({
-                        command: "error",
-                        text: "Please select a template",
-                    });
-                    return false;
-                }
-                return true;
-            case 2:
-                if (
-                    !projectNameInput.value ||
-                    !solutionInput.value ||
-                    !locationInput.value
-                ) {
-                    vscode.postMessage({
-                        command: "error",
-                        text: "Please fill in all required fields",
-                    });
-                    return false;
-                }
-                return true;
-            case 3:
-                if (!selectedFramework) {
-                    vscode.postMessage({
-                        command: "error",
-                        text: "Please select a framework version",
-                    });
-                    return false;
-                }
-                return true;
-        }
-        return true;
-    }
-
-    function validateForm() {
-        const isValid = (() => {
-            switch (currentStep) {
-                case 1:
-                    return !!selectedTemplate;
-                case 2:
-                    return !!(
-                        projectNameInput.value &&
-                        solutionInput.value &&
-                        locationInput.value
-                    );
-                case 3:
-                    const frameworkValid = !!selectedFramework;
-                    console.log("Framework validation:", {
-                        selectedFramework,
-                        frameworkSelectValue: frameworkSelect.value,
-                        isValid: frameworkValid,
-                    });
-                    return frameworkValid;
-                default:
-                    return false;
+        nextButton.addEventListener("click", () => {
+            if (validateForm()) {
+                currentStep++;
+                updateWizardState();
             }
-        })();
-
-        console.log("Form validation:", {
-            currentStep,
-            isValid,
-            selectedTemplate: !!selectedTemplate,
-            projectName: !!projectNameInput.value,
-            solution: !!solutionInput.value,
-            location: !!locationInput.value,
-            framework: !!selectedFramework,
         });
 
-        nextButton.disabled = !isValid;
-        createButton.disabled = !isValid;
-        return isValid;
-    }
+        // Template selection
+        projectGroupSelect.addEventListener("change", () => {
+            selectedTemplate = null; // Reset selection when changing groups
+            populateTemplates();
+            validateForm();
+        });
 
-    // Project Creation
-    function createProject() {
-        if (!validateForm()) {
-            console.log("Form validation failed", {
-                currentStep,
-                selectedTemplate: selectedTemplate?.shortName,
-                projectName: projectNameInput.value,
-                solution: solutionInput.value,
-                location: locationInput.value,
-                framework: selectedFramework || frameworkSelect.value,
+        templateSearch.addEventListener("input", () => {
+            populateTemplates();
+        });
+
+        // Project name validation
+        projectNameInput.addEventListener("input", () => {
+            validateForm();
+        });
+
+        // Framework selection
+        frameworkSelect.addEventListener("change", () => {
+            selectedFramework = frameworkSelect.value;
+            // Update framework grid selection
+            frameworkGrid
+                .querySelectorAll(".framework-card")
+                .forEach((card) =>
+                    card.classList.toggle(
+                        "selected",
+                        card.dataset.framework === selectedFramework
+                    )
+                );
+            validateForm();
+        });
+
+        // Project creation
+        createButton.addEventListener("click", () => {
+            const projectName = projectNameInput.value.trim();
+
+            if (!projectName || !selectedTemplate || !frameworkSelect.value) {
+                vscode.postMessage({
+                    command: "error",
+                    text: "Please fill in all required fields",
+                });
+                return;
+            }
+
+            vscode.postMessage({
+                command: "addProject",
+                project: projectName,
+                template: selectedTemplate,
+                framework: frameworkSelect.value,
+                https: httpsCheckbox.checked,
+                docker: dockerCheckbox.checked,
             });
-            return;
-        }
-
-        // Get the selected framework value and ensure it has the 'net' prefix
-        let frameworkValue = selectedFramework || frameworkSelect.value;
-        if (!frameworkValue.startsWith("net")) {
-            frameworkValue = "net" + frameworkValue;
-        }
-
-        if (!selectedTemplate || !frameworkValue) {
-            console.log("Missing required values:", {
-                template: selectedTemplate?.shortName,
-                framework: frameworkValue,
-            });
-            return;
-        }
-
-        const message = {
-            command: "createProject",
-            template: selectedTemplate.shortName,
-            project: projectNameInput.value,
-            solution: solutionInput.value,
-            framework: frameworkValue,
-            filepath: locationInput.value,
-            https: httpsCheckbox.checked,
-            docker: dockerCheckbox.checked,
-        };
-
-        console.log("Sending create project message:", message);
-        vscode.postMessage(message);
-    }
-
-    // Filter templates
-    function filterTemplates(searchTerm) {
-        const templates = document.querySelectorAll(".template-card");
-        const term = searchTerm.toLowerCase();
-
-        templates.forEach((template) => {
-            const name = template
-                .querySelector(".template-name")
-                .textContent.toLowerCase();
-            const description = template
-                .querySelector(".template-description")
-                .textContent.toLowerCase();
-            const tags = Array.from(
-                template.querySelectorAll(".template-tag")
-            ).map((tag) => tag.textContent.toLowerCase());
-
-            const matches =
-                name.includes(term) ||
-                description.includes(term) ||
-                tags.some((tag) => tag.includes(term));
-
-            template.classList.toggle("hidden", !matches);
         });
     }
-
-    // Message handling
-    window.addEventListener("message", (event) => {
-        const message = event.data;
-
-        switch (message.command) {
-            case "updateState":
-                if (message.projectGroup) {
-                    projectGroupSelect.value = message.projectGroup;
-                }
-                if (message.selectedTemplate) {
-                    selectTemplate(message.selectedTemplate);
-                }
-                break;
-            case "updateLocation":
-                if (message.filepath) {
-                    locationInput.value = message.filepath;
-                    validateForm();
-                }
-                break;
-        }
-    });
-
-    // Initialize the UI
-    init();
 })();

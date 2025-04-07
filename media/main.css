@@ -261,26 +261,24 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 16px;
     padding: 16px;
-    margin-top: 16px;
 }
 
 .framework-card {
-    border: 1px solid var(--border-color);
+    background-color: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-panel-border);
     border-radius: 6px;
     padding: 16px;
     cursor: pointer;
     transition: all 0.2s ease;
-    background-color: var(--vscode-editor-background);
 }
 
 .framework-card:hover {
-    border-color: var(--primary-color);
-    background-color: var(--primary-light);
+    background-color: var(--vscode-list-hoverBackground);
 }
 
 .framework-card.selected {
-    border-color: var(--primary-color);
-    background-color: var(--primary-light);
+    background-color: #9747ff20;
+    border-color: #9747ff;
 }
 
 .framework-icon {
@@ -289,19 +287,25 @@ body {
 }
 
 .framework-content {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .framework-version {
     font-size: 14px;
     font-weight: 500;
-    margin-bottom: 4px;
     color: var(--vscode-foreground);
 }
 
 .framework-description {
     font-size: 12px;
     color: var(--vscode-descriptionForeground);
+}
+
+/* Hide location-related elements */
+.form-group.location {
+    display: none !important;
 }
 
 /* Hide the original select element */
@@ -374,4 +378,18 @@ select {
 
 .wizard-page.active {
     animation: fadeIn 0.3s ease-in-out;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.disabled {
+    background-color: #3c3c3c !important;
+    cursor: not-allowed;
+}
+
+button:not(.disabled) {
+    background-color: #9747ff !important;
+    cursor: pointer;
 }
