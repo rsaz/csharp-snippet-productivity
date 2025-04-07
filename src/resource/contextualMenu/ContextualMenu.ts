@@ -7,7 +7,11 @@ const findUpGlob = require("find-up-glob");
 const lineByLine = require("n-readlines");
 
 class ContextualMenu {
-    public static async init(uri: vscode.Uri, fileType: string, framework: string) {
+    public static async init(
+        uri: vscode.Uri,
+        fileType: string,
+        framework: string
+    ) {
         let pathSelected = "";
         let projectRoot: string | undefined;
 
@@ -15,11 +19,18 @@ class ContextualMenu {
         const formContextMenu = !!uri;
 
         if (formContextMenu && uri) {
-            pathSelected = uri.fsPath;
+            // Get the directory path if a file is selected, or use the selected path if it's a directory
+            pathSelected = fs.statSync(uri.fsPath).isDirectory()
+                ? uri.fsPath
+                : path.dirname(uri.fsPath);
+
+            // Find the project root to validate we're in a C# project
             projectRoot = getProjectRootDirOrFilePath(pathSelected);
 
             if (!projectRoot) {
-                vscode.window.showErrorMessage("No project selected");
+                vscode.window.showErrorMessage(
+                    "Selected location is not within a C# project"
+                );
                 return;
             }
         } else {
@@ -53,7 +64,7 @@ class ContextualMenu {
                 prompt: "Type the file name",
                 value: "New " + fileType + ".cs",
             })
-            .then((newFileName) => {
+            .then(async (newFileName) => {
                 if (typeof newFileName === undefined || newFileName === "") {
                     vscode.window.showErrorMessage(
                         "Please input a valid name or press Scape to cancel the operation!"
@@ -67,60 +78,60 @@ class ContextualMenu {
                     newFileName = "New" + fileType + ".cs";
                 }
 
-                let newFilePath = pathSelected + path.sep + newFileName;
+                let newFilePath = path.join(pathSelected, newFileName);
 
                 if (fs.existsSync(newFilePath)) {
-                    vscode.window.showErrorMessage(`File ${newFileName} already exist`);
-                    return;
+                    // Ask user if they want to replace the existing file
+                    const answer = await vscode.window.showWarningMessage(
+                        `File ${newFileName} already exists. Do you want to replace it?`,
+                        "Yes",
+                        "No"
+                    );
+
+                    if (answer !== "Yes") {
+                        return this.init(uri, fileType, framework);
+                    }
                 }
 
                 newFilePath = correctFileNameExtension(newFilePath);
                 let originalFilePath = newFilePath;
 
-                let rootDir = getProjectRootDirOrFilePath(newFilePath);
+                // Calculate namespace based on the project structure
+                let relativeToProject = path.relative(
+                    projectRoot!,
+                    pathSelected
+                );
+                let namespace = projectRoot!.substring(
+                    projectRoot!.lastIndexOf(path.sep) + 1
+                );
 
-                if (rootDir === null) {
-                    vscode.window.showErrorMessage("Unable to find *.csproj or project.json");
-                    return;
+                if (relativeToProject !== "") {
+                    // Add subdirectories to namespace
+                    namespace +=
+                        "." + relativeToProject.split(path.sep).join(".");
                 }
 
-                let rootNamespace: any = checkRootNameOnCsproj(newFilePath);
+                // Clean up namespace
+                namespace = namespace.replace(/\s+/g, "_").replace(/-/g, "_");
 
-                if (rootDir !== undefined) {
-                    rootDir =
-                        rootDir[rootDir.length - 1] === path.sep
-                            ? rootDir.substring(0, rootDir.length - 1)
-                            : rootDir;
-
-                    let projRootDir = rootDir.substring(rootDir.lastIndexOf(path.sep) + 1);
-
-                    let childFilePath = newFilePath.substring(newFilePath.lastIndexOf(projRootDir));
-
-                    if (rootNamespace !== null) {
-                        childFilePath = childFilePath.replace(
-                            childFilePath.substring(0, childFilePath.indexOf("\\")),
-                            rootNamespace
-                        );
-                    }
-
-                    // set the regex pattern for path structure
-                    let pathSepRegEX = /\//g;
-                    if (os.platform() === "win32") {
-                        pathSepRegEX = /\\/g;
-                    }
-
-                    // replace \\ for . in following the namespace convention
-                    let namespace = path.dirname(childFilePath);
-                    namespace = namespace.replace(pathSepRegEX, ".");
-
-                    // replace file name empty space or dash by underscore
-                    namespace = namespace.replace(/\s+/g, "_");
-                    namespace = namespace.replace(/-/g, "_");
-
-                    newFilePath = path.basename(newFilePath, ".cs");
-
-                    loadTemplate(fileType, namespace, newFilePath, originalFilePath, framework);
+                // Get root namespace from csproj if available
+                let rootNamespace = checkRootNameOnCsproj(newFilePath);
+                if (rootNamespace) {
+                    namespace =
+                        rootNamespace +
+                        (relativeToProject
+                            ? "." + relativeToProject.split(path.sep).join(".")
+                            : "");
                 }
+
+                newFilePath = path.basename(newFilePath, ".cs");
+                loadTemplate(
+                    fileType,
+                    namespace,
+                    newFilePath,
+                    originalFilePath,
+                    framework
+                );
             });
     }
 }
@@ -141,9 +152,14 @@ function correctFileNameExtension(fileName: any) {
 
 // function to detect the root directory where the .csproj is included
 function getProjectRootDirOrFilePath(filePath: any): string | undefined {
-    var projectRootDir = parentFinder.sync(path.dirname(filePath), "project.json");
+    var projectRootDir = parentFinder.sync(
+        path.dirname(filePath),
+        "project.json"
+    );
     if (projectRootDir === null) {
-        let csProjFiles = findUpGlob.sync("*.csproj", { cwd: path.dirname(filePath) });
+        let csProjFiles = findUpGlob.sync("*.csproj", {
+            cwd: path.dirname(filePath),
+        });
 
         if (csProjFiles === null) {
             return undefined;
@@ -171,8 +187,9 @@ function loadTemplate(
 
     vscode.workspace
         .openTextDocument(
-            vscode.extensions.getExtension("richardzampieriprog.csharp-snippet-productivity")
-                ?.extensionPath +
+            vscode.extensions.getExtension(
+                "richardzampieriprog.csharp-snippet-productivity"
+            )?.extensionPath +
                 "/models/" +
                 fileTemplate
         )
@@ -204,7 +221,9 @@ function findCursorPos(content: string) {
 
 // function to check root namespace in the csproj file
 function checkRootNameOnCsproj(filePath: string) {
-    let rootNamespace: string = findUpGlob.sync("*.csproj", { cwd: path.dirname(filePath) })[0];
+    let rootNamespace: string = findUpGlob.sync("*.csproj", {
+        cwd: path.dirname(filePath),
+    })[0];
     const liner = new lineByLine(rootNamespace);
     let line;
 
@@ -216,7 +235,10 @@ function checkRootNameOnCsproj(filePath: string) {
         }
         let content = result[0];
 
-        let root: string = content.substring(content.indexOf(">") + 1, content.indexOf("</"));
+        let root: string = content.substring(
+            content.indexOf(">") + 1,
+            content.indexOf("</")
+        );
 
         if (root !== null && root !== "") {
             return root;

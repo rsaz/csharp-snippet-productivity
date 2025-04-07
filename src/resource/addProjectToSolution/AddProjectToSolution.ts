@@ -20,10 +20,16 @@ export class AddProjectToSolution {
                 }
 
                 // Acquiring the solution root folder
-                let root = vscode.workspace.workspaceFolders
-                    ?.map((folder) => folder.uri.path)[0]
-                    .replace(/\//g, "\\");
-                root = root?.slice(1, root.length);
+                const workspaceFolders = vscode.workspace.workspaceFolders;
+                if (!workspaceFolders || workspaceFolders.length === 0) {
+                    vscode.window.showErrorMessage(
+                        "No workspace folder is open"
+                    );
+                    return;
+                }
+
+                let root = workspaceFolders[0].uri.path.replace(/\//g, "\\");
+                root = root.slice(1, root.length);
 
                 // Removing white spaces within the new project name
                 if (newFileName) {
@@ -31,27 +37,43 @@ export class AddProjectToSolution {
                 }
 
                 // Setting the new project path
-                const newFilePath = root + path.sep + newFileName;
+                if (!newFileName) {
+                    vscode.window.showErrorMessage(
+                        "Project name cannot be empty"
+                    );
+                    return;
+                }
+                const newFilePath = path.join(root, newFileName);
 
                 // Verify if project already exist
                 if (fs.existsSync(newFilePath)) {
-                    vscode.window.showErrorMessage(`Project ${newFileName} already exist`);
+                    vscode.window.showErrorMessage(
+                        `Project ${newFileName} already exist`
+                    );
                     return this.init(uri, context);
                 }
 
                 let rootDir = getProjectRootDirOrFilePath(root);
 
                 if (rootDir === null) {
-                    vscode.window.showErrorMessage("Unable to find *.sln (solution)");
+                    vscode.window.showErrorMessage(
+                        "Unable to find *.sln (solution)"
+                    );
                     return;
                 }
 
                 // Create a project
                 if (newFileName) {
-                    const panel = new Panel(context, newFileName, rootDir, "Add Project", {
-                        folder: "media",
-                        file: "addProjectIcon.png",
-                    });
+                    const panel = new Panel(
+                        context,
+                        newFileName,
+                        rootDir,
+                        "Add Project",
+                        {
+                            folder: "media",
+                            file: "addProjectIcon.png",
+                        }
+                    );
                     panel.webViewPanel?.onDidDispose(() => {
                         panel.webViewPanel = undefined;
                     }, context.subscriptions);
@@ -61,9 +83,17 @@ export class AddProjectToSolution {
 }
 
 // function to detect the root directory where the .csproj is included
-function getProjectRootDirOrFilePath(filePath: any) {
-    const paths: string[] = filePath.split("\\");
-    const solution: string = filePath + path.sep + paths[paths.length - 1] + ".sln";
+function getProjectRootDirOrFilePath(filePath: string): string | null {
+    if (!filePath) {
+        return null;
+    }
+
+    const paths = filePath.split("\\");
+    if (paths.length === 0) {
+        return null;
+    }
+
+    const solution = path.join(filePath, `${paths[paths.length - 1]}.sln`);
 
     if (!fs.existsSync(solution)) {
         return null;

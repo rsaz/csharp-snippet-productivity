@@ -1,8 +1,10 @@
 using System;
 
-namespace ${namespace};
-
-public record ${fileName}
+namespace ${namespace}
 {
-    ${cursor}
+    public record ${fileName}
+    {
+        ${cursor}
+    }
 }
+

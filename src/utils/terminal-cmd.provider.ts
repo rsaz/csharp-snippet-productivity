@@ -34,8 +34,27 @@ export const TEMPLATE_COMPATIBILITY: TemplateCompatibility = {
     blazor: ["net5.0", "net6.0", "net7.0", "net8.0"],
     "blazorwasm-empty": ["net5.0", "net6.0", "net7.0", "net8.0"],
     blazorwasm: ["net5.0", "net6.0", "net7.0", "net8.0"],
-    classlib: ["netstandard2.0", "netstandard2.1", "net5.0", "net6.0", "net7.0", "net8.0"],
+    classlib: [
+        "netstandard2.0",
+        "netstandard2.1",
+        "net5.0",
+        "net6.0",
+        "net7.0",
+        "net8.0",
+    ],
     console: ["net5.0", "net6.0", "net7.0", "net8.0"],
+    "console-framework": [
+        "net48",
+        "net472",
+        "net471",
+        "net47",
+        "net462",
+        "net461",
+        "net46",
+        "net452",
+        "net451",
+        "net45",
+    ],
     grpc: ["net5.0", "net6.0", "net7.0", "net8.0"],
     mvc: ["net5.0", "net6.0", "net7.0", "net8.0"],
     webapp: ["net5.0", "net6.0", "net7.0", "net8.0"],
@@ -62,7 +81,9 @@ export class Command {
     }
 
     executeCommonCommands() {
-        this.terminal.sendText(`mkdir '${this.message.filepath}\\${this.message.solution}'`);
+        this.terminal.sendText(
+            `mkdir '${this.message.filepath}\\${this.message.solution}'`
+        );
         this.terminal.sendText(
             `dotnet new sln -n ${this.message.solution} -o '${this.message.filepath}\\${this.message.solution}' --force`
         );
@@ -78,7 +99,9 @@ export class Command {
     }
 
     openInVsCode() {
-        this.terminal.sendText(`code '${this.message.filepath}\\${this.message.solution}' -r`);
+        this.terminal.sendText(
+            `code '${this.message.filepath}\\${this.message.solution}' -r`
+        );
     }
 
     execute() {
@@ -87,10 +110,15 @@ export class Command {
 
     isFrameworkCompatible() {
         // Verify if template is not undefined
-        if (!this.message.template || !(this.message.template in TEMPLATE_COMPATIBILITY)) {
+        if (
+            !this.message.template ||
+            !(this.message.template in TEMPLATE_COMPATIBILITY)
+        ) {
             return true;
         }
-        return TEMPLATE_COMPATIBILITY[this.message.template].includes(this.message.framework);
+        return TEMPLATE_COMPATIBILITY[this.message.template].includes(
+            this.message.framework
+        );
     }
 }
 
@@ -108,7 +136,9 @@ export class GrpcCommand extends Command {
 export class MinWebApiCommand extends Command {
     execute() {
         if (this.message.framework !== "net6.0") {
-            vscode.window.showWarningMessage("Please select net6.0 for Minimal WebAPI");
+            vscode.window.showWarningMessage(
+                "Please select net6.0 for Minimal WebAPI"
+            );
             return;
         }
         this.executeCommonCommands();
@@ -124,14 +154,16 @@ export class DefaultCommand extends Command {
     execute() {
         if (!this.isFrameworkCompatible()) {
             // Format list of compatible frameworks
-            const compatibleFrameworks = TEMPLATE_COMPATIBILITY[this.message.template]
+            const compatibleFrameworks = TEMPLATE_COMPATIBILITY[
+                this.message.template
+            ]
                 .map((f) => `'${f.substring(3)}'`)
                 .join(", ");
 
             vscode.window.showWarningMessage(
-                `Please select a compatible framework for ${this.message.template} - [${
-                    compatibleFrameworks || "None"
-                }]`
+                `Please select a compatible framework for ${
+                    this.message.template
+                } - [${compatibleFrameworks || "None"}]`
             );
             return;
         }
@@ -152,9 +184,36 @@ export class CommandFactory {
                 return new GrpcCommand(terminal, message);
             case "minwebapi":
                 return new MinWebApiCommand(terminal, message);
-            // Cases for other templates...
+            case "console-framework":
+                return new FrameworkConsoleCommand(terminal, message);
             default:
                 return new DefaultCommand(terminal, message);
         }
+    }
+}
+
+export class FrameworkConsoleCommand extends Command {
+    execute() {
+        if (!this.isFrameworkCompatible()) {
+            const compatibleFrameworks = TEMPLATE_COMPATIBILITY[
+                this.message.template
+            ]
+                .map((f) => `'${f.substring(3)}'`)
+                .join(", ");
+
+            vscode.window.showWarningMessage(
+                `Please select a compatible framework for ${
+                    this.message.template
+                } - [${compatibleFrameworks || "None"}]`
+            );
+            return;
+        }
+
+        this.executeCommonCommands();
+        this.terminal.sendText(
+            `dotnet new console --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework} --force`
+        );
+        this.addProjectToSolution();
+        this.openInVsCode();
     }
 }

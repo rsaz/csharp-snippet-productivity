@@ -13,6 +13,7 @@ export class CreateProjectPanel {
     private static _sdks: string[] = [];
     private static _defaultFolder: vscode.WorkspaceConfiguration | undefined;
     private static _terminal: vscode.Terminal;
+    private static _csp: string;
 
     // To avoid direct instantiation use the createOrShow method
     private constructor() {}
@@ -46,6 +47,23 @@ export class CreateProjectPanel {
             }
         );
 
+        // Get the nonce for CSP
+        const nonce = getNonce();
+
+        // Set Content Security Policy
+        this._csp = `
+            default-src 'none';
+            img-src ${panel.webview.cspSource} https:;
+            script-src ${panel.webview.cspSource} 'nonce-${nonce}';
+            style-src ${panel.webview.cspSource} 'unsafe-inline' 'self' https://*.vscode-cdn.net;
+            font-src ${panel.webview.cspSource};
+        `
+            .replace(/\s+/g, " ")
+            .trim();
+
+        // Store nonce in panel for later use
+        (panel as any).nonce = nonce;
+
         // adding panel icon
         panel.iconPath = vscode.Uri.file(
             path.join(this.context.extensionPath, "media", "addProjectIcon.png")
@@ -61,18 +79,7 @@ export class CreateProjectPanel {
             .getConfiguration("csharp-snippet-productivity")
             .get("defaultFolderForProjectCreation");
 
-        if (!this._defaultFolder) {
-            vscode.window.showInformationMessage(
-                "Please set a default folder for project creation"
-            );
-        }
-
-        this._filepath = this._defaultFolder;
-        this._terminal =
-            vscode.window.activeTerminal === undefined
-                ? vscode.window.createTerminal()
-                : vscode.window.activeTerminal;
-        this._terminal.show();
+        this._filepath = this._defaultFolder || "";
 
         // OnPanel Close
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -81,6 +88,11 @@ export class CreateProjectPanel {
             async (message) => {
                 switch (message.command) {
                     case "createProject":
+                        // Create terminal only when needed
+                        this._terminal =
+                            vscode.window.activeTerminal === undefined
+                                ? vscode.window.createTerminal()
+                                : vscode.window.activeTerminal;
                         await this.projectCreation(message);
                         return;
 
@@ -91,26 +103,17 @@ export class CreateProjectPanel {
                             canSelectFiles: false,
                             canSelectFolders: true,
                         };
-                        vscode.window.showOpenDialog(options).then((fileUri) => {
-                            if (fileUri && fileUri[0]) {
-                                this._filepath = fileUri[0].fsPath;
-                                this.update(
-                                    message.projectGroupSelect,
-                                    message.projectGroupSelect,
-                                    message.templateName,
-                                    message.template,
-                                    message.project,
-                                    message.solution,
-                                    message.framework
-                                );
-                            }
-                        });
-
-                        this._panel.webview.postMessage({
-                            command: "updateState",
-                            projectGroupSelect: message.projectGroupSelect,
-                            selectedTemplate: message.template,
-                        });
+                        vscode.window
+                            .showOpenDialog(options)
+                            .then((fileUri) => {
+                                if (fileUri && fileUri[0]) {
+                                    this._filepath = fileUri[0].fsPath;
+                                    this._panel.webview.postMessage({
+                                        command: "updateLocation",
+                                        filepath: this._filepath,
+                                    });
+                                }
+                            });
                         return;
                 }
             },
@@ -149,11 +152,38 @@ export class CreateProjectPanel {
             return;
         }
 
-        const command = CommandFactory.getCommand(this._terminal, message);
-        command.execute();
+        try {
+            console.log("Creating project with command factory:", message);
+            const command = CommandFactory.getCommand(this._terminal, message);
 
-        // setting the current project framework to define the template namespace to be used
-        CreateProjectPanel.context.globalState.update("framework", message.framework);
+            if (!command) {
+                vscode.window.showErrorMessage(
+                    "Failed to create command for project creation"
+                );
+                return;
+            }
+
+            await command.execute();
+
+            // setting the current project framework to define the template namespace to be used
+            CreateProjectPanel.context.globalState.update(
+                "framework",
+                message.framework
+            );
+
+            // Show success message
+            vscode.window.showInformationMessage(
+                `Successfully created project ${message.project}`
+            );
+
+            // Close the webview panel
+            this.dispose();
+        } catch (error: any) {
+            console.error("Error creating project:", error);
+            vscode.window.showErrorMessage(
+                `Failed to create project: ${error?.message || "Unknown error"}`
+            );
+        }
     }
 
     private static async update(
@@ -200,96 +230,56 @@ export class CreateProjectPanel {
             vscode.Uri.joinPath(this.context.extensionUri, "media", "main.js")
         );
 
-        // Local path to css styles
-        const styleResetPath = vscode.Uri.joinPath(this.context.extensionUri, "media", "reset.css");
-        const stylesPathMainPath = vscode.Uri.joinPath(
-            this.context.extensionUri,
-            "media",
-            "vscode.css"
+        // template icons script integration
+        const templateIconsScriptUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(
+                this.context.extensionUri,
+                "media",
+                "template-icons.js"
+            )
         );
 
-        // Uri to load styles into webview
-        const stylesResetUri = webview.asWebviewUri(styleResetPath);
-        const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
+        // styles integration
+        const stylesResetUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, "media", "reset.css")
+        );
+        const stylesMainUri = webview.asWebviewUri(
+            vscode.Uri.joinPath(this.context.extensionUri, "media", "main.css")
+        );
 
-        // Use a nonce to only allow specific scripts to be run
-        const nonce = getNonce();
+        // Use the nonce from panel
+        const nonce = (this._panel as any).nonce;
 
-        // Post message transformation before sending to the webview
-        const frameworkPostMessage = this._sdks
-            .map((sdk: string) => {
-                return `<option value="${sdk}"${
-                    sdk === framework ? "selected" : ""
-                }>${sdk}</option>`;
-            })
-            .join("");
+        // Get the HTML content
+        const htmlContent = fs.readFileSync(
+            path.join(this.context.extensionPath, "media", "index.html"),
+            "utf8"
+        );
 
-        return `<!DOCTYPE html>
-    <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${
-      webview.cspSource
-  }; img-src ${webview.cspSource} https:; script-src 'nonce-${nonce}';">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="${stylesResetUri}" rel="stylesheet">
-  <link href="${stylesMainUri}" rel="stylesheet">       
-</head>
-<body>
-  <h1>Create a new Solution or Project</h1>
-  <br/>
-  <br/>
-  <h3>Select the project type</h3>
-    <select id="project-group-select" name="project-group">
-      <option value="${projectGroup}" selected="selected">${
-            projectGroupName === "" ? "Select Project Type" : projectGroupName
-        }</option>
-      <option value="api">API</option>
-      <option value="blazor">Blazor</option>
-      <option value="cloud">Cloud</option>
-      <option value="console">Console</option>
-      <option value="desktop">Desktop</option>
-      <option value="extensions">Extensions</option>
-      <option value="game">Game</option>
-      <option value="iot">IoT</option>
-      <opt value="lib">Libraries</opt>
-      <option value="machinelearning">Machine Learning</option>
-      <option value="maui">MAUI</option>
-      <option value="mobile">Mobile</option>
-      <option value="test">Test</option>
-      <option value="web">Web</option>      
-    </select>
-  <br/>
-  <br/>
-  <h3>Select the project template</h3>
-  <select id="custom-select" name="project-type">
-    <option value="${template}" selected="selected">${templateName}</option>
-  <!-- Dynamic templates will be added here -->
-  </select>
-  </br>
-  </br>
-  <label for="projectName">Project Name:</label>
-  <input id="projectName" type="text" name="projectName" value="${solution}" required placeholder="Insert your project name">
-  <br />
-  <label for="location">Location:</label>
-  <div id="forminline">
-    <input id="inputLocal" value="${
-        this._filepath
-    }" type="text" name="location" required placeholder="Select the location to save your project">
-    <button id="selectFolder">...</button>
-  </div>
-  </br>
-  <label for="solution">Solution Name:</label>
-  <input id="solution" type="text" name="solution" value="${solution}" required placeholder="Your solution name is a container for one or more projects">
-  <br />
-  <label for="framework">Framework</label>
-  <br />
-  <select id="custom-select2" name="framework">
-    ${frameworkPostMessage}
-  </select>
-  <button id="create-project-button">Create Project</button>
-  <script nonce="${nonce}" src="${scriptUri}"></script>
-  </body>
-</html>`;
+        // Replace the placeholders in the HTML
+        return htmlContent
+            .replace(/{{nonce}}/g, nonce)
+            .replace(/{{cspSource}}/g, webview.cspSource)
+            .replace(/{{script}}/g, scriptUri.toString())
+            .replace(
+                /{{templateIconsScript}}/g,
+                templateIconsScriptUri.toString()
+            )
+            .replace(/{{stylesResetUri}}/g, stylesResetUri.toString())
+            .replace(/{{stylesMainUri}}/g, stylesMainUri.toString())
+            .replace(/{{project}}/g, project)
+            .replace(/{{solution}}/g, solution)
+            .replace(
+                /{{sdkOptions}}/g,
+                this._sdks
+                    .map((sdk) => `<option value="${sdk}">${sdk}</option>`)
+                    .join("")
+            )
+            .replace(
+                "</head>",
+                `<meta http-equiv="Content-Security-Policy" content="${this._csp
+                    .replace(/\s+/g, " ")
+                    .trim()}"></head>`
+            );
     }
 }

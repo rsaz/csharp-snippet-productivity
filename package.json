@@ -80,11 +80,6 @@
                 "command": "csharp-snippet-productivity.addProjectToSolution",
                 "title": "Add Project",
                 "category": "C# Toolbox"
-            },
-            {
-                "command": "csharp-snippet-productivity.scaffoldResources",
-                "title": "Scaffold Resources",
-                "category": "C# Toolbox"
             }
         ],
         "keybindings": [
@@ -115,11 +110,6 @@
                 "command": "csharp-snippet-productivity.createRecord",
                 "key": "ctrl+alt+/ r",
                 "when": "!editorReadonly"
-            },
-            {
-                "command": "csharp-snippet-productivity.scaffoldResources",
-                "key": "ctrl+alt+/ ctrl+e",
-                "when": "!editorReadonly"
             }
         ],
         "menus": {
@@ -144,9 +134,6 @@
                 },
                 {
                     "command": "csharp-snippet-productivity.addProjectToSolution"
-                },
-                {
-                    "command": "csharp-snippet-productivity.scaffoldResources"
                 }
             ],
             "commandPalette": [
@@ -172,10 +159,6 @@
                 },
                 {
                     "command": "csharp-snippet-productivity.addProjectToSolution",
-                    "when": "true"
-                },
-                {
-                    "command": "csharp-snippet-productivity.scaffoldResources",
                     "when": "true"
                 }
             ]

@@ -1,8 +1,10 @@
 using System;
 
-namespace ${namespace};
-
-public interface ${fileName}
+namespace ${namespace}
 {
-    ${cursor}
+    internal interface ${fileName}
+    {
+        ${cursor}
+    }
 }
+

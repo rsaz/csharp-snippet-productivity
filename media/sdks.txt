@@ -24,4 +24,3 @@
 6.0.202 [C:\Program Files\dotnet\sdk]
 6.0.203 [C:\Program Files\dotnet\sdk]
 6.0.321 [C:\Program Files\dotnet\sdk]
-8.0.100 [C:\Program Files\dotnet\sdk]

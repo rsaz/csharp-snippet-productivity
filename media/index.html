@@ -1,50 +1,168 @@
 <!DOCTYPE html>
-    <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}}; img-src {{cspSource}} https:; script-src 'nonce-{{nonce}}';">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="{{stylesResetUri}}" rel="stylesheet">
-  <link href="{{stylesMainUri}}" rel="stylesheet">       
-</head>
-<body>
-  <h1>Add the Project Details</h1>
-  <br/>
-  <br/>
-  <h3>Select the project type</h3>
-    <select id="project-group-select" name="project-group">
-      <option value="api">API</option>
-      <option value="blazor">Blazor</option>
-      <option value="cloud">Cloud</option>
-      <option value="console">Console</option>
-      <option value="desktop">Desktop</option>
-      <option value="extensions">Extensions</option>
-      <option value="game">Game</option>
-      <option value="iot">IoT</option>
-      <option value="lib">Libraries</option>
-      <option value="machinelearning">Machine Learning</option>
-      <option value="maui">MAUI</option>
-      <option value="mobile">Mobile</option>
-      <option value="test">Test</option>
-      <option value="web">Web</option>      
-    </select>
-  <br/>
-  <br/>
-  <h3>Select the project template</h3>
-  <select id="custom-select" name="project-type">
-    <!-- Dynamically filled options -->
-  </select>
-  </br>
-  </br>
-  <label for="projectName">Project Name:</label>
-  <input id="projectName" type="text" name="projectName" value="{{project}}" required placeholder="Insert your project name">
-  <br /> 
-  <label for="framework">Framework</label>
-  <br />
-  <select id="custom-select2" name="framework">
-    {{sdkOptions}}
-  </select>
-  <button id="create-project-button">Create Project</button>
-  <script nonce="{{nonce}}" src="{{script}}"></script>
-  </body>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'none'; style-src {{cspSource}}; img-src {{cspSource}} https:; script-src 'nonce-{{nonce}}' 'unsafe-inline';"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Create Project</title>
+        <link href="{{stylesResetUri}}" rel="stylesheet" />
+        <link href="{{stylesMainUri}}" rel="stylesheet" />
+
+        <script nonce="{{nonce}}" src="{{templateIconsScript}}"></script>
+        <script nonce="{{nonce}}" src="{{script}}" defer></script>
+    </head>
+    <body>
+        <div class="wizard-container">
+            <div class="wizard-header">
+                <h1>Create a New Project</h1>
+                <div class="search-container">
+                    <input
+                        type="text"
+                        id="template-search"
+                        placeholder="Search templates..."
+                    />
+                </div>
+            </div>
+
+            <div class="wizard-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Choose Template</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Configure Project</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Additional Options</div>
+                </div>
+            </div>
+
+            <div class="wizard-content">
+                <!-- Step 1: Template Selection -->
+                <div class="wizard-page active" id="template-selection">
+                    <div class="template-filters">
+                        <select id="project-group-select" name="project-group">
+                            <option value="all">All Templates</option>
+                            <option value="api">API</option>
+                            <option value="blazor">Blazor</option>
+                            <option value="cloud">Cloud</option>
+                            <option value="console">Console</option>
+                            <option value="desktop">Desktop</option>
+                            <option value="extensions">Extensions</option>
+                            <option value="game">Game</option>
+                            <option value="iot">IoT</option>
+                            <option value="lib">Libraries</option>
+                            <option value="machinelearning">
+                                Machine Learning
+                            </option>
+                            <option value="maui">MAUI</option>
+                            <option value="mobile">Mobile</option>
+                            <option value="test">Test</option>
+                            <option value="web">Web</option>
+                        </select>
+                    </div>
+
+                    <div class="template-grid" id="template-grid">
+                        <!-- Templates will be dynamically populated here -->
+                    </div>
+                </div>
+
+                <!-- Step 2: Project Configuration -->
+                <div class="wizard-page" id="project-config">
+                    <div class="config-form">
+                        <div class="form-group">
+                            <label for="projectName">Project name</label>
+                            <input
+                                id="projectName"
+                                type="text"
+                                name="projectName"
+                                value="{{project}}"
+                                required
+                            />
+                            <span class="help-text"
+                                >The name of your project. This will also be
+                                used as the default namespace.</span
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="solution">Solution name</label>
+                            <input
+                                id="solution"
+                                type="text"
+                                name="solution"
+                                value="{{solution}}"
+                                required
+                            />
+                            <span class="help-text"
+                                >The name of the solution file (.sln)</span
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <div class="location-input">
+                                <input id="inputLocal" type="text" readonly />
+                                <button
+                                    id="selectFolder"
+                                    class="secondary-button"
+                                >
+                                    Browse
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Additional Options -->
+                <div class="wizard-page" id="additional-options">
+                    <div class="framework-selection">
+                        <h3>Target Framework</h3>
+                        <div class="framework-grid" id="framework-grid">
+                            <select id="custom-select2" name="framework" hidden>
+                                {{sdkOptions}}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="additional-settings">
+                        <label class="checkbox-container">
+                            <input
+                                type="checkbox"
+                                id="https-checkbox"
+                                checked
+                            />
+                            <span class="checkmark"></span>
+                            Configure for HTTPS
+                        </label>
+
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="docker-checkbox" />
+                            <span class="checkmark"></span>
+                            Enable Docker Support
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-footer">
+                <button id="prev-button" class="secondary-button" disabled>
+                    Previous
+                </button>
+                <button id="next-button" class="primary-button">Next</button>
+                <button
+                    id="create-project-button"
+                    class="primary-button"
+                    style="display: none"
+                >
+                    Create Project
+                </button>
+            </div>
+        </div>
+    </body>
 </html>

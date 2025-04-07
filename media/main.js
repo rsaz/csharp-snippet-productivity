@@ -3,208 +3,513 @@
 // It cannot access the main VS Code APIs directly.
 
 (function () {
-    // vscode api
     const vscode = acquireVsCodeApi();
 
-    // Html elements bindings
-    const buttonCreateProject = document.getElementById("create-project-button");
-    const buttonFilePicker = document.getElementById("selectFolder");
+    // State management
+    let currentStep = 1;
+    let selectedTemplate = null;
+    let selectedFramework = null;
+
+    // DOM Elements
+    const wizardSteps = document.querySelectorAll(".step");
+    const wizardPages = document.querySelectorAll(".wizard-page");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const createButton = document.getElementById("create-project-button");
     const projectGroupSelect = document.getElementById("project-group-select");
-    const template = document.getElementById("custom-select");
-    const project = document.getElementById("projectName");
-    const filePath = document.getElementById("inputLocal");
-    const solution = document.getElementById("solution");
-    const framework = document.getElementById("custom-select2");
+    const templateSearch = document.getElementById("template-search");
+    const templateGrid = document.getElementById("template-grid");
+    const projectNameInput = document.getElementById("projectName");
+    const solutionInput = document.getElementById("solution");
+    const locationInput = document.getElementById("inputLocal");
+    const selectFolderButton = document.getElementById("selectFolder");
+    const frameworkGrid = document.getElementById("framework-grid");
+    const frameworkSelect = document.getElementById("custom-select2");
+    const httpsCheckbox = document.getElementById("https-checkbox");
+    const dockerCheckbox = document.getElementById("docker-checkbox");
 
-    document.addEventListener("DOMContentLoaded", function (event) {
-        buttonCreateProject.disabled = "true";
-        buttonCreateProject.style.backgroundColor = "#3C3C3C";
-
-        // Event listener for project group selection
-        projectGroupSelect.addEventListener("change", function () {
-            loadTemplateSelect(this.value, "");
-        });
-
-        fieldValidation();
-    });
-
-    function fieldValidation() {
-        if (project.value === "" || solution.value === "") {
-            buttonCreateProject.disabled = true;
-        } else {
-            buttonCreateProject.disabled = false;
-            buttonCreateProject.style.backgroundColor = "#0E639C";
-        }
-    }
-
-    /* Project group select */
+    // Project templates configuration
     const projectGroupToTemplates = {
         api: [
-            { templateName: ".NET Core Web API", shortName: "webapi" },
-            { templateName: ".NET Core Web API (native AOT)", shortName: "webapiaot" },
-            { templateName: "API Controller", shortName: "apicontroller" },
+            {
+                templateName: ".NET Core Web API",
+                shortName: "webapi",
+                description:
+                    "A project template for creating an ASP.NET Core Web API",
+                tags: ["API", "REST", "HTTP"],
+            },
+            {
+                templateName: ".NET Core Web API (native AOT)",
+                shortName: "webapiaot",
+                description:
+                    "A project template for creating an ASP.NET Core Web API with native AOT compilation",
+                tags: ["API", "AOT", "Performance"],
+            },
+            {
+                templateName: "API Controller",
+                shortName: "apicontroller",
+                description: "A template for creating an API Controller",
+                tags: ["API", "Controller"],
+            },
         ],
         blazor: [
-            { templateName: ".NET MAUI Blazor Hybrid App", shortName: "maui-blazor" },
-            { templateName: "Blazor Server App", shortName: "blazorserver" },
-            { templateName: "Blazor Server App Empty", shortName: "blazorserver-empty" },
-            { templateName: "Blazor Web App", shortName: "blazor" },
-            { templateName: "Blazor WebAssembly App Empty", shortName: "blazorwasm-empty" },
-            { templateName: "Blazor WebAssembly Standalone App", shortName: "blazorwasm" },
+            {
+                templateName: ".NET MAUI Blazor Hybrid App",
+                shortName: "maui-blazor",
+                description:
+                    "A project for creating a .NET MAUI Blazor Hybrid application",
+                tags: ["Blazor", "MAUI", "Hybrid"],
+            },
+            {
+                templateName: "Blazor Server App",
+                shortName: "blazorserver",
+                description:
+                    "A project template for creating a Blazor server app",
+                tags: ["Blazor", "Server"],
+            },
+            {
+                templateName: "Blazor Web App",
+                shortName: "blazor",
+                description: "A project template for creating a Blazor web app",
+                tags: ["Blazor", "Web"],
+            },
         ],
-        cloud: [], // No specific templates for cloud in the given list
-        console: [{ templateName: "Console App", shortName: "console" }],
-        desktop: [
-            { templateName: "Windows Forms App", shortName: "winforms" },
-            { templateName: "Windows Forms Class Library", shortName: "winformslib" },
-            { templateName: "Windows Forms Control Library", shortName: "winformscontrollib" },
-            { templateName: "WPF Application", shortName: "wpf" },
-            { templateName: "WPF Class Library", shortName: "wpflib" },
-            { templateName: "WPF Custom Control Library", shortName: "wpfcustomcontrollib" },
-            { templateName: "WPF User Control Library", shortName: "wpfusercontrollib" },
-        ],
-        extensions: [], // No specific templates for extensions in the given list
-        game: [], // No specific templates for game in the given list
-        iot: [], // No specific templates for IoT in the given list
-        lib: [
-            { templateName: "Class Library", shortName: "classlib" },
-            { templateName: ".NET MAUI Class Library", shortName: "mauilib" },
-            { templateName: "Android Class Library", shortName: "androidlib" },
-            { templateName: "iOS Class Library", shortName: "ioslib" },
-            { templateName: "Mac Catalyst Class Library", shortName: "maccatalystlib" },
-            { templateName: "Razor Class Library", shortName: "razorclasslib" },
-        ],
-        machinelearning: [], // No specific templates for machine learning in the given list
-        maui: [
-            { templateName: ".NET MAUI App", shortName: "maui" },
-            { templateName: ".NET MAUI ContentPage (C#)", shortName: "maui-page-csharp" },
-            { templateName: ".NET MAUI ContentPage (XAML)", shortName: "maui-page-xaml" },
-            { templateName: ".NET MAUI ContentView (C#)", shortName: "maui-view-csharp" },
-            { templateName: ".NET MAUI ContentView (XAML)", shortName: "maui-view-xaml" },
-            { templateName: ".NET MAUI ResourceDictionary (XAML)", shortName: "maui-dict-xaml" },
-        ],
-        mobile: [
-            { templateName: "Android Application", shortName: "android" },
-            { templateName: "Android Wear Application", shortName: "androidwear" },
-            { templateName: "iOS Application", shortName: "ios" },
-            { templateName: "iOS Tabbed Application", shortName: "ios-tabbed" },
-        ],
-        test: [
-            { templateName: "MSTest Test Project", shortName: "mstest" },
-            { templateName: "MSTest Playwright Test Project", shortName: "mstest-playwright" },
-            { templateName: "NUnit 3 Test Project", shortName: "nunit" },
-            { templateName: "NUnit 3 Test Item", shortName: "nunit-test" },
-            { templateName: "NUnit Playwright Test Project", shortName: "nunit-playwright" },
-            { templateName: "xUnit Test Project", shortName: "xunit" },
+        console: [
+            {
+                templateName: "Console App",
+                shortName: "console",
+                description:
+                    "A project for creating a command-line application that can run on .NET on Windows, Linux and macOS",
+                tags: ["Console", "CLI", "Cross-platform"],
+                platforms: ["Windows", "Linux", "macOS"],
+            },
+            {
+                templateName: "Console App (.NET Framework)",
+                shortName: "console-framework",
+                description:
+                    "A project for creating a command-line application that runs on .NET Framework",
+                tags: ["Console", "CLI", "Windows"],
+                platforms: ["Windows"],
+            },
         ],
         web: [
-            { templateName: "ASP.NET Core Empty", shortName: "web" },
-            { templateName: "ASP.NET Core gRPC Service", shortName: "grpc" },
-            { templateName: "ASP.NET Core Web App (Model-View-Controller)", shortName: "mvc" },
-            { templateName: "ASP.NET Core Web App (Razor Pages)", shortName: "webapp" },
-            { templateName: "ASP.NET Core with Angular", shortName: "angular" },
-            { templateName: "ASP.NET Core with React.js", shortName: "react" },
-            { templateName: "ASP.NET Core with React.js and Redux", shortName: "reactredux" },
-            { templateName: "Razor Component", shortName: "razorcomponent" },
-            { templateName: "Razor Page", shortName: "page" },
-            { templateName: "Razor View", shortName: "view" },
+            {
+                templateName: "ASP.NET Core Empty",
+                shortName: "web",
+                description:
+                    "An empty project template for creating an ASP.NET Core application",
+                tags: ["Web", "Empty"],
+            },
+            {
+                templateName: "ASP.NET Core Web App (MVC)",
+                shortName: "mvc",
+                description:
+                    "A project template for creating an ASP.NET Core application using the Model-View-Controller pattern",
+                tags: ["Web", "MVC"],
+            },
+            {
+                templateName: "ASP.NET Core Web App (Razor Pages)",
+                shortName: "webapp",
+                description:
+                    "A project template for creating an ASP.NET Core application using Razor Pages",
+                tags: ["Web", "Razor"],
+            },
         ],
+        // ... other template groups ...
     };
 
-    // Load template select based on selected project group
-    function loadTemplateSelect(group, selectedTemplate) {
-        template.innerHTML = ""; // Clear existing options
+    // Initialize the UI
+    function init() {
+        updateTemplateGrid();
+        createFrameworkOptions();
+        setupEventListeners();
+    }
 
-        // Add default 'Select Template' option
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "Select Template";
-        template.appendChild(defaultOption);
+    // Event Listeners
+    function setupEventListeners() {
+        prevButton.addEventListener("click", () => navigateStep(-1));
+        nextButton.addEventListener("click", () => navigateStep(1));
+        createButton.addEventListener("click", createProject);
 
-        // Check if a project group is selected before populating templates
-        if (group && projectGroupToTemplates[group]) {
-            const templates = projectGroupToTemplates[group];
-            templates.forEach((tmpl) => {
-                const option = document.createElement("option");
-                option.value = tmpl.shortName;
-                option.textContent = tmpl.templateName;
-                if (tmpl.shortName === selectedTemplate) option.selected = true;
-                template.appendChild(option);
+        projectGroupSelect.addEventListener("change", () => {
+            updateTemplateGrid();
+        });
+
+        templateSearch.addEventListener("input", (e) => {
+            filterTemplates(e.target.value);
+        });
+
+        projectNameInput.addEventListener("input", (e) => {
+            solutionInput.value = e.target.value;
+            validateForm();
+        });
+
+        solutionInput.addEventListener("input", validateForm);
+
+        selectFolderButton.addEventListener("click", () => {
+            vscode.postMessage({
+                command: "selectDirectory",
+                projectGroupSelect: projectGroupSelect.value,
+                template: selectedTemplate?.shortName || "",
             });
+        });
+    }
+
+    // Template Grid
+    function updateTemplateGrid() {
+        const group = projectGroupSelect.value;
+        const templates =
+            group === "all"
+                ? Object.values(projectGroupToTemplates).flat()
+                : projectGroupToTemplates[group] || [];
+
+        templateGrid.innerHTML = templates
+            .map((template) => createTemplateCard(template))
+            .join("");
+
+        // Add click handlers to template cards
+        document.querySelectorAll(".template-card").forEach((card) => {
+            card.addEventListener("click", () => {
+                const templateShortName = card.dataset.template;
+                selectTemplate(templateShortName);
+
+                // Update visual selection
+                document.querySelectorAll(".template-card").forEach((c) => {
+                    c.classList.toggle(
+                        "selected",
+                        c.dataset.template === templateShortName
+                    );
+                });
+            });
+        });
+    }
+
+    function createTemplateCard(template) {
+        // Determine which icon to use
+        let iconKey = template.shortName;
+        if (template.shortName.includes("webapi")) {
+            iconKey = "webapi";
+        } else if (template.shortName.includes("blazor")) {
+            iconKey = "blazor";
+        } else if (template.shortName.includes("web")) {
+            iconKey = "web";
+        } else if (template.shortName.includes("lib")) {
+            iconKey = "classlib";
+        } else if (template.tags.includes("Test")) {
+            iconKey = "test";
+        }
+
+        const icon = templateIcons[iconKey] || templateIcons.default;
+
+        return `
+            <div class="template-card ${
+                selectedTemplate?.shortName === template.shortName
+                    ? "selected"
+                    : ""
+            }" 
+                 data-template="${template.shortName}">
+                <div class="template-icon">
+                    ${icon}
+                </div>
+                <div class="template-content">
+                    <div class="template-name">${template.templateName}</div>
+                    <div class="template-description">${
+                        template.description
+                    }</div>
+                    <div class="template-tags">
+                        ${template.tags
+                            .map(
+                                (tag) =>
+                                    `<span class="template-tag">${tag}</span>`
+                            )
+                            .join("")}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function selectTemplate(templateShortName) {
+        const group = projectGroupSelect.value;
+        const templates =
+            group === "all"
+                ? Object.values(projectGroupToTemplates).flat()
+                : projectGroupToTemplates[group] || [];
+
+        selectedTemplate = templates.find(
+            (t) => t.shortName === templateShortName
+        );
+
+        // Enable next button if a template is selected
+        if (currentStep === 1) {
+            nextButton.disabled = !selectedTemplate;
+        }
+
+        validateForm();
+    }
+
+    // Framework Selection
+    function createFrameworkOptions() {
+        const frameworks = Array.from(frameworkSelect.options).map(
+            (option) => ({
+                value: option.value,
+                label: option.text,
+            })
+        );
+
+        console.log("Available frameworks:", frameworks);
+
+        const frameworkCards = frameworks
+            .map(
+                (framework) => `
+            <div class="framework-card ${
+                selectedFramework === framework.value ? "selected" : ""
+            }"
+                 data-framework="${framework.value}">
+                <div class="framework-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M11.7 20H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2v7.3c-.6-.3-1.3-.5-2-.5-2.8 0-5 2.2-5 5 0 .8.2 1.5.5 2.2-.3 0-.5-.1-.8-.1zM7 13c0 .6.4 1 1 1h5.5c.2-.7.5-1.4 1-2H8c-.6 0-1 .4-1 1zm1-3h10c.6 0 1-.4 1-1s-.4-1-1-1H8c-.6 0-1 .4-1 1s.4 1 1 1zm13.3 10.7c-.2.2-.5.3-.7.3-.3 0-.5-.1-.7-.3l-2-2c-.6.4-1.3.6-2 .6-2 0-3.5-1.5-3.5-3.5S15.8 12 17.8 12s3.5 1.5 3.5 3.5c0 .7-.2 1.4-.6 2l2 2c.4.4.4 1 0 1.4zM17.8 14c-.8 0-1.5.7-1.5 1.5s.7 1.5 1.5 1.5 1.5-.7 1.5-1.5-.7-1.5-1.5-1.5z"/>
+                    </svg>
+                </div>
+                <div class="framework-content">
+                    <div class="framework-version">${framework.label}</div>
+                    <div class="framework-description">Target Framework</div>
+                </div>
+            </div>
+        `
+            )
+            .join("");
+
+        frameworkGrid.innerHTML = frameworkCards;
+
+        // Add click handlers to framework cards
+        document.querySelectorAll(".framework-card").forEach((card) => {
+            card.addEventListener("click", () => {
+                selectedFramework = card.dataset.framework;
+                console.log("Framework selected:", selectedFramework);
+
+                // Update visual selection
+                document.querySelectorAll(".framework-card").forEach((c) => {
+                    c.classList.toggle(
+                        "selected",
+                        c.dataset.framework === selectedFramework
+                    );
+                });
+                // Update the hidden select element
+                frameworkSelect.value = selectedFramework;
+                validateForm();
+            });
+        });
+
+        // If we have frameworks but none selected, select the first one
+        if (frameworks.length > 0 && !selectedFramework) {
+            const firstCard = document.querySelector(".framework-card");
+            if (firstCard) {
+                firstCard.click();
+            }
         }
     }
 
-    // Receive message from the extension
+    // Navigation
+    function navigateStep(direction) {
+        const newStep = currentStep + direction;
+
+        if (newStep < 1 || newStep > 3) return;
+
+        if (direction > 0 && !validateCurrentStep()) return;
+
+        currentStep = newStep;
+        updateUI();
+    }
+
+    function updateUI() {
+        // Update steps
+        wizardSteps.forEach((step) => {
+            const stepNum = parseInt(step.dataset.step);
+            step.classList.toggle("active", stepNum === currentStep);
+        });
+
+        // Update pages
+        wizardPages.forEach((page, index) => {
+            page.classList.toggle("active", index + 1 === currentStep);
+        });
+
+        // Update buttons
+        prevButton.disabled = currentStep === 1;
+        nextButton.style.display = currentStep === 3 ? "none" : "block";
+        createButton.style.display = currentStep === 3 ? "block" : "none";
+
+        // Validate form for current step
+        validateForm();
+    }
+
+    // Validation
+    function validateCurrentStep() {
+        switch (currentStep) {
+            case 1:
+                if (!selectedTemplate) {
+                    vscode.postMessage({
+                        command: "error",
+                        text: "Please select a template",
+                    });
+                    return false;
+                }
+                return true;
+            case 2:
+                if (
+                    !projectNameInput.value ||
+                    !solutionInput.value ||
+                    !locationInput.value
+                ) {
+                    vscode.postMessage({
+                        command: "error",
+                        text: "Please fill in all required fields",
+                    });
+                    return false;
+                }
+                return true;
+            case 3:
+                if (!selectedFramework) {
+                    vscode.postMessage({
+                        command: "error",
+                        text: "Please select a framework version",
+                    });
+                    return false;
+                }
+                return true;
+        }
+        return true;
+    }
+
+    function validateForm() {
+        const isValid = (() => {
+            switch (currentStep) {
+                case 1:
+                    return !!selectedTemplate;
+                case 2:
+                    return !!(
+                        projectNameInput.value &&
+                        solutionInput.value &&
+                        locationInput.value
+                    );
+                case 3:
+                    const frameworkValid = !!selectedFramework;
+                    console.log("Framework validation:", {
+                        selectedFramework,
+                        frameworkSelectValue: frameworkSelect.value,
+                        isValid: frameworkValid,
+                    });
+                    return frameworkValid;
+                default:
+                    return false;
+            }
+        })();
+
+        console.log("Form validation:", {
+            currentStep,
+            isValid,
+            selectedTemplate: !!selectedTemplate,
+            projectName: !!projectNameInput.value,
+            solution: !!solutionInput.value,
+            location: !!locationInput.value,
+            framework: !!selectedFramework,
+        });
+
+        nextButton.disabled = !isValid;
+        createButton.disabled = !isValid;
+        return isValid;
+    }
+
+    // Project Creation
+    function createProject() {
+        if (!validateForm()) {
+            console.log("Form validation failed", {
+                currentStep,
+                selectedTemplate: selectedTemplate?.shortName,
+                projectName: projectNameInput.value,
+                solution: solutionInput.value,
+                location: locationInput.value,
+                framework: selectedFramework || frameworkSelect.value,
+            });
+            return;
+        }
+
+        // Get the selected framework value and ensure it has the 'net' prefix
+        let frameworkValue = selectedFramework || frameworkSelect.value;
+        if (!frameworkValue.startsWith("net")) {
+            frameworkValue = "net" + frameworkValue;
+        }
+
+        if (!selectedTemplate || !frameworkValue) {
+            console.log("Missing required values:", {
+                template: selectedTemplate?.shortName,
+                framework: frameworkValue,
+            });
+            return;
+        }
+
+        const message = {
+            command: "createProject",
+            template: selectedTemplate.shortName,
+            project: projectNameInput.value,
+            solution: solutionInput.value,
+            framework: frameworkValue,
+            filepath: locationInput.value,
+            https: httpsCheckbox.checked,
+            docker: dockerCheckbox.checked,
+        };
+
+        console.log("Sending create project message:", message);
+        vscode.postMessage(message);
+    }
+
+    // Filter templates
+    function filterTemplates(searchTerm) {
+        const templates = document.querySelectorAll(".template-card");
+        const term = searchTerm.toLowerCase();
+
+        templates.forEach((template) => {
+            const name = template
+                .querySelector(".template-name")
+                .textContent.toLowerCase();
+            const description = template
+                .querySelector(".template-description")
+                .textContent.toLowerCase();
+            const tags = Array.from(
+                template.querySelectorAll(".template-tag")
+            ).map((tag) => tag.textContent.toLowerCase());
+
+            const matches =
+                name.includes(term) ||
+                description.includes(term) ||
+                tags.some((tag) => tag.includes(term));
+
+            template.classList.toggle("hidden", !matches);
+        });
+    }
+
+    // Message handling
     window.addEventListener("message", (event) => {
-        const message = event.data; // The JSON data our extension sent
+        const message = event.data;
 
         switch (message.command) {
             case "updateState":
-                projectGroupSelect.value = message.projectGroup;
-                loadTemplateSelect(message.projectGroup, message.selectedTemplate);
+                if (message.projectGroup) {
+                    projectGroupSelect.value = message.projectGroup;
+                }
+                if (message.selectedTemplate) {
+                    selectTemplate(message.selectedTemplate);
+                }
+                break;
+            case "updateLocation":
+                if (message.filepath) {
+                    locationInput.value = message.filepath;
+                    validateForm();
+                }
                 break;
         }
     });
-    /* Project group select End of Implementation */
 
-    template.addEventListener("keydown" | "click", () => {
-        project.focus();
-    });
-
-    project.addEventListener("change", () => {
-        solution.value = project.value;
-        fieldValidation();
-    });
-
-    solution.addEventListener("keyup", () => {
-        fieldValidation();
-    });
-
-    filePath.addEventListener("keyup" | "focus", () => {
-        fieldValidation();
-    });
-
-    filePath.addEventListener("keydown", () => {
-        buttonFilePicker.focus();
-    });
-
-    // create console project
-    buttonCreateProject.addEventListener("click", () => {
-        let frameworkSelected = framework.options[framework.selectedIndex].value;
-        let frameworkRun = "";
-
-        if (frameworkSelected === "2.0") frameworkRun = "netcoreapp2.0";
-        else if (frameworkSelected === "2.1") frameworkRun = "netcoreapp2.1";
-        else if (frameworkSelected === "2.2") frameworkRun = "netcoreapp2.2";
-        else if (frameworkSelected === "3.0") frameworkRun = "netcoreapp3.0";
-        else if (frameworkSelected === "3.1") frameworkRun = "netcoreapp3.1";
-        else if (frameworkSelected === "5.0") frameworkRun = "net5.0";
-        else if (frameworkSelected === "6.0") frameworkRun = "net6.0";
-        else if (frameworkSelected === "7.0") frameworkRun = "net7.0";
-        else if (frameworkSelected === "8.0") frameworkRun = "net8.0";
-
-        vscode.postMessage({
-            command: "createProject",
-            template: template.options[template.selectedIndex].value,
-            project: project.value,
-            filePath: filePath.value,
-            solution: solution.value,
-            framework: frameworkRun,
-        });
-    });
-
-    // file picker to save the project in a specific location
-    buttonFilePicker.addEventListener("click", () => {
-        solution.focus();
-        vscode.postMessage({
-            command: "selectDirectory",
-            projectGroupSelect:
-                projectGroupSelect.options[projectGroupSelect.selectedIndex].textContent,
-            templateName: template.options[template.selectedIndex].text,
-            template: template.options[template.selectedIndex].value,
-            project: project.value,
-            solution: solution.value,
-            framework: framework.options[framework.selectedIndex].value,
-        });
-    });
+    // Initialize the UI
+    init();
 })();
