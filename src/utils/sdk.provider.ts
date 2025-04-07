@@ -1,5 +1,9 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
+import * as cp from "child_process";
+import * as util from "util";
+
+const exec = util.promisify(cp.exec);
 
 export function getTargetFrameworks(sdksResource: vscode.Uri): string[] {
     // Cleaning the sdk's folder path
@@ -49,7 +53,9 @@ function writeSDKOnFile(sdkFile: string) {
             terminal.sendText(`dotnet --list-sdks > "${sdkFile}"`);
         } else {
             // Default to PowerShell command
-            terminal.sendText(`Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`);
+            terminal.sendText(
+                `Write-Output --noEnumeration | dotnet --list-sdks > "${sdkFile}"`
+            );
         }
     } else {
         terminal.sendText(`echo -n | dotnet --list-sdks > "${sdkFile}"`);
@@ -61,4 +67,18 @@ function getTerminal(): vscode.Terminal {
     return vscode.window.activeTerminal === undefined
         ? vscode.window.createTerminal()
         : vscode.window.activeTerminal;
+}
+
+export async function getInstalledSDKs(): Promise<string[]> {
+    try {
+        const { stdout } = await exec("dotnet --list-sdks");
+        // Split by newline and filter out empty lines
+        return stdout
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0 && line.match(/^\d+\.\d+\.\d+/));
+    } catch (error) {
+        console.error("Error getting SDK versions:", error);
+        return [];
+    }
 }

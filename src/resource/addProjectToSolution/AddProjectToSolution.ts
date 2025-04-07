@@ -8,6 +8,7 @@ import {
     TEMPLATE_COMPATIBILITY,
     Message,
 } from "../../utils/terminal-cmd.provider";
+import { projectTemplateGroups } from "../../utils/project-templates";
 
 type FrameworkCommand = {
     [key: string]: string;
@@ -31,23 +32,7 @@ export class AddProjectToSolution {
 
     public static init(uri: vscode.Uri, context: vscode.ExtensionContext) {
         this.context = context;
-
-        // Get the solution file path
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (!workspaceFolders || workspaceFolders.length === 0) {
-            vscode.window.showErrorMessage("No workspace folder is open");
-            return;
-        }
-
-        let root = workspaceFolders[0].uri.path.replace(/\//g, "\\");
-        root = root.slice(1, root.length);
-        const solutionPath = getProjectRootDirOrFilePath(root);
-
-        if (solutionPath === null) {
-            vscode.window.showErrorMessage("Unable to find *.sln (solution)");
-            return;
-        }
-        this._solution = solutionPath;
+        this._solution = uri.fsPath;
 
         const column = vscode.window.activeTextEditor
             ? vscode.window.activeTextEditor.viewColumn
@@ -56,20 +41,18 @@ export class AddProjectToSolution {
         // If we already have a panel, show it.
         if (AddProjectToSolution._panel) {
             AddProjectToSolution._panel.reveal(column);
-            AddProjectToSolution.update();
             return;
         }
 
         // Otherwise, create a new panel.
         const panel = vscode.window.createWebviewPanel(
             "add-project",
-            "Add Project",
+            "Add Project to Solution",
             column || vscode.ViewColumn.One,
             {
                 enableScripts: true,
                 localResourceRoots: [
                     vscode.Uri.joinPath(context.extensionUri, "media"),
-                    vscode.Uri.joinPath(context.extensionUri, "out/compiled"),
                 ],
             }
         );
@@ -108,6 +91,13 @@ export class AddProjectToSolution {
         this._panel.webview.onDidReceiveMessage(
             async (message) => {
                 switch (message.command) {
+                    case "getTemplates":
+                        this._panel.webview.postMessage({
+                            command: "templates",
+                            templates: projectTemplateGroups,
+                        });
+                        break;
+
                     case "addProject":
                         await this.addProject(message);
                         return;
@@ -121,7 +111,7 @@ export class AddProjectToSolution {
         this.update();
     }
 
-    private static async addProject(message: Message): Promise<void> {
+    private static async addProject(message: any): Promise<void> {
         let root = vscode.workspace.workspaceFolders?.map(
             (folder) => folder.uri.fsPath
         )[0];
@@ -131,32 +121,8 @@ export class AddProjectToSolution {
             return;
         }
 
-        // Get the framework command
-        message.framework = frameworkCommands[message.framework];
-
         const terminal = vscode.window.createTerminal();
         terminal.show(true);
-
-        if (!isFrameworkCompatible(message)) {
-            // Format list of compatible frameworks
-            const compatibleFrameworks = TEMPLATE_COMPATIBILITY[
-                message.template
-            ]
-                .map((f: string) => `'${f.substring(3)}'`)
-                .join(", ");
-
-            vscode.window.showWarningMessage(
-                `Please select a compatible framework for ${
-                    message.template
-                } - [${compatibleFrameworks || "None"}]`
-            );
-
-            setTimeout(() => {
-                terminal.dispose();
-            }, 5000);
-
-            return;
-        }
 
         try {
             // Create the project first
@@ -196,101 +162,38 @@ export class AddProjectToSolution {
         }
     }
 
-    private static async update(
-        projectGroupName: any = "Select Project Type",
-        projectGroup: any = "api",
-        templateName: any = "Select Template",
-        template: any = "console",
-        project: any = "",
-        framework: any = ""
-    ) {
+    private static async update() {
         const webview = this._panel.webview;
-
-        // list of sdk's
-        const sdksResource: vscode.Uri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, "media", "sdks.txt")
-        );
-        this._sdks = getTargetFrameworks(sdksResource);
-
-        this._panel.webview.html = this.getHtmlForWebview(
-            webview,
-            projectGroupName,
-            projectGroup,
-            templateName,
-            template,
-            project,
-            framework
-        );
-    }
-
-    private static getHtmlForWebview(
-        webview: vscode.Webview,
-        projectGroupName: any,
-        projectGroup: any,
-        templateName: any,
-        template: any,
-        project: any,
-        framework: any
-    ) {
-        // main script integration
-        const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, "media", "main.js")
-        );
-
-        // template icons script integration
-        const templateIconsScriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(
-                this.context.extensionUri,
-                "media",
-                "template-icons.js"
-            )
-        );
-
-        // styles integration
-        const stylesResetUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, "media", "reset.css")
-        );
-        const stylesMainUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this.context.extensionUri, "media", "main.css")
-        );
-
-        // Use the nonce from panel
-        const nonce = (this._panel as any).nonce;
 
         // Get the HTML content
         const htmlContent = fs.readFileSync(
-            path.join(this.context.extensionPath, "media", "index.html"),
+            path.join(this.context.extensionPath, "media", "addProject.html"),
             "utf8"
         );
 
         // Replace the placeholders in the HTML
-        return htmlContent
-            .replace(/{{nonce}}/g, nonce)
+        this._panel.webview.html = htmlContent
             .replace(/{{cspSource}}/g, webview.cspSource)
-            .replace(/{{script}}/g, scriptUri.toString())
             .replace(
-                /{{templateIconsScript}}/g,
-                templateIconsScriptUri.toString()
-            )
-            .replace(/{{stylesResetUri}}/g, stylesResetUri.toString())
-            .replace(/{{stylesMainUri}}/g, stylesMainUri.toString())
-            .replace(/{{project}}/g, project)
-            .replace(
-                /{{sdkOptions}}/g,
-                this._sdks
-                    .map((sdk) => `<option value="${sdk}">${sdk}</option>`)
-                    .join("")
-            )
-            .replace(
-                "</head>",
-                `<meta http-equiv="Content-Security-Policy" content="${this._csp
-                    .replace(/\s+/g, " ")
-                    .trim()}"></head>`
+                /{{script}}/g,
+                webview
+                    .asWebviewUri(
+                        vscode.Uri.joinPath(
+                            this.context.extensionUri,
+                            "media",
+                            "addProject.js"
+                        )
+                    )
+                    .toString()
             );
     }
 
     private static dispose() {
-        AddProjectToSolution._panel.dispose();
+        // Clean up our resources
+        this._panel.dispose();
+
+        AddProjectToSolution._panel = undefined as any;
+
         while (this._disposables.length) {
             const x = this._disposables.pop();
             if (x) {

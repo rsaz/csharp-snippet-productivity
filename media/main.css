@@ -141,26 +141,47 @@ body {
 }
 
 .template-card {
-    border: 1px solid var(--border-color);
+    background-color: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-widget-border);
     border-radius: 6px;
     padding: 16px;
+    margin: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    background-color: var(--vscode-editor-background);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .template-card:hover {
-    border-color: var(--primary-color);
-    background-color: var(--primary-light);
+    background-color: var(--vscode-list-hoverBackground);
+    border-color: var(--vscode-focusBorder);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .template-card.selected {
-    border-color: var(--primary-color);
-    background-color: var(--primary-light);
+    background-color: var(--vscode-list-activeSelectionBackground);
+    border-color: #c586c0;
+    box-shadow: 0 0 0 2px rgba(197, 134, 192, 0.2);
 }
 
 .template-card.hidden {
     display: none !important;
+}
+
+.template-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #c586c0;
+    letter-spacing: 0.3px;
+}
+
+.template-card p {
+    font-size: 13px;
+    color: var(--vscode-foreground);
+    margin-bottom: 12px;
+    line-height: 1.4;
+    opacity: 0.9;
 }
 
 .template-icon {
@@ -180,7 +201,9 @@ body {
 }
 
 .template-content {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .template-name {
@@ -200,31 +223,56 @@ body {
 .template-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 6px;
+    margin-top: 4px;
 }
 
-.template-tag {
-    background-color: var(--primary-light);
-    color: var(--primary-color);
+.tag {
+    background-color: rgba(151, 71, 255, 0.1);
+    color: #c586c0;
     padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    margin-right: 4px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    border: 1px solid rgba(197, 134, 192, 0.2);
+}
+
+.template-card:hover .tag {
+    background-color: rgba(151, 71, 255, 0.15);
+    border-color: rgba(197, 134, 192, 0.3);
+}
+
+.template-platforms {
+    margin-top: 8px;
+}
+
+.template-platforms small {
+    color: var(--vscode-descriptionForeground);
+    font-size: 11px;
+    opacity: 0.8;
 }
 
 .config-form {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.form-group + .form-group {
+    margin-top: 8px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--vscode-input-foreground);
+    font-weight: normal;
+    font-size: 13px;
 }
 
 .form-group input {
@@ -236,20 +284,40 @@ body {
     color: var(--text-color);
 }
 
-.help-text {
+.form-group .help-text {
     display: block;
     font-size: 0.9rem;
+    color: var(--vscode-descriptionForeground);
     margin-top: 0.25rem;
-    opacity: 0.7;
 }
 
 .location-input {
     display: flex;
     gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .location-input input {
     flex: 1;
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.location-input button {
+    background-color: var(--secondary-color);
+    color: var(--vscode-button-foreground);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.location-input button:hover {
+    background-color: var(--secondary-hover-color);
 }
 
 .framework-selection {
@@ -258,27 +326,50 @@ body {
 
 .framework-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-    padding: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
 }
 
 .framework-card {
     background-color: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-panel-border);
+    border: 1px solid var(--vscode-widget-border);
     border-radius: 6px;
-    padding: 16px;
+    padding: 6px 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    text-align: center;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .framework-card:hover {
     background-color: var(--vscode-list-hoverBackground);
+    border-color: var(--vscode-focusBorder);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .framework-card.selected {
-    background-color: #9747ff20;
-    border-color: #9747ff;
+    background-color: var(--vscode-list-activeSelectionBackground);
+    border-color: #c586c0;
+    box-shadow: 0 0 0 2px rgba(197, 134, 192, 0.2);
+}
+
+.framework-card h3 {
+    color: #c586c0;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+}
+
+.framework-card.selected h3 {
+    color: var(--vscode-list-activeSelectionForeground);
 }
 
 .framework-icon {
@@ -303,14 +394,101 @@ body {
     color: var(--vscode-descriptionForeground);
 }
 
-/* Hide location-related elements */
-.form-group.location {
-    display: none !important;
+.form-select {
+    width: 100%;
+    padding: 4px 8px;
+    background-color: var(--vscode-dropdown-background);
+    color: var(--vscode-dropdown-foreground);
+    border: 1px solid var(--vscode-dropdown-border);
+    border-radius: 2px;
+    margin-bottom: 4px;
+    height: 28px;
 }
 
-/* Hide the original select element */
-#custom-select2 {
+.help-text {
+    display: block;
+    margin-top: 2px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--vscode-descriptionForeground);
+}
+
+.checkbox-group {
+    margin-bottom: 4px;
+    padding-left: 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: var(--vscode-foreground);
+    gap: 6px;
+    margin-bottom: 0;
+    min-height: 20px;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    order: -1;
+    width: 16px;
+    height: 16px;
+}
+
+.container-options {
     display: none;
+    margin-top: 4px;
+    margin-left: 24px;
+}
+
+.container-options.visible {
+    display: block;
+}
+
+.container-options label {
+    margin-top: 4px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.container-options .form-select {
+    margin-bottom: 8px;
+    width: calc(100% - 24px);
+}
+
+.info-icon {
+    margin-left: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+    order: 2;
+}
+
+/* Style for the solution name input */
+#solution {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+/* Framework select styling */
+#custom-select2 {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--vscode-dropdown-background);
+    color: var(--vscode-dropdown-foreground);
+    border: 1px solid var(--vscode-dropdown-border);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#custom-select2:focus {
+    outline: none;
+    border-color: var(--vscode-focusBorder);
 }
 
 .additional-settings {
@@ -392,4 +570,43 @@ select {
 button:not(.disabled) {
     background-color: #9747ff !important;
     cursor: pointer;
+}
+
+/* Input focus states */
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* Adjust vertical spacing between sections */
+.form-group + .form-group {
+    margin-top: 16px;
+}
+
+/* Container options adjustments */
+.container-options .form-select {
+    margin-bottom: 12px;
+}
+
+/* Framework section label */
+.framework-section label {
+    margin-bottom: 8px;
+}
+
+/* Navigation buttons */
+#next-button {
+    display: block;
+}
+
+#next-button.hidden {
+    display: none;
+}
+
+#create-project-button {
+    display: none;
+}
+
+#create-project-button.visible {
+    display: block;
 }

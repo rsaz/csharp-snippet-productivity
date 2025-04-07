@@ -1,9 +1,13 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { getTargetFrameworks } from "../../utils/sdk.provider";
+import {
+    getTargetFrameworks,
+    getInstalledSDKs,
+} from "../../utils/sdk.provider";
 import { getNonce } from "./GetNonce";
 import { CommandFactory, Message } from "../../utils/terminal-cmd.provider";
+import { projectTemplateGroups } from "../../utils/project-templates";
 
 export class CreateProjectPanel {
     private static context: vscode.ExtensionContext;
@@ -87,6 +91,28 @@ export class CreateProjectPanel {
         this._panel.webview.onDidReceiveMessage(
             async (message) => {
                 switch (message.command) {
+                    case "getTemplates":
+                        this._panel.webview.postMessage({
+                            command: "templates",
+                            templates: projectTemplateGroups,
+                        });
+                        break;
+
+                    case "getSDKVersions":
+                        try {
+                            const sdks = await getInstalledSDKs();
+                            this._panel.webview.postMessage({
+                                command: "sdkVersions",
+                                versions: sdks,
+                            });
+                        } catch (error) {
+                            console.error("Error getting SDK versions:", error);
+                            vscode.window.showErrorMessage(
+                                "Failed to get SDK versions"
+                            );
+                        }
+                        break;
+
                     case "createProject":
                         // Create terminal only when needed
                         this._terminal =

@@ -73,16 +73,15 @@
                 </div>
 
                 <!-- Step 2: Project Configuration -->
-                <div class="wizard-page" id="project-config">
+                <div class="wizard-page" data-step="2">
                     <div class="config-form">
                         <div class="form-group">
                             <label for="projectName">Project name</label>
                             <input
-                                id="projectName"
                                 type="text"
+                                id="projectName"
                                 name="projectName"
-                                value="{{project}}"
-                                required
+                                placeholder="MyProject"
                             />
                             <span class="help-text"
                                 >The name of your project. This will also be
@@ -93,59 +92,158 @@
                         <div class="form-group">
                             <label for="solution">Solution name</label>
                             <input
-                                id="solution"
                                 type="text"
+                                id="solution"
                                 name="solution"
-                                value="{{solution}}"
-                                required
+                                placeholder="MySolution"
                             />
                             <span class="help-text"
-                                >The name of the solution file (.sln)</span
+                                >The name of the solution that will contain your
+                                project.</span
                             >
                         </div>
 
-                        <div class="form-group">
-                            <label for="location">Location</label>
+                        <div class="form-group location">
+                            <label for="inputLocal">Location</label>
                             <div class="location-input">
-                                <input id="inputLocal" type="text" readonly />
+                                <input
+                                    type="text"
+                                    id="inputLocal"
+                                    name="location"
+                                    readonly
+                                />
                                 <button
+                                    type="button"
                                     id="selectFolder"
                                     class="secondary-button"
                                 >
                                     Browse
                                 </button>
                             </div>
+                            <span class="help-text"
+                                >The folder where your project will be
+                                created.</span
+                            >
                         </div>
                     </div>
                 </div>
 
                 <!-- Step 3: Additional Options -->
-                <div class="wizard-page" id="additional-options">
-                    <div class="framework-selection">
-                        <h3>Target Framework</h3>
-                        <div class="framework-grid" id="framework-grid">
-                            <select id="custom-select2" name="framework" hidden>
-                                {{sdkOptions}}
+                <div class="wizard-page" data-step="3">
+                    <div class="config-form">
+                        <div class="form-group">
+                            <label>Framework</label>
+                            <div id="framework-grid" class="framework-grid">
+                                <!-- Framework cards will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Authentication type</label>
+                            <select id="auth-type" class="form-select">
+                                <option value="None">None</option>
+                                <option value="Windows">Windows</option>
+                                <option value="IndividualB2C">
+                                    Individual B2C
+                                </option>
+                                <option value="SingleOrg">
+                                    Single Organization
+                                </option>
+                                <option value="MultiOrg">
+                                    Multiple Organizations
+                                </option>
+                            </select>
+                            <span class="help-text"
+                                >The type of authentication to use</span
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="https-checkbox"
+                                    />
+                                    Configure for HTTPS
+                                    <span class="info-icon">ℹ️</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="docker-checkbox"
+                                    />
+                                    Enable container support
+                                    <span class="info-icon">ℹ️</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div
+                            class="form-group container-options"
+                            style="display: none"
+                        >
+                            <label>Container OS</label>
+                            <select id="container-os" class="form-select">
+                                <option value="Linux">Linux</option>
+                                <option value="Windows">Windows</option>
+                            </select>
+
+                            <label>Container build type</label>
+                            <select
+                                id="container-build-type"
+                                class="form-select"
+                            >
+                                <option value="Dockerfile">Dockerfile</option>
+                                <option value="DockerCompose">
+                                    Docker Compose
+                                </option>
                             </select>
                         </div>
-                    </div>
 
-                    <div class="additional-settings">
-                        <label class="checkbox-container">
-                            <input
-                                type="checkbox"
-                                id="https-checkbox"
-                                checked
-                            />
-                            <span class="checkmark"></span>
-                            Configure for HTTPS
-                        </label>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="openapi-checkbox"
+                                    />
+                                    Enable OpenAPI support
+                                    <span class="info-icon">ℹ️</span>
+                                </label>
+                            </div>
+                        </div>
 
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="docker-checkbox" />
-                            <span class="checkmark"></span>
-                            Enable Docker Support
-                        </label>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="top-level-statements-checkbox"
+                                    />
+                                    Do not use top-level statements
+                                    <span class="info-icon">ℹ️</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="controllers-checkbox"
+                                    />
+                                    Use controllers
+                                    <span class="info-icon">ℹ️</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
