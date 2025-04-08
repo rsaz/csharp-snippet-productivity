@@ -278,6 +278,7 @@
             const containerBuildType = document.getElementById(
                 "container-build-type"
             ).value;
+            const noHttps = !document.getElementById("https-checkbox").checked;
 
             if (!(projectName && solutionName && location && framework)) {
                 vscode.postMessage({
@@ -294,7 +295,7 @@
                 template: selectedTemplate,
                 framework: framework,
                 authType: authType,
-                https: httpsCheckbox.checked,
+                noHttps: noHttps,
                 docker: dockerCheckbox.checked,
                 containerOs: containerOs,
                 containerBuildType: containerBuildType,

@@ -8,6 +8,13 @@ export type Message = {
     project: string;
     template: string;
     framework: string;
+    noHttps?: boolean;
+    docker?: boolean;
+    containerOs?: string;
+    containerBuildType?: string;
+    openApi?: boolean;
+    noTopLevelStatements?: boolean;
+    useControllers?: boolean;
 };
 
 export type TemplateCompatibility = {
@@ -142,8 +149,10 @@ export class MinWebApiCommand extends Command {
             return;
         }
         this.executeCommonCommands();
+        const noHttpsFlag = this.message.noHttps ? " --no-https false" : "";
+        console.log("noHttpsFlag", noHttpsFlag);
         this.terminal.sendText(
-            `dotnet new webapi -minimal --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework} --force`
+            `dotnet new webapi -minimal --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework}${noHttpsFlag} --force`
         );
         this.addProjectToSolution();
         this.openInVsCode();
@@ -169,8 +178,9 @@ export class DefaultCommand extends Command {
         }
 
         this.executeCommonCommands();
+        const noHttpsFlag = this.message.noHttps ? " --no-https" : "";
         this.terminal.sendText(
-            `dotnet new ${this.message.template} -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework} --force`
+            `dotnet new ${this.message.template} -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework}${noHttpsFlag} --force`
         );
         this.addProjectToSolution();
         this.openInVsCode();
@@ -210,8 +220,9 @@ export class FrameworkConsoleCommand extends Command {
         }
 
         this.executeCommonCommands();
+        const noHttpsFlag = this.message.noHttps ? " --no-https" : "";
         this.terminal.sendText(
-            `dotnet new console --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework} --force`
+            `dotnet new console --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework}${noHttpsFlag} --force`
         );
         this.addProjectToSolution();
         this.openInVsCode();
