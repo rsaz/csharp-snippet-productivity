@@ -142,16 +142,10 @@
                             <label>Authentication type</label>
                             <select id="auth-type" class="form-select">
                                 <option value="None">None</option>
+                                <option value="MicrosoftIdentityPlatform">
+                                    Microsoft identity platform
+                                </option>
                                 <option value="Windows">Windows</option>
-                                <option value="IndividualB2C">
-                                    Individual B2C
-                                </option>
-                                <option value="SingleOrg">
-                                    Single Organization
-                                </option>
-                                <option value="MultiOrg">
-                                    Multiple Organizations
-                                </option>
                             </select>
                             <span class="help-text"
                                 >The type of authentication to use</span
@@ -166,7 +160,11 @@
                                         id="https-checkbox"
                                     />
                                     Configure for HTTPS
-                                    <span class="info-icon">ℹ️</span>
+                                    <span
+                                        class="info-icon"
+                                        title="Enables an HTTPS endpoint for the application"
+                                        >ⓘ</span
+                                    >
                                 </label>
                             </div>
                         </div>
@@ -179,7 +177,11 @@
                                         id="docker-checkbox"
                                     />
                                     Enable container support
-                                    <span class="info-icon">ℹ️</span>
+                                    <span
+                                        class="info-icon"
+                                        title="Adds Dockerfile and container configuration"
+                                        >ⓘ</span
+                                    >
                                 </label>
                             </div>
                         </div>
@@ -214,7 +216,11 @@
                                         id="openapi-checkbox"
                                     />
                                     Enable OpenAPI support
-                                    <span class="info-icon">ℹ️</span>
+                                    <span
+                                        class="info-icon"
+                                        title="Adds OpenAPI (Swagger) support to the project"
+                                        >ⓘ</span
+                                    >
                                 </label>
                             </div>
                         </div>
@@ -227,7 +233,11 @@
                                         id="top-level-statements-checkbox"
                                     />
                                     Do not use top-level statements
-                                    <span class="info-icon">ℹ️</span>
+                                    <span
+                                        class="info-icon"
+                                        title="Uses the traditional Program class structure instead of top-level statements"
+                                        >ⓘ</span
+                                    >
                                 </label>
                             </div>
                         </div>
@@ -240,7 +250,11 @@
                                         id="controllers-checkbox"
                                     />
                                     Use controllers
-                                    <span class="info-icon">ℹ️</span>
+                                    <span
+                                        class="info-icon"
+                                        title="Uses controllers instead of minimal APIs"
+                                        >ⓘ</span
+                                    >
                                 </label>
                             </div>
                         </div>
