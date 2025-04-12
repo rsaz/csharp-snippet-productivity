@@ -163,8 +163,11 @@ export class DefaultCommand extends Command {
         const useControllers = this.message.useControllers
             ? " --use-controllers"
             : " -minimal";
+        const noTopLevelStatements = this.message.noTopLevelStatements
+            ? " --use-program-main"
+            : "";
         this.terminal.sendText(
-            `dotnet new ${this.message.template}${useControllers} --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework}${noHttpsFlag} --force`
+            `dotnet new ${this.message.template}${useControllers} --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework}${noHttpsFlag}${noTopLevelStatements} --force`
         );
         this.addProjectToSolution();
         this.openInVsCode();
