@@ -140,25 +140,6 @@ export class GrpcCommand extends Command {
     }
 }
 
-export class MinWebApiCommand extends Command {
-    execute() {
-        if (this.message.framework !== "net6.0") {
-            vscode.window.showWarningMessage(
-                "Please select net6.0 for Minimal WebAPI"
-            );
-            return;
-        }
-        this.executeCommonCommands();
-        const noHttpsFlag = this.message.noHttps ? " --no-https false" : "";
-        console.log("noHttpsFlag", noHttpsFlag);
-        this.terminal.sendText(
-            `dotnet new webapi -minimal --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework}${noHttpsFlag} --force`
-        );
-        this.addProjectToSolution();
-        this.openInVsCode();
-    }
-}
-
 export class DefaultCommand extends Command {
     execute() {
         if (!this.isFrameworkCompatible()) {
@@ -179,8 +160,11 @@ export class DefaultCommand extends Command {
 
         this.executeCommonCommands();
         const noHttpsFlag = this.message.noHttps ? " --no-https" : "";
+        const useControllers = this.message.useControllers
+            ? " --use-controllers"
+            : " -minimal";
         this.terminal.sendText(
-            `dotnet new ${this.message.template} -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework}${noHttpsFlag} --force`
+            `dotnet new ${this.message.template}${useControllers} --language c# -n ${this.message.project} -o '${this.message.filepath}\\${this.message.solution}\\${this.message.project}' --framework ${this.message.framework}${noHttpsFlag} --force`
         );
         this.addProjectToSolution();
         this.openInVsCode();
@@ -188,14 +172,14 @@ export class DefaultCommand extends Command {
 }
 
 export class CommandFactory {
-    static getCommand(terminal: vscode.Terminal, message: Message) {
+    static getCommand(terminal: vscode.Terminal, message: Message): Command {
         switch (message.template) {
             case "grpc":
                 return new GrpcCommand(terminal, message);
-            case "minwebapi":
-                return new MinWebApiCommand(terminal, message);
-            case "console-framework":
+            case "console":
                 return new FrameworkConsoleCommand(terminal, message);
+            case "webapi":
+                return new DefaultCommand(terminal, message);
             default:
                 return new DefaultCommand(terminal, message);
         }
