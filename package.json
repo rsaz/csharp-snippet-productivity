@@ -2,7 +2,7 @@
     "name": "csharp-snippet-productivity",
     "displayName": "C# Toolbox",
     "description": "Scaffold solutions, insert patterns, and ship modern C# in seconds.",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "icon": "icon.png",
     "publisher": "richardzampieriprog",
     "license": "SEE LICENSE IN LICENSE.md",
