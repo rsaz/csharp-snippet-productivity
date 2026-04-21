@@ -66,8 +66,8 @@ VS Code's official C# tooling gives you a great editor and debugger. **C# Toolbo
 | ![Project wizard](./media/screenshots/02-wizard.png) | ![Clean Architecture scaffold](./media/screenshots/03-clean-arch.png) |
 | **Pattern Code Actions** — `Ctrl+.` inserts Result / Option / Repository / CQRS / Specification / Builder / UoW. | **Quick Add NuGet** — searchable picker over 26 curated packages (Serilog, Polly, MediatR, EF Core, …). |
 | ![Pattern Ctrl+.](./media/screenshots/04-pattern-ctrl-dot.png) | ![Quick Add NuGet](./media/screenshots/05-nuget.png) |
-| **Smart Comments** — `// TODO`, `// FIXME`, `// HACK`, `// NOTE`, `// DEPRECATED`, and 9 more, coloured out of the box. | **Solution Analyzer** — visualize the project graph and surface circular / orphan references. |
-| ![Smart comments](./media/screenshots/06-smart-comments.png) | ![Analyze Solution](./media/screenshots/07-analyze.png) |
+
+> Two more screenshots on the way for **Smart Comments** and the **Solution Analyzer** — both features are fully shipped in 3.0.0 and documented in detail under [Features at a glance](#features-at-a-glance) below.
 
 ---
 
