@@ -1,0 +1,349 @@
+# Release workflow for C# Toolbox.
+#
+# Triggered by pushing a v*.*.* tag (or manually via workflow_dispatch with an
+# existing tag). On success the workflow:
+#   1. Verifies the tag matches package.json version.
+#   2. Re-runs the lint + build + test matrix on Ubuntu / macOS / Windows.
+#   3. Builds a .vsix and uploads it as a workflow artifact.
+#   4. Publishes the .vsix to the VS Code Marketplace.
+#   5. Publishes the .vsix to Open VSX, if opted in (see below).
+#   6. Creates a GitHub Release with the .vsix attached and notes pulled
+#      from CHANGELOG.md (falling back to auto-generated notes).
+#
+# Required repo configuration (one-time, GitHub UI -> Settings -> Secrets/Variables):
+#   secret VSCE_PAT       Personal Access Token for the VS Code Marketplace.
+#                         Created at https://dev.azure.com/, organization-wide,
+#                         scope "Marketplace > Manage". Lives 1 year max.
+#   variable RELEASE_OPENVSX
+#                         Set to "true" to also publish to Open VSX.
+#                         Leave unset/empty to skip the Open VSX job entirely.
+#   secret OVSX_PAT       Personal Access Token for Open VSX (only required
+#                         when RELEASE_OPENVSX=true). Created at
+#                         https://open-vsx.org/user-settings/tokens.
+#
+# Cutting a release:
+#   1. Bump version in package.json (and rerun npm install to refresh
+#      package-lock.json).
+#   2. Update CHANGELOG.md with a "## [X.Y.Z] - YYYY-MM-DD" header so the
+#      release notes step can extract them.
+#   3. Commit and push to main.
+#   4. git tag -a vX.Y.Z -m "Release vX.Y.Z" && git push origin vX.Y.Z
+#   5. Watch this workflow run.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to publish (e.g. v3.0.0). Must already exist on origin.'
+        required: true
+        type: string
+
+permissions:
+  contents: write   # needed to create the GitHub Release
+
+env:
+  NODE_VERSION: '22.x'
+
+jobs:
+  verify:
+    name: Verify tag matches package.json
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+      is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
+    steps:
+      - name: Checkout (at the tag)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Resolve tag and version
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${{ inputs.tag }}" ]]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.+-]+)?$ ]]; then
+            echo "::error::Tag '$TAG' is not a valid semver release tag (expected vX.Y.Z or vX.Y.Z-suffix)."
+            exit 1
+          fi
+
+          TAG_VERSION="${TAG#v}"
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+
+          if [[ "$TAG_VERSION" != "$PKG_VERSION" ]]; then
+            echo "::error::Tag version ($TAG_VERSION) does not match package.json version ($PKG_VERSION). Bump package.json before tagging."
+            exit 1
+          fi
+
+          if [[ "$TAG_VERSION" == *-* ]]; then
+            IS_PRERELEASE=true
+          else
+            IS_PRERELEASE=false
+          fi
+
+          echo "tag=$TAG"               >> "$GITHUB_OUTPUT"
+          echo "version=$TAG_VERSION"   >> "$GITHUB_OUTPUT"
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Release metadata"
+            echo "- Tag: \`$TAG\`"
+            echo "- Version: \`$TAG_VERSION\`"
+            echo "- Pre-release: \`$IS_PRERELEASE\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  test:
+    name: Test (Node ${{ env.NODE_VERSION }} / ${{ matrix.os }})
+    needs: verify
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout (at the tag)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.verify.outputs.tag }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Compile
+        run: npm run compile
+
+      - name: Compile tests
+        run: npm run compile:test
+
+      - name: Run unit tests
+        run: npm test
+
+  package:
+    name: Build .vsix
+    needs: [verify, test]
+    runs-on: ubuntu-latest
+    outputs:
+      vsix_name: ${{ steps.pack.outputs.vsix_name }}
+    steps:
+      - name: Checkout (at the tag)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.verify.outputs.tag }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
+
+      - name: Package
+        id: pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRE_FLAG=""
+          if [[ "${{ needs.verify.outputs.is_prerelease }}" == "true" ]]; then
+            PRE_FLAG="--pre-release"
+          fi
+          vsce package --no-dependencies $PRE_FLAG
+          VSIX="$(ls -1 *.vsix | head -n1)"
+          echo "vsix_name=$VSIX" >> "$GITHUB_OUTPUT"
+          echo "Built: $VSIX"
+
+      - name: Upload .vsix artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-vsix
+          path: '*.vsix'
+          if-no-files-found: error
+
+  publish-marketplace:
+    name: Publish to VS Code Marketplace
+    needs: [verify, package]
+    runs-on: ubuntu-latest
+    environment: marketplace
+    steps:
+      - name: Download .vsix artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-vsix
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
+
+      - name: Verify VSCE_PAT is configured
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        shell: bash
+        run: |
+          if [[ -z "${VSCE_PAT}" ]]; then
+            echo "::error::VSCE_PAT secret is not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRE_FLAG=""
+          if [[ "${{ needs.verify.outputs.is_prerelease }}" == "true" ]]; then
+            PRE_FLAG="--pre-release"
+          fi
+          vsce publish --packagePath "${{ needs.package.outputs.vsix_name }}" $PRE_FLAG
+          {
+            echo "Published \`${{ needs.package.outputs.vsix_name }}\` to the VS Code Marketplace."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  publish-openvsx:
+    name: Publish to Open VSX
+    needs: [verify, package]
+    if: ${{ vars.RELEASE_OPENVSX == 'true' }}
+    runs-on: ubuntu-latest
+    environment: open-vsx
+    steps:
+      - name: Download .vsix artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-vsix
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install ovsx
+        run: npm install -g ovsx
+
+      - name: Verify OVSX_PAT is configured
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        shell: bash
+        run: |
+          if [[ -z "${OVSX_PAT}" ]]; then
+            echo "::error::RELEASE_OPENVSX=true but OVSX_PAT secret is missing. Add it or unset RELEASE_OPENVSX."
+            exit 1
+          fi
+
+      - name: Publish
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRE_FLAG=""
+          if [[ "${{ needs.verify.outputs.is_prerelease }}" == "true" ]]; then
+            PRE_FLAG="--pre-release"
+          fi
+          ovsx publish "${{ needs.package.outputs.vsix_name }}" $PRE_FLAG
+          {
+            echo "Published \`${{ needs.package.outputs.vsix_name }}\` to Open VSX."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  github-release:
+    name: Create GitHub Release
+    needs: [verify, package, publish-marketplace]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout (at the tag)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.verify.outputs.tag }}
+
+      - name: Download .vsix artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-vsix
+
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.verify.outputs.version }}"
+          NOTES_FILE="$(mktemp)"
+          # Pull lines between "## [X.Y.Z]" and the next "## [" header.
+          # If the CHANGELOG uses a different format, the awk pattern returns
+          # nothing and we fall back to gh's --generate-notes.
+          awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "\\]" { capture = 1; next }
+            capture && /^## \[/        { capture = 0 }
+            capture                     { print }
+          ' CHANGELOG.md > "$NOTES_FILE" || true
+          if [[ -s "$NOTES_FILE" ]]; then
+            echo "have_notes=true"  >> "$GITHUB_OUTPUT"
+          else
+            echo "have_notes=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "notes_file=$NOTES_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Create release (with CHANGELOG notes)
+        if: steps.notes.outputs.have_notes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRERELEASE_FLAG=""
+          if [[ "${{ needs.verify.outputs.is_prerelease }}" == "true" ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          gh release create "${{ needs.verify.outputs.tag }}" \
+            --title "C# Toolbox ${{ needs.verify.outputs.tag }}" \
+            --notes-file "${{ steps.notes.outputs.notes_file }}" \
+            $PRERELEASE_FLAG \
+            "${{ needs.package.outputs.vsix_name }}"
+
+      - name: Create release (auto-generated notes)
+        if: steps.notes.outputs.have_notes == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRERELEASE_FLAG=""
+          if [[ "${{ needs.verify.outputs.is_prerelease }}" == "true" ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          gh release create "${{ needs.verify.outputs.tag }}" \
+            --title "C# Toolbox ${{ needs.verify.outputs.tag }}" \
+            --generate-notes \
+            $PRERELEASE_FLAG \
+            "${{ needs.package.outputs.vsix_name }}"
