@@ -38,7 +38,7 @@
 </p>
 
 <p align="center">
-    <img src="./media/screenshots/01-hero.gif" alt="C# Toolbox in action — scaffolding a Clean Architecture solution and inserting a Result pattern in seconds." width="800"/>
+    <img src="./media/screenshots/01-hero.png" alt="C# Toolbox in action — a freshly scaffolded Clean Architecture solution with the four projects laid out in the explorer." width="800"/>
 </p>
 
 ---
@@ -58,18 +58,16 @@ VS Code's official C# tooling gives you a great editor and debugger. **C# Toolbo
 
 ---
 
-## 60-second tour
-
-> _Each clip is < 8 seconds. Click any image to expand._
+## A quick tour
 
 | | |
 | --- | --- |
 | **Project Wizard** — every modern .NET template, real-time validation, recent projects, LTS badges. | **Clean Architecture scaffold** — 4 projects with the correct reference graph in one command. |
-| ![Project wizard](./media/screenshots/02-wizard.gif) | ![Clean Architecture scaffold](./media/screenshots/03-clean-arch.gif) |
+| ![Project wizard](./media/screenshots/02-wizard.png) | ![Clean Architecture scaffold](./media/screenshots/03-clean-arch.png) |
 | **Pattern Code Actions** — `Ctrl+.` inserts Result / Option / Repository / CQRS / Specification / Builder / UoW. | **Quick Add NuGet** — searchable picker over 26 curated packages (Serilog, Polly, MediatR, EF Core, …). |
-| ![Pattern Ctrl+.](./media/screenshots/04-pattern-ctrl-dot.gif) | ![Quick Add NuGet](./media/screenshots/05-nuget.gif) |
+| ![Pattern Ctrl+.](./media/screenshots/04-pattern-ctrl-dot.png) | ![Quick Add NuGet](./media/screenshots/05-nuget.png) |
 | **Smart Comments** — `// TODO`, `// FIXME`, `// HACK`, `// NOTE`, `// DEPRECATED`, and 9 more, coloured out of the box. | **Solution Analyzer** — visualize the project graph and surface circular / orphan references. |
-| ![Smart comments](./media/screenshots/06-smart-comments.gif) | ![Analyze Solution](./media/screenshots/07-analyze.gif) |
+| ![Smart comments](./media/screenshots/06-smart-comments.png) | ![Analyze Solution](./media/screenshots/07-analyze.png) |
 
 ---
 
