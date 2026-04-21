@@ -65,7 +65,13 @@
     "activationEvents": [
         "onLanguage:csharp",
         "onLanguage:markdown",
-        "onLanguage:plaintext"
+        "onLanguage:plaintext",
+        "onCommand:csharp-snippet-productivity.createProject",
+        "onCommand:csharp-snippet-productivity.addProjectToSolution",
+        "onCommand:csharp-snippet-productivity.scaffoldCleanArchitecture",
+        "onCommand:csharp-snippet-productivity.scaffoldDdd",
+        "onCommand:csharp-snippet-productivity.quickAddNuget",
+        "onCommand:csharp-snippet-productivity.analyzeSolution"
     ],
     "contributes": {
         "snippets": [
