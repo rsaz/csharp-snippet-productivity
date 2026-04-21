@@ -1,16 +1,36 @@
 :root {
     --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    --primary-color: #8b44ac;
-    --primary-hover: #9d4ec3;
-    --primary-active: #7a3b96;
-    --primary-light: rgba(139, 68, 172, 0.1);
+    --primary-color: var(--vscode-button-background, #0e639c);
+    --primary-hover: var(--vscode-button-hoverBackground, #1177bb);
+    --primary-active: var(--vscode-focusBorder, #007acc);
+    --primary-light: rgba(14, 99, 156, 0.1);
+    --accent-color: var(--vscode-textLink-foreground, #3794ff);
+    --accent-hover: var(--vscode-textLink-activeForeground, #4daafc);
     --secondary-color: var(--vscode-button-secondaryBackground);
     --secondary-hover-color: var(--vscode-button-secondaryHoverBackground);
-    --border-color: #3d3d3d;
+    --border-color: var(--vscode-widget-border, var(--vscode-panel-border, #3d3d3d));
     --text-color: var(--vscode-foreground);
+    --text-muted: var(--vscode-descriptionForeground);
     --background-color: var(--vscode-editor-background);
     --input-background: var(--vscode-input-background);
+    --input-border: var(--vscode-input-border, var(--border-color));
+    --error-color: var(--vscode-errorForeground, #f48771);
+    --success-color: var(--vscode-testing-iconPassed, #73c991);
+    --warning-color: var(--vscode-editorWarning-foreground, #cca700);
+
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.18);
+    --transition-fast: 0.15s ease;
+    --transition-medium: 0.25s ease;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
@@ -19,44 +39,87 @@ body {
     font-family: var(--vscode-font-family);
     background-color: var(--background-color);
     color: var(--text-color);
+    font-size: 13px;
+    line-height: 1.5;
 }
 
+/* ===== Wizard Container ===== */
 .wizard-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
+    animation: fadeInUp 0.4s ease-out;
 }
 
 .wizard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .wizard-header h1 {
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     font-weight: 600;
+    background: linear-gradient(
+        135deg,
+        var(--accent-color),
+        var(--primary-color)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.wizard-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
 }
 
 .search-container {
-    flex: 0 0 300px;
+    flex: 0 0 320px;
+    position: relative;
+}
+
+.search-container::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23888'><path d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/></svg>");
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0.7;
 }
 
 .search-container input {
     width: 100%;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    padding: 0.55rem 1rem 0.55rem 2.25rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
     background-color: var(--input-background);
     color: var(--text-color);
+    transition: border-color var(--transition-fast);
 }
 
+.search-container input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 1px var(--accent-color);
+}
+
+/* ===== Wizard Steps ===== */
 .wizard-steps {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 3rem;
+    margin-bottom: 2.25rem;
     position: relative;
     padding: 0 40px;
 }
@@ -65,11 +128,33 @@ body {
     content: "";
     position: absolute;
     top: 15px;
-    left: 40px;
-    right: 40px;
+    left: 80px;
+    right: 80px;
     height: 2px;
     background-color: var(--border-color);
     z-index: 1;
+}
+
+.wizard-steps::after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: 80px;
+    height: 2px;
+    background-color: var(--accent-color);
+    z-index: 1;
+    width: 0;
+    transition: width var(--transition-medium);
+}
+
+.wizard-steps[data-progress="1"]::after {
+    width: 0;
+}
+.wizard-steps[data-progress="2"]::after {
+    width: calc(50% - 80px);
+}
+.wizard-steps[data-progress="3"]::after {
+    width: calc(100% - 160px);
 }
 
 .step {
@@ -80,6 +165,7 @@ body {
     z-index: 2;
     background-color: var(--background-color);
     padding: 0 10px;
+    cursor: default;
 }
 
 .step-number {
@@ -87,24 +173,42 @@ body {
     height: 30px;
     border-radius: 50%;
     background-color: var(--border-color);
-    color: #fff;
+    color: var(--vscode-foreground);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    margin-bottom: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    transition: all var(--transition-medium);
 }
 
 .step.active .step-number {
-    background-color: var(--primary-color);
+    background-color: var(--accent-color);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(55, 148, 255, 0.18);
+}
+
+.step.completed .step-number {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.step.completed .step-number::before {
+    content: "✓";
+}
+
+.step.completed .step-number .num {
+    display: none;
 }
 
 .step-title {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-color);
-    opacity: 0.8;
+    opacity: 0.7;
     text-align: center;
     white-space: nowrap;
+    transition: opacity var(--transition-fast);
 }
 
 .step.active .step-title {
@@ -112,12 +216,15 @@ body {
     font-weight: 500;
 }
 
+/* ===== Wizard Content ===== */
 .wizard-content {
     background-color: var(--input-background);
-    border-radius: 8px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    min-height: 400px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    min-height: 420px;
+    box-shadow: var(--shadow-sm);
 }
 
 .wizard-page {
@@ -126,42 +233,72 @@ body {
 
 .wizard-page.active {
     display: block;
+    animation: fadeIn 0.25s ease-in-out;
 }
 
+/* ===== Templates ===== */
 .template-filters {
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.template-filters label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
 
 .template-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 0.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.5rem;
 }
 
 .template-card {
-    background-color: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-widget-border);
-    border-radius: 6px;
-    padding: 16px;
-    margin: 8px;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform var(--transition-fast),
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background-color var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.template-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background-color: var(--accent-color);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--transition-fast);
 }
 
 .template-card:hover {
     background-color: var(--vscode-list-hoverBackground);
-    border-color: var(--vscode-focusBorder);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .template-card.selected {
     background-color: var(--vscode-list-activeSelectionBackground);
-    border-color: #c586c0;
-    box-shadow: 0 0 0 2px rgba(197, 134, 192, 0.2);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(55, 148, 255, 0.25);
+}
+
+.template-card.selected::before {
+    transform: scaleY(1);
 }
 
 .template-card.hidden {
@@ -169,253 +306,340 @@ body {
 }
 
 .template-card h3 {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 8px;
-    color: #c586c0;
-    letter-spacing: 0.3px;
+    margin: 0 0 6px 0;
+    color: var(--accent-color);
+    letter-spacing: 0.2px;
 }
 
 .template-card p {
-    font-size: 13px;
-    color: var(--vscode-foreground);
-    margin-bottom: 12px;
-    line-height: 1.4;
-    opacity: 0.9;
-}
-
-.template-icon {
-    flex: 0 0 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 12px;
     color: var(--text-color);
-    opacity: 0.8;
-    transition: opacity 0.2s ease;
-}
-
-.template-card:hover .template-icon {
-    opacity: 1;
-    color: var(--primary-color);
+    margin: 0 0 10px 0;
+    line-height: 1.45;
+    opacity: 0.85;
 }
 
 .template-content {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-}
-
-.template-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
-.template-description {
-    font-size: 0.9rem;
-    opacity: 0.8;
-    margin-bottom: 1rem;
-    line-height: 1.4;
+    gap: 6px;
 }
 
 .template-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 4px;
     margin-top: 4px;
 }
 
 .tag {
-    background-color: rgba(151, 71, 255, 0.1);
-    color: #c586c0;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
+    background-color: var(--primary-light);
+    color: var(--accent-color);
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 10.5px;
     font-weight: 500;
-    letter-spacing: 0.2px;
-    border: 1px solid rgba(197, 134, 192, 0.2);
-}
-
-.template-card:hover .tag {
-    background-color: rgba(151, 71, 255, 0.15);
-    border-color: rgba(197, 134, 192, 0.3);
+    border: 1px solid rgba(55, 148, 255, 0.18);
 }
 
 .template-platforms {
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .template-platforms small {
-    color: var(--vscode-descriptionForeground);
+    color: var(--text-muted);
     font-size: 11px;
-    opacity: 0.8;
 }
 
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+}
+
+.empty-state-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state-text {
+    font-size: 0.95rem;
+}
+
+/* ===== Recent Projects ===== */
+.recent-projects-section {
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.recent-projects-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.recent-projects-header h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.recent-projects-clear {
+    background: none;
+    color: var(--text-muted);
+    border: none;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.recent-projects-clear:hover {
+    background-color: var(--vscode-list-hoverBackground);
+    color: var(--text-color);
+}
+
+.recent-projects-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.recent-project-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.65rem;
+    background-color: var(--input-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.recent-project-chip:hover {
+    border-color: var(--accent-color);
+    background-color: var(--vscode-list-hoverBackground);
+}
+
+.recent-project-chip .icon {
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* ===== Forms ===== */
 .config-form {
-    max-width: 800px;
+    max-width: 760px;
     margin: 0 auto;
-    padding: 0 1rem;
 }
 
 .form-group {
-    margin-bottom: 8px;
-}
-
-.form-group + .form-group {
-    margin-top: 8px;
+    margin-bottom: 1rem;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 0.35rem;
     color: var(--vscode-input-foreground);
-    font-weight: normal;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.form-group label .required {
+    color: var(--error-color);
+    margin-left: 2px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--input-background);
+    color: var(--text-color);
+    transition: border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+    font-family: inherit;
     font-size: 13px;
 }
 
-.form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--input-background);
-    color: var(--text-color);
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 1px var(--accent-color);
+}
+
+.form-group input.invalid {
+    border-color: var(--error-color);
+    box-shadow: 0 0 0 1px var(--error-color);
+}
+
+.form-group input.valid:not(:focus):not(:placeholder-shown) {
+    border-color: var(--success-color);
 }
 
 .form-group .help-text {
     display: block;
-    font-size: 0.9rem;
-    color: var(--vscode-descriptionForeground);
+    font-size: 0.8rem;
+    color: var(--text-muted);
     margin-top: 0.25rem;
+}
+
+.form-group .error-text {
+    display: none;
+    font-size: 0.8rem;
+    color: var(--error-color);
+    margin-top: 0.25rem;
+}
+
+.form-group.has-error .error-text {
+    display: block;
 }
 
 .location-input {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
 }
 
 .location-input input {
     flex: 1;
-    background-color: var(--vscode-input-background);
-    color: var(--vscode-input-foreground);
-    border: 1px solid var(--vscode-input-border);
-    padding: 0.5rem;
-    border-radius: 4px;
 }
 
 .location-input button {
-    background-color: var(--secondary-color);
-    color: var(--vscode-button-foreground);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    background-color: var(--secondary-color, var(--input-background));
+    color: var(--vscode-button-secondaryForeground, var(--text-color));
+    border: 1px solid var(--input-border);
+    padding: 0 1rem;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition-fast);
+    white-space: nowrap;
 }
 
 .location-input button:hover {
-    background-color: var(--secondary-hover-color);
+    background-color: var(--secondary-hover-color, var(--vscode-list-hoverBackground));
 }
 
-.framework-selection {
-    margin-bottom: 2rem;
-}
-
+/* ===== Frameworks ===== */
 .framework-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 8px;
-    margin-bottom: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .framework-card {
-    background-color: var(--vscode-editor-background);
-    border: 1px solid var(--vscode-widget-border);
-    border-radius: 6px;
-    padding: 6px 8px;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 8px 10px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast);
     text-align: center;
-    min-height: 28px;
+    min-height: 36px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
 .framework-card:hover {
     background-color: var(--vscode-list-hoverBackground);
-    border-color: var(--vscode-focusBorder);
+    border-color: var(--accent-color);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .framework-card.selected {
     background-color: var(--vscode-list-activeSelectionBackground);
-    border-color: #c586c0;
-    box-shadow: 0 0 0 2px rgba(197, 134, 192, 0.2);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(55, 148, 255, 0.25);
+}
+
+.framework-card.recommended::after {
+    content: "★";
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: 0.7rem;
+    color: var(--warning-color);
 }
 
 .framework-card h3 {
-    color: #c586c0;
+    color: var(--accent-color);
     font-size: 13px;
     font-weight: 500;
     margin: 0;
     white-space: nowrap;
-    letter-spacing: 0.3px;
 }
 
 .framework-card.selected h3 {
     color: var(--vscode-list-activeSelectionForeground);
 }
 
-.framework-icon {
-    margin-right: 12px;
-    color: var(--vscode-symbolIcon-classForeground);
+.framework-card .lts-badge {
+    font-size: 9px;
+    background-color: var(--success-color);
+    color: white;
+    padding: 1px 5px;
+    border-radius: 8px;
+    margin-top: 3px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
-.framework-content {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.framework-version {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--vscode-foreground);
-}
-
-.framework-description {
-    font-size: 12px;
-    color: var(--vscode-descriptionForeground);
-}
-
+/* ===== Selects ===== */
 .form-select {
     width: 100%;
-    padding: 4px 8px;
-    background-color: var(--vscode-dropdown-background);
-    color: var(--vscode-dropdown-foreground);
-    border: 1px solid var(--vscode-dropdown-border);
-    border-radius: 2px;
-    margin-bottom: 4px;
-    height: 28px;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--vscode-dropdown-background, var(--input-background));
+    color: var(--vscode-dropdown-foreground, var(--text-color));
+    border: 1px solid var(--vscode-dropdown-border, var(--input-border));
+    border-radius: var(--radius-sm);
+    height: 32px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
 }
 
-.help-text {
-    display: block;
-    margin-top: 2px;
-    margin-bottom: 4px;
-    font-size: 12px;
-    color: var(--vscode-descriptionForeground);
+.form-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
 }
 
+select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--input-background);
+    color: var(--text-color);
+    cursor: pointer;
+    font-family: inherit;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* ===== Checkboxes ===== */
 .checkbox-group {
-    margin-bottom: 4px;
-    padding-left: 0;
+    margin-bottom: 0.5rem;
 }
 
 .checkbox-label {
@@ -423,116 +647,86 @@ body {
     align-items: center;
     font-size: 13px;
     color: var(--vscode-foreground);
-    gap: 6px;
-    margin-bottom: 0;
-    min-height: 20px;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
 }
 
 .checkbox-label input[type="checkbox"] {
     margin: 0;
-    order: -1;
     width: 16px;
     height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent-color);
 }
 
 .container-options {
     display: none;
-    margin-top: 4px;
+    margin-top: 0.5rem;
     margin-left: 24px;
+    padding: 0.75rem;
+    background-color: var(--background-color);
+    border-left: 2px solid var(--accent-color);
+    border-radius: var(--radius-sm);
 }
 
 .container-options.visible {
     display: block;
+    animation: fadeIn 0.2s ease-out;
 }
 
 .container-options label {
-    margin-top: 4px;
+    margin-top: 0.5rem;
     display: block;
-    margin-bottom: 4px;
-}
-
-.container-options .form-select {
-    margin-bottom: 8px;
-    width: calc(100% - 24px);
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
 }
 
 .info-icon {
     margin-left: 6px;
     font-size: 12px;
-    color: var(--vscode-descriptionForeground);
+    color: var(--text-muted);
     cursor: help;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    font-weight: 500;
     opacity: 0.7;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--transition-fast);
 }
 
-.info-icon:hover {
-    opacity: 1;
-}
-
+.info-icon:hover,
 .checkbox-label:hover .info-icon {
     opacity: 1;
 }
 
-/* Style for the solution name input */
-#solution {
-    background-color: var(--vscode-input-background);
-    color: var(--vscode-input-foreground);
-    border: 1px solid var(--vscode-input-border);
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 4px;
-    margin-bottom: 0.5rem;
-}
-
-/* Framework select styling */
-#custom-select2 {
-    display: block;
-    width: 100%;
-    padding: 0.5rem;
-    background-color: var(--vscode-dropdown-background);
-    color: var(--vscode-dropdown-foreground);
-    border: 1px solid var(--vscode-dropdown-border);
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-#custom-select2:focus {
-    outline: none;
-    border-color: var(--vscode-focusBorder);
-}
-
-.additional-settings {
-    margin-top: 2rem;
-}
-
-.checkbox-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    cursor: pointer;
-}
-
-.checkbox-container input[type="checkbox"] {
-    margin-right: 0.5rem;
-}
-
+/* ===== Wizard Footer ===== */
 .wizard-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+.wizard-footer-left {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.wizard-footer-right {
+    display: flex;
+    gap: 0.5rem;
 }
 
 button {
     background-color: var(--primary-color);
-    color: white;
+    color: var(--vscode-button-foreground, white);
     border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition-fast),
+        transform var(--transition-fast);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
 }
 
 button:hover:not(:disabled) {
@@ -540,7 +734,7 @@ button:hover:not(:disabled) {
 }
 
 button:active:not(:disabled) {
-    background-color: var(--primary-active);
+    transform: translateY(1px);
 }
 
 button:disabled {
@@ -548,16 +742,158 @@ button:disabled {
     cursor: not-allowed;
 }
 
-select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--input-background);
+button.secondary-button {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--input-border);
+}
+
+button.secondary-button:hover:not(:disabled) {
+    background-color: var(--vscode-list-hoverBackground);
+    border-color: var(--accent-color);
+}
+
+button.primary-button {
+    background-color: var(--primary-color);
+    color: var(--vscode-button-foreground, white);
+}
+
+/* ===== Loading & Progress States ===== */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+}
+
+.loading-overlay.visible {
+    display: flex;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.loading-text {
+    color: white;
+    font-size: 0.95rem;
+}
+
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--background-color);
+    padding: 2rem 3rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.loading-content .loading-text {
     color: var(--text-color);
 }
 
-/* Animations */
+/* ===== Toast Notifications ===== */
+.toast-container {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 380px;
+}
+
+.toast {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-color);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    animation: slideInRight 0.3s ease-out;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: var(--text-color);
+    font-size: 0.85rem;
+}
+
+.toast.toast-success {
+    border-left-color: var(--success-color);
+}
+
+.toast.toast-error {
+    border-left-color: var(--error-color);
+}
+
+.toast.toast-warning {
+    border-left-color: var(--warning-color);
+}
+
+.toast.toast-info {
+    border-left-color: var(--accent-color);
+}
+
+.toast.toast-removing {
+    animation: slideOutRight 0.25s ease-in forwards;
+}
+
+.toast-icon {
+    font-weight: 700;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+
+.toast-success .toast-icon {
+    color: var(--success-color);
+}
+
+.toast-error .toast-icon {
+    color: var(--error-color);
+}
+
+.toast-warning .toast-icon {
+    color: var(--warning-color);
+}
+
+.toast-info .toast-icon {
+    color: var(--accent-color);
+}
+
+.toast-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.toast-close:hover {
+    opacity: 1;
+    background: none;
+}
+
+/* ===== Animations ===== */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -567,59 +903,78 @@ select {
     }
 }
 
-.wizard-page.active {
-    animation: fadeIn 0.3s ease-in-out;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    to {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+}
+
+/* ===== Utilities ===== */
 .hidden {
     display: none !important;
 }
 
-.disabled {
-    background-color: #3c3c3c !important;
-    cursor: not-allowed;
+.kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    font-family: var(--vscode-editor-font-family, monospace);
+    font-size: 0.75rem;
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    color: var(--text-muted);
+    margin: 0 2px;
 }
 
-button:not(.disabled) {
-    background-color: #9747ff !important;
-    cursor: pointer;
-}
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .wizard-container {
+        padding: 1rem;
+    }
 
-/* Input focus states */
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-}
+    .wizard-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-/* Adjust vertical spacing between sections */
-.form-group + .form-group {
-    margin-top: 16px;
-}
+    .search-container {
+        flex: 1 1 auto;
+    }
 
-/* Container options adjustments */
-.container-options .form-select {
-    margin-bottom: 12px;
-}
+    .template-grid {
+        grid-template-columns: 1fr;
+    }
 
-/* Framework section label */
-.framework-section label {
-    margin-bottom: 8px;
-}
-
-/* Navigation buttons */
-#next-button {
-    display: block;
-}
-
-#next-button.hidden {
-    display: none;
-}
-
-#create-project-button {
-    display: none;
-}
-
-#create-project-button.visible {
-    display: block;
+    .wizard-steps {
+        padding: 0 10px;
+    }
 }

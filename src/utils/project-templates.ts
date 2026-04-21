@@ -146,6 +146,36 @@ export const projectTemplateGroups: ProjectTemplateGroup[] = [
                 tags: ["Console", "CLI", "Windows"],
                 platforms: ["Windows"],
             },
+            {
+                templateName: "Worker Service",
+                shortName: "worker",
+                description:
+                    "A project for creating a long-running background service using the Generic Host",
+                tags: ["Worker", "Background", "Hosted Service"],
+                platforms: ["Windows", "Linux", "macOS"],
+            },
+        ],
+    },
+    {
+        name: "cloud",
+        displayName: "Cloud",
+        templates: [
+            {
+                templateName: ".NET Aspire App",
+                shortName: "aspire",
+                description:
+                    "A solution for orchestrating cloud-native, multi-project .NET applications using .NET Aspire",
+                tags: ["Aspire", "Cloud-native", "Orchestration"],
+                platforms: ["Windows", "Linux", "macOS"],
+            },
+            {
+                templateName: ".NET Aspire Starter App",
+                shortName: "aspire-starter",
+                description:
+                    "A starter solution that scaffolds a complete .NET Aspire app with sample services",
+                tags: ["Aspire", "Starter", "Cloud-native"],
+                platforms: ["Windows", "Linux", "macOS"],
+            },
         ],
     },
     {

@@ -5,6 +5,103 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Released]
 
+## [3.0.0] - [2026-04-21]
+
+This is a major release that consolidates the `feature/new-ui` branch: a redesigned project-creation experience, multi-project Clean Architecture / DDD scaffolds, in-editor pattern Code Actions, a NuGet quick-add palette, a solution analyzer, modern C# 11 / 12 / 13 snippet packs, framework-aware file scaffolding, and an expanded smart-comment palette. See the highlights below; cumulative entries from the 2.2.x and 2.3.x preview cycles are preserved further down for reference.
+
+### Added
+
+- **Framework-aware file scaffolds** — `Create Class`, `Create Interface`, `Create Struct`, `Create Record` now read `<TargetFramework>` (or the first entry of `<TargetFrameworks>`) from the nearest `.csproj` and pick a template that matches the project's actual C# language level. Modern templates (`*-modern.mdl`) are emitted for **.NET 6+** and produce file-scoped namespaces, an `internal` default access level, no obsolete `using System;` lines, and positional `record` declarations. Legacy templates remain in place for `net5.0`, `netcoreapp*`, `netstandard*`, and `net4xx`.
+- **Expanded smart-comment palette** — the default `csharp-snippet-productivity.tags` list grew from 5 to 14 tags so common conventions colour out of the box: `BUG`, `FIXME`, `TODO`, `HACK`, `WIP`, `XXX`, `WARNING`, `IMPORTANT`, `NOTE`, `RESEARCH`, `REVIEW`, `OPTIMIZE`, `DEPRECATED`, plus the existing `//` strikethrough.
+- **Pattern Code Actions** — `Ctrl+.` inside any C# file offers seven *Insert: …* refactorings: Result, Option, Generic Repository, CQRS handler, Specification, Fluent Builder, Unit of Work.
+- **Clean Architecture scaffold** (`C# Toolbox: Scaffold Clean Architecture Solution`) — generates a four-project solution (`Domain`, `Application`, `Infrastructure`, `WebApi`) with the correct `<ProjectReference>` graph and conventional folders.
+- **DDD scaffold** (`C# Toolbox: Scaffold DDD Solution`) — five-project DDD layout with a dedicated `SharedKernel` and aggregate / value-object / specification folders.
+- **NuGet quick-add** (`C# Toolbox: Quick Add NuGet Package`) — searchable picker over a curated, configurable list of 26 popular packages (Serilog, Polly, MediatR, FluentValidation, EF Core, AutoMapper, …) editable via `csharp-snippet-productivity.nuget.popularPackages`.
+- **Solution analyzer** (`C# Toolbox: Analyze Solution`) — walks every `.csproj` in the workspace, prints the project-reference graph to the **C# Toolbox** Output channel, and surfaces circular dependencies and orphan references.
+- **Welcome walkthrough** — four-step Getting Started experience surfaced via `contributes.walkthroughs` and the `C# Toolbox: Open Getting Started Walkthrough` command.
+- **Telemetry opt-in contract** — `csharp-snippet-productivity.telemetry.enabled` (default `false`) plus a [`PRIVACY.md`](./PRIVACY.md) document. No telemetry is collected today.
+- **Marketplace polish** — README rebuild with badges (version, installs, rating, CI, license, stars), one-click install link, hero blurb, "Why this extension?", and "Quick start" sections.
+- **Modern C# snippets** for C# 11 / 12 / 13 (`snippets/modern.json`) and **architectural pattern snippets** (`snippets/patterns.json`).
+- **.NET 9.0** support across all modern templates plus **.NET Aspire** (`aspire`, `aspire-starter`) and Worker Service templates.
+- **Unit-test harness** — Mocha + a hand-rolled `vscode` mock (`src/test/`) runnable via `npm test` without launching the Extension Host. **67 tests** cover snippet validity, project-template metadata, scaffold command sequences, framework picker, NuGet picker parsing, pattern templates, solution-analysis cycle / orphan detection, and the new framework-aware template selection.
+- **GitHub Actions CI** (`.github/workflows/ci.yml`) covering lint, build, and tests across Linux, macOS, and Windows.
+- **Documentation set** under `docs/` (architecture, snippets, testing) and a `CONTRIBUTING.md`.
+
+### Changed
+
+- **Bumped to 3.0.0** to mark the cumulative `feature/new-ui` re-platforming.
+- **Engine requirement raised to VS Code 1.85.0** (matches the `contributes.walkthroughs` features used by the new onboarding).
+- **Project-creation wizard** redesigned with VS Code theme variables (dark / light / high-contrast), real-time input validation, recent-projects chips, recommended-framework indicators (`★`), LTS badges, keyboard navigation, and toast notifications.
+- **Webview message protocol** extended with `creationStarted`, `creationCompleted`, `creationFailed`, `closePanel`, and `showToast`.
+- **`CommandRegister`** now wires the five new commands plus the Pattern Code Action provider and reports the registered command count via `Logger.debug`.
+- **Architecture scaffolds** emit fail-fast shell commands (`$LASTEXITCODE` checks on PowerShell, `&&` chaining on POSIX) so a failed `dotnet new` aborts the dependent `dotnet sln add` and reference steps with a single clear error instead of cascading failures.
+- **Framework picker** in scaffolders is built from the user's actually installed SDKs (`dotnet --list-sdks`), with the highest installed version marked `★ recommended` and LTS versions tagged.
+
+### Fixed
+
+- **Stale-framework bug** in file scaffolds — `ContextualMenu` previously read the framework from a `globalState` key set by the project wizard, so opening any pre-existing project gave you the *last wizard pick* instead of the project's real TFM. Fixed: framework is now resolved from the nearest `.csproj` first.
+- **Hard-coded magic strings** replaced with constants from `src/utils/constants.ts` to prevent drift between webview and extension.
+- **Webview message dispatch** wrapped in try/catch.
+
+### Removed / deprecated
+
+- The `*6.mdl` template family is superseded by `*-modern.mdl` and is no longer wired into the scaffold path. The files are kept on disk for one release cycle in case downstream forks reference them; they will be deleted in 3.1.
+
+## [2.3.0] - [2026-04-21]
+
+### Added
+
+- **Welcome walkthrough** — a four-step Getting Started experience surfaced via `contributes.walkthroughs` and the new `C# Toolbox: Open Getting Started Walkthrough` command. Steps cover project creation, file scaffolding, modern snippets, and advanced architecture commands.
+- **Clean Architecture scaffold** — `C# Toolbox: Scaffold Clean Architecture Solution` creates a four-project layout (`Domain`, `Application`, `Infrastructure`, `WebApi`) with the correct `<ProjectReference>` graph and pre-folded conventional folders (`Entities`, `ValueObjects`, `Features`, `Persistence`, …).
+- **DDD scaffold** — `C# Toolbox: Scaffold DDD Solution` produces a five-project DDD layout including a `SharedKernel` for primitives, with aggregate / value-object / specification folders pre-created.
+- **Pattern Code Actions** — pressing `Ctrl+.` inside any C# file now offers seven *Insert: …* refactorings that drop fully-formed implementations of Result, Option, Generic Repository, CQRS handler, Specification, Fluent Builder, and Unit of Work at the cursor.
+- **NuGet quick-add** — `C# Toolbox: Quick Add NuGet Package` opens a searchable picker over a curated, configurable list of 26 popular packages (Serilog, Polly, MediatR, FluentValidation, EF Core, AutoMapper, …) and runs `dotnet add package` against the selected `.csproj`. The list is editable via the new `csharp-snippet-productivity.nuget.popularPackages` setting.
+- **Solution analyzer** — `C# Toolbox: Analyze Solution` walks every `.csproj` in the workspace, prints the project-reference graph to the **C# Toolbox** Output channel, and surfaces circular dependencies and orphan references.
+- **Telemetry opt-in contract** — new `csharp-snippet-productivity.telemetry.enabled` setting (default `false`) and a [`PRIVACY.md`](./PRIVACY.md) document defining what *would* be collected if telemetry is wired in a future release. Nothing is sent today.
+- **Marketplace polish** — README revamp with marketplace badges (version / installs / rating / CI / license / stars), one-click install link, hero blurb, and "Why this extension?" + "Quick start" sections.
+- **Unit tests** for the Clean Architecture / DDD scaffold command sequence, NuGet picker parsing, pattern-template inventory, and solution-analysis cycle / orphan detection (Mocha, no VS Code Extension Host required).
+
+### Changed
+
+- README rewritten for the marketplace — clearer value proposition, badges, install link, walkthrough invocation, and links to `PRIVACY.md`.
+- `CommandRegister` now wires five new commands plus the Pattern Code Action provider and reports the registered command count via `Logger.debug`.
+
+## [2.2.0] - [2026-04-20]
+
+### Added
+
+- **.NET 9.0 support** across all modern templates (Console, Class Library, Web API, MVC, Blazor, Worker Service, MAUI, Test projects, etc.).
+- **.NET Aspire templates** (`aspire`, `aspire-starter`) for cloud-native multi-project apps.
+- **Worker Service template** for long-running background hosts.
+- **Modern C# snippets** for C# 11, 12, and 13 features (`snippets/modern.json`):
+    - Collection expressions, primary constructors, type aliases, default lambda parameters
+    - `params` collections (C# 13), inline arrays, `ref readonly` parameters
+    - Required members, raw string literals, list patterns, file-scoped types, UTF-8 string literals, generic attributes, static abstract members
+- **Modern pattern snippets** (`snippets/patterns.json`): Result/Either, Option/Maybe, Repository, CQRS handler, Specification, Fluent Builder, Unit of Work, lightweight Mediator, Minimal API endpoints & groups.
+- **Recent projects** chips in the project creation wizard, persisted across sessions.
+- **Toast notifications** in the wizard for success/error/info feedback.
+- **Loading overlay** during project creation with progress messaging.
+- **Real-time validation** with inline error messages for project name, solution, and location.
+- **Recommended framework indicators** (★) and **LTS badges** on framework cards.
+- **Keyboard navigation** in the wizard (Tab/Enter/Escape) with documented shortcuts.
+- **Centralized Logger** (`src/utils/logger.ts`) writing to a dedicated VS Code Output channel ("C# Toolbox").
+- **Constants module** (`src/utils/constants.ts`) for command IDs, configuration keys, and webview message contracts.
+- **Unit-test infrastructure** based on Mocha + a `vscode` module mock (`src/test/`), runnable via `npm test` without launching VS Code.
+- **GitHub Actions CI** (`.github/workflows/ci.yml`) covering lint, build, and tests across Linux, macOS, and Windows.
+- **Documentation set** under `docs/` (architecture, snippet reference, testing guide) and a `CONTRIBUTING.md`.
+
+### Changed
+
+- **Wizard UI overhaul**: redesigned with VS Code theme variables (full dark/light/high-contrast support), refined spacing, animations, and accessible roles/labels.
+- **Webview message protocol** extended with `creationStarted`, `creationCompleted`, `creationFailed`, `closePanel`, and `showToast` for richer UX feedback.
+- `CreateProject.ts`, `CommandRegister.ts`, and `extension.ts` refactored to use the Logger, constants, and TSDoc-documented APIs; replaced ad-hoc `any` typings with proper interfaces.
+- Bumped extension version to 2.2.0.
+
+### Fixed
+
+- Hard-coded magic strings replaced with constants to prevent drift between webview and extension.
+- Improved error handling around webview message dispatch (try/catch around all inbound messages).
+
 ## [2.1.1] - [2024-01-18]
 
 ## What's new in 2.1.1

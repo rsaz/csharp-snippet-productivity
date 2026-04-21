@@ -1,45 +1,25 @@
-// Place your settings in this file to overwrite default and user settings.
 {
     "files.exclude": {
-        "out": false // set this to true to hide the "out" folder with the compiled JS files
+        "out": false,
+        "out-test": true,
+        "node_modules": true,
+        ".vscode-test": true
     },
     "search.exclude": {
-        "out": true // set this to false to include "out" folder in search results
+        "out": true,
+        "out-test": true,
+        "node_modules": true
     },
-    // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
     "typescript.tsc.autoDetect": "off",
-    "cSpell.ignoreWords": [
-        "backreference",
-        "documentxml",
-        "extention",
-        "group",
-        "json",
-        "multiline",
-        "snippets",
-        "strikethrough",
-        "to",
-        "zampieri"
-    ],
-    "cSpell.words": [
-        "Blazor",
-        "blazorserver",
-        "blazorwasm",
-        "classlib",
-        "Creational",
-        "designpattern",
-        "forminline",
-        "mauilib",
-        "minwebapi",
-        "mstest",
-        "netcoreapp",
-        "nunit",
-        "paddding",
-        "razorclasslib",
-        "reactredux",
-        "readlines",
-        "richardzampieriprog",
-        "submenu",
-        "webapi",
-        "xunit"
-    ]
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "[json]": {
+        "editor.tabSize": 2
+    },
+    "[jsonc]": {
+        "editor.tabSize": 2
+    },
+    "eslint.validate": ["typescript"]
 }

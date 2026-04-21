@@ -82,3 +82,30 @@ export async function getInstalledSDKs(): Promise<string[]> {
         return [];
     }
 }
+
+/**
+ * Returns the list of `netX.0` target framework monikers that the user can
+ * actually build against, derived from `dotnet --list-sdks`.
+ *
+ * Example: a machine with `6.0.428`, `8.0.404`, `9.0.100` installed yields
+ * `['net9.0', 'net8.0', 'net6.0']` (sorted descending so the latest is first).
+ *
+ * Returns an empty array if SDK detection fails — callers should fall back to
+ * a sensible default list in that case.
+ */
+export async function getInstalledTargetFrameworks(): Promise<string[]> {
+    const sdks = await getInstalledSDKs();
+    const majors = new Set<number>();
+    for (const sdk of sdks) {
+        const match = sdk.match(/^(\d+)\.\d+\.\d+/);
+        if (match) {
+            const major = Number.parseInt(match[1], 10);
+            if (!Number.isNaN(major) && major >= 5) {
+                majors.add(major);
+            }
+        }
+    }
+    return [...majors]
+        .sort((a, b) => b - a)
+        .map((major) => `net${major}.0`);
+}

@@ -1,245 +1,336 @@
-<h2 align="center">
-C# Snippet Productivity
-</h2>
-<h3 align="center">
-	<a href="https://img.shields.io/badge/type-Open Project-green">
-		<img src="https://img.shields.io/badge/type-Open Project-green" align="center">
-	</a>
-    <a href="https://img.shields.io/github/repo-size/rsaz/mankind">
-        <img src="https://img.shields.io/github/repo-size/rsaz/csharp-snippet-productivity" align="center"/>
-    </a>	
-    <a href="https://img.shields.io/github/contributors/rsaz/csharp-snippet-productivity.svg">
-        <img src="https://img.shields.io/github/contributors/rsaz/csharp-snippet-productivity.svg" align="center"/>
+<h1 align="center">C# Toolbox</h1>
+
+<p align="center">
+    <strong>Stop typing boilerplate. Scaffold a Clean Architecture solution, drop in patterns, and ship modern C# in seconds — without leaving VS Code.</strong>
+</p>
+
+<p align="center">
+    <a href="https://marketplace.visualstudio.com/items?itemName=richardzampieriprog.csharp-snippet-productivity">
+        <img src="https://img.shields.io/visual-studio-marketplace/v/richardzampieriprog.csharp-snippet-productivity?style=flat-square&label=Marketplace&color=0e639c" alt="Marketplace version"/>
     </a>
-    <a href="https://img.shields.io/github/stars/rsaz/csharp-snippet-productivity?style=social">
-        <img src="https://img.shields.io/github/stars/rsaz/csharp-snippet-productivity?style=social" align="center"/>
-    </a>	
-	<br>
-</h3>
+    <a href="https://marketplace.visualstudio.com/items?itemName=richardzampieriprog.csharp-snippet-productivity">
+        <img src="https://img.shields.io/visual-studio-marketplace/i/richardzampieriprog.csharp-snippet-productivity?style=flat-square&label=Installs&color=0e639c" alt="Installs"/>
+    </a>
+    <a href="https://marketplace.visualstudio.com/items?itemName=richardzampieriprog.csharp-snippet-productivity&ssr=false#review-details">
+        <img src="https://img.shields.io/visual-studio-marketplace/r/richardzampieriprog.csharp-snippet-productivity?style=flat-square&label=Rating&color=0e639c" alt="Rating"/>
+    </a>
+    <a href="https://github.com/rsaz/csharp-snippet-productivity/actions/workflows/ci.yml">
+        <img src="https://img.shields.io/github/actions/workflow/status/rsaz/csharp-snippet-productivity/ci.yml?branch=main&style=flat-square&label=CI" alt="CI status"/>
+    </a>
+    <a href="https://github.com/rsaz/csharp-snippet-productivity/blob/main/LICENSE.md">
+        <img src="https://img.shields.io/github/license/rsaz/csharp-snippet-productivity?style=flat-square" alt="License"/>
+    </a>
+    <a href="https://github.com/rsaz/csharp-snippet-productivity/stargazers">
+        <img src="https://img.shields.io/github/stars/rsaz/csharp-snippet-productivity?style=flat-square" alt="GitHub stars"/>
+    </a>
+</p>
 
-## Goal
+<p align="center">
+    <a href="vscode:extension/richardzampieriprog.csharp-snippet-productivity"><strong>▶ Install from VS Code</strong></a> &nbsp;·&nbsp;
+    <a href="https://marketplace.visualstudio.com/items?itemName=richardzampieriprog.csharp-snippet-productivity">Marketplace</a> &nbsp;·&nbsp;
+    <a href="./CHANGELOG.md">Changelog</a> &nbsp;·&nbsp;
+    <a href="./CONTRIBUTING.md">Contributing</a> &nbsp;·&nbsp;
+    <a href="./PRIVACY.md">Privacy</a>
+</p>
 
-> -   C# Snippet Productivity aims to increase the use of vscode editor as the main tool for console, web and game development in C# Programming Language providing the same shortcuts, efficiency, intellisense that is offered by Visual Studio Community.
-> -   One of the first objectives is to reduce the amount of extensions downloaded for C# reducing the time and effort on configuration that has to be done by the user as well as to avoid extensions conflicts. Also great features to speed up your development workflow.
+<p align="center">
+    <em>★★★★★ on the Marketplace · trusted by <strong>29,000+ .NET developers</strong> · works alongside <a href="https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit">C# Dev Kit</a></em>
+</p>
 
-## Changelog
+<p align="center">
+    <img src="./media/screenshots/01-hero.gif" alt="C# Toolbox in action — scaffolding a Clean Architecture solution and inserting a Result pattern in seconds." width="800"/>
+</p>
 
-> [Click here](https://github.com/rsaz/csharp-snippet-productivity/blob/main/CHANGELOG.md)
+---
 
-## What's new in 2.1.1
+## Why C# Toolbox?
 
-> -   **_New Feature added_**: Added all current scaffold commands from context menu available in the command palette.
-> -   **_New Feature added_**: Added template validation against the .NET SDK installed on the machine.
-> -   **_Fix_**: Adjusted the AddProject command to work with the new template validation and project group selection.
+VS Code's official C# tooling gives you a great editor and debugger. **C# Toolbox is the productivity layer on top.** Where Visual Studio makes you click through dialogs and where C# Dev Kit stops at "open the project", we ship the *features* — solution scaffolds, pattern inserts, NuGet pickers, and modern code generation.
 
-Observations:
+| You want to…                                  | Without C# Toolbox                | With C# Toolbox                |
+| --------------------------------------------- | --------------------------------- | ------------------------------ |
+| Scaffold a Clean Architecture solution        | 15 min, ~30 `dotnet` commands     | **1 command, ~5 seconds**      |
+| Add a `Result<T, E>` to a domain class        | Copy from Stack Overflow          | **`Ctrl+.` → Insert: Result**  |
+| Create a new file on .NET 8 with modern style | Manually fix usings & namespace   | **One click — done correctly** |
+| Add Serilog to the right `.csproj`            | Open terminal, look up package id | **Quick Add NuGet → "ser"**    |
+| Find circular project references              | Open Rider or draw it by hand     | **Analyze Solution → done**    |
+| Highlight `// FIXME` and `// TODO`            | Install another extension         | **Built-in, 14 default tags**  |
 
-```diff
-- Not all templates from Project Creation are tested and validated. Please report any issues with the following information to help us to improve the extension:
-- - Template Name
-- - Template Framework
+---
+
+## 60-second tour
+
+> _Each clip is < 8 seconds. Click any image to expand._
+
+| | |
+| --- | --- |
+| **Project Wizard** — every modern .NET template, real-time validation, recent projects, LTS badges. | **Clean Architecture scaffold** — 4 projects with the correct reference graph in one command. |
+| ![Project wizard](./media/screenshots/02-wizard.gif) | ![Clean Architecture scaffold](./media/screenshots/03-clean-arch.gif) |
+| **Pattern Code Actions** — `Ctrl+.` inserts Result / Option / Repository / CQRS / Specification / Builder / UoW. | **Quick Add NuGet** — searchable picker over 26 curated packages (Serilog, Polly, MediatR, EF Core, …). |
+| ![Pattern Ctrl+.](./media/screenshots/04-pattern-ctrl-dot.gif) | ![Quick Add NuGet](./media/screenshots/05-nuget.gif) |
+| **Smart Comments** — `// TODO`, `// FIXME`, `// HACK`, `// NOTE`, `// DEPRECATED`, and 9 more, coloured out of the box. | **Solution Analyzer** — visualize the project graph and surface circular / orphan references. |
+| ![Smart comments](./media/screenshots/06-smart-comments.gif) | ![Analyze Solution](./media/screenshots/07-analyze.gif) |
+
+---
+
+## Quick start
+
+1. **Install** from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=richardzampieriprog.csharp-snippet-productivity) — or open the Extensions panel in VS Code and search for **C# Toolbox**.
+2. Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **`C# Toolbox: Open Getting Started Walkthrough`**.
+3. Walk through the four onboarding steps — you'll have a project scaffolded and running in under a minute.
+
+> 💡 **Tip:** C# Toolbox is designed to live alongside **C# Dev Kit** and the official **C#** extension. Keep both — Dev Kit handles project loading and debugging; C# Toolbox handles the scaffolding and code generation Dev Kit doesn't ship.
+
+---
+
+## Features at a glance
+
+<details>
+<summary><strong>🏗️ Project & Solution Scaffolding</strong></summary>
+
+- **Project wizard** — webview UI with theme-aware styling, real-time name/path validation, recent projects, recommended (`★`) and LTS framework badges, full keyboard navigation.
+- **Every modern .NET template** — Console, Class Library, Web API, MVC, Blazor (Server / WebAssembly), Worker Service, MAUI, Razor Class Library, gRPC Services, .NET Aspire (`aspire`, `aspire-starter`), test projects (xUnit, NUnit, MSTest), and more.
+- **Multi-project Clean Architecture scaffold** — `Domain`, `Application`, `Infrastructure`, `WebApi` with the correct `<ProjectReference>` graph and conventional folders.
+- **Multi-project DDD scaffold** — five-project layout with a dedicated `SharedKernel`, plus aggregate / value-object / specification folders.
+- **Add project to solution** — pick a template + framework, attach to the current `.sln`.
+- **Fail-fast command sequencing** — a failed `dotnet new` aborts the chain with a single clear error instead of cascading into "could not find project" noise.
+
+</details>
+
+<details>
+<summary><strong>📁 Framework-aware File Scaffolding</strong></summary>
+
+`Create Class`, `Create Interface`, `Create Struct`, and `Create Record` read `<TargetFramework>` from the nearest `.csproj` and emit code that matches your project's actual C# language level.
+
+**On .NET 6+** (modern templates):
+```csharp
+namespace Acme.Domain.Orders;
+
+internal class Order
+{
+}
 ```
 
-The commands available in the context menu follow a different workflow than the commands available in the command palette. The commands in the context menu will create the project or resource in the same clicked folder.
+```csharp
+namespace Acme.Domain.Orders;
 
-The commands in the command palette will ask the user to select the project, create or select the folder, and then create the project.
+public sealed record Order(Guid Id, string CustomerName);
+```
 
-Expect a different interaction when using the commands in the context menu and the command palette.
+**On `net5.0` / `netstandard*` / `netcoreapp*`** the classic block-namespace template is used so older codebases stay consistent.
 
-All commands are available via shortcut keys. You can find the shortcut keys in the command palette.
+</details>
 
--   `Ctrl + alt + /` + `p` - Create Project
--   `Ctrl + alt + /` + `c` - Create Class
--   `Ctrl + alt + /` + `i` - Create Interface
--   `Ctrl + alt + /` + `r` - Create Record
--   `Ctrl + alt + /` + `s` - Create Struct
--   `Ctrl + alt + /` + `a` - Add Project to Solution
+<details>
+<summary><strong>⚡ Pattern Code Actions (<code>Ctrl+.</code>)</strong></summary>
 
-## What's new in 2.0.1
+Open any C# file, press `Ctrl+.`, and pick from:
 
-> -   **_Fix_**: Fixed issues related to design patterns snippets. Added a more modern code approach to the snippets.
+- **Insert: Result&lt;T, E&gt;** — railway-oriented success/failure type
+- **Insert: Option&lt;T&gt;** — null-safe optional value
+- **Insert: Generic Repository** — `IRepository<T>` + base implementation
+- **Insert: CQRS handler** — `IRequest<T>` + `IRequestHandler<T>`
+- **Insert: Specification** — composable predicate pattern
+- **Insert: Fluent Builder** — chainable construction with validation
+- **Insert: Unit of Work** — transactional aggregate of repositories
 
-## What's new in 2.0.0
+Each snippet is a fully-formed, modern C# implementation — not a TODO comment.
 
-> -   **_All Project Types_**: Added support for all project types and templates under project creation.
-> -   **_Support for .NET 7.0 and .NET 8.0_**
-> -   **_Performance improvements_**: Extension loading time decreased and command execution time decreased.
-> -   **_Snippet improvements_**: Fixed snippet conflicts and non standard snippets.
-> -   **_Project Template and Framework Compatibility Validation_**: Validates the project template and framework compatibility based on the .NET SDK installed on the machine.
-> -   **_Add or Create Project with empty space_**: Added validation to avoid creating projects with empty spaces.
-> -   **_Suggests the user to add the default folder_**: Reinforce the use of the default folder for project creation.
+</details>
 
-## What's new in 1.3.0
+<details>
+<summary><strong>📦 NuGet Quick Add</strong></summary>
 
-> -   **_New Feature added_**: Minimal Web API, MStest, xUnit, NUnit project template added.
-> -   **_Fix_**: Creating Solution with the same name in the same directory.
-> -   **_Improvement_**: Extension loading time decreased.
+Run **`C# Toolbox: Quick Add NuGet Package`**, type a few letters, pick the `.csproj` to add it to. Curated default list of 26 popular packages including:
 
-## What's new in 1.2.9
+> Serilog · Polly · MediatR · FluentValidation · AutoMapper · Mapster · Refit · MassTransit · Microsoft.EntityFrameworkCore · Npgsql · MongoDB.Driver · Hangfire · Quartz · NodaTime · OpenTelemetry · Swashbuckle · FluentAssertions · NSubstitute · Bogus · BenchmarkDotNet · …
 
-> -   **_New Feature added_**: Scoped namespaces in the .NET 6.0
-> -   **_Improvement_**: Project creation highlighting the `create project button` after the project name is typed and tab is pressed.
+Edit the list any time via `csharp-snippet-productivity.nuget.popularPackages` in your settings.
 
-## What's new in 1.2.8
+</details>
 
-> -   **_New Feature added_**: Project support for C# .NET Core 6.0
+<details>
+<summary><strong>🔍 Solution Analyzer</strong></summary>
 
-## Current features
+Run **`C# Toolbox: Analyze Solution`** to print a project-reference graph to the **C# Toolbox** Output channel and surface:
 
-> -   **_Fix_**: Classes, Interfaces, and other types created correctly even when the user type incorrect names.
-> -   **_New Features added_**: Added a default folder for project creation. Add this configuration to your settings with your path: `"csharp-snippet-productivity.defaultFolderForProjectCreation": "D:\\"` **{Your path}**
-> -   **_New Features added_**:
-> -   **_Add Project to a Solution_** : Capability to add projects to the same solution with a click of a button. You can select a different project framework as well as the template.
->
-> ![Add Project](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/addProject.PNG?raw=true)
->
-> -   **_Submenu With Options_** :
->     -   Create Class
->     -   Create Interface
->     -   Create Record
->     -   Create Struct
-> -   **_Fix_**: .NET target frameworks list on project creation are based on OS and SDKs installed.
-> -   **_Enhancement_**: Design patterns snippets added. It will create a commented pattern code to be used as reference
-> -   **_singleton_** : Creational singleton pattern
-> -   **_factoryMethod_** : Creational factory method pattern
-> -   **_adapter_** : Structural adapter pattern
-> -   **_observer_**: Structural observer pattern
-> -   **_Enhancement_**: Regex snippet cheat sheet added.
-> -   **_regex_** : Regex cheat sheet
-> -   When creating classes or interfaces system will consider if you have a `<RootNamespace>`YourUniqueNamespace`</RootNamespace>` tag on your **_.csproj_**. If the tag is not found system will use your project name as your root namespace
-> -   Added command to create Class from the context/menu
-> -   Added command to create Interface from the context/menu
-> -   How to use:
->     -   Right click in the project folder or any folder inside of your project folder and select either Create Class or Create Interface
->     -   Give it a name of your file and class or interface will be created automatically in the selected folder
->
-> ![Class and Interface](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/classInterface.PNG?raw=true)
+- Circular project references
+- Orphan references (csproj-to-csproj entries pointing at non-existent projects)
+- Project-by-project dependency lists
 
-### Command to Create Solution or Project
+Useful before a refactor or when onboarding to a new codebase.
 
-> Command to create projects
->
-> Press CTRL + SHIFT + P: Then type: Create Project
-> [ C# Toolbox: Create Project ]
->
-> > ![Create Project](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/createproject.PNG?raw=true)
->
-> -   Projects templates supported:
-> -   Blazor Server App
-> -   Blazor WebAssembly App
-> -   Console Application
-> -   Class Library
-> -   .NET Core: Empty, MVC, Razor Page, Angular SPA, React SPA, React/Redux SPA, Web Api, GRPC Services, Razor Class Library
->
-> -   Added snippets for creating arrays, lists and dictionaries using var
->     -   var myArray = new type[size];
->     -   var myList = new List\<type>();
->     -   var myDictionary = new Dictionary\<type,type>();
+</details>
 
-> ### Smart Comments
->
-> -   Colorful and configurable comments to better emphasize your work
-> -   Snippets:
->     -   **_todo_** : comments
->     -   **_review_** : comments
->     -   **_bug_** : comments
->     -   **_research_** : comments
->         > ![Colored comments](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/comment.gif?raw=true)
+<details>
+<summary><strong>💬 Smart Comments</strong></summary>
 
-> ### General Snippets
->
-> -   **_cw_** : console write/writeline
-> -   **_cwi_** : console writeline interpolation
-> -   **_cr_** : console readline
-> -   **_crk_**: console readkey
-> -   **_clr_**: console clear
-> -   **_var_**: variable declaration
-> -   **_if_**: if statement
-> -   **_else_**: else statement
-> -   **_ifelse_**: if/else statement
-> -   **_iif_**: conditional operator
-> -   **_enum_**: enum type
-> -   **_switch_**: switch statement
-> -   **_using_**: using statement
-> -   **_while_**: while loop
-> -   **_dowhile_**: do/while loop
-> -   **_for_**: for loop
-> -   **_foreach_**: foreach loop
-> -   **_arr_**: array structure
-> -   **_varr_**: array structure using var
-> -   **_lst_**: list structure
-> -   **_vlst_**: list structure using var
-> -   **_ilst_**: Ilist structure
-> -   **_dic_**: dictionary structure
-> -   **_vdic_**: dictionary structure using var
-> -   **_cdic_**: concurrent dictionary structure
-> -   **_idic_**: idictionary structure
-> -   **_func_**: create a void function
-> -   **_vfunc_**: create a virtual function
-> -   **_afunc_**: create an abstract function
-> -   **_rfunc_**: create a function with return type
-> -   **_sfunc_**: create a static function
-> -   **_pfunc_**: create a function using params
-> -   **_try_**: create a try/catch block
-> -   **_namespace_**: add namespace
-> -   **_struct_**: create a struct
-> -   **_class_**: create a class based on the file name
-> -   **_ctor_**: class constructor
-> -   **_instantiate_**: object instantiation
-> -   **_fclass_**: class created with a default constructor and three overrides [ToString, Equals, GetHashCode]
-> -   **_sclass_**: create a static class
-> -   **_aclass_**: create an abstract class
-> -   **_interface_**: create an interface based on the file name
-> -   **_prop_**: create a property
-> -   **_prope_**: create an expanded property
-> -   **_record_**: create a record
->
-> ### XML Documentation Snippets
->
-> -   **_xml-summary_**: this tag adds brief information about a type or member
-> -   **_xml-remarks_**: the [remarks] tag supplements the information about types or members that the [summary] tag provides
-> -   **_xml-returns_**: the [returns] tag describes the return value of a method declaration
-> -   **_xml-value_**: the [value] tag is similar to the [returns] tag, except that you use it for properties
-> -   **_xml-example_**: You use the [example] tag to include an example in your XML documentation. This involves using the child [code] tag
-> -   **_xml-para_**: you use the [para] tag to format the content within its parent tag. [para] is usually used inside a tag, such as [remarks] or [returns], to divide text into paragraphs. You can format the contents of the [remarks] tag for your class definition
-> -   **_xml-c_**: still on the topic of formatting, you use the [c] tag for marking part of text as code. It's like the [code] tag but inline. It's useful when you want to show a quick code example as part of a tag's content
-> -   **_xml-exception_**: by using the [exception] tag, you let your developers know that a method can throw specific exceptions
-> -   **_xml-see_**: the [see] tag lets you create a clickable link to a documentation page for another code element
-> -   **_xml-seealso_**: you use the [seealso] tag in the same way you do the [see] tag. The only difference is that its content is typically placed in a \"See Also\" section
-> -   **_xml-param_**: you use the [param] tag to describe a method's parameters
-> -   **_xml-typeparam_**: You use [typeparam] tag just like the [param] tag but for generic type or method declarations to describe a generic parameter
-> -   **_xml-paramref_**: sometimes you might be in the middle of describing what a method does in what could be a [summary] tag, and you might want to make a reference to a parameter
-> -   **_xml-typeparamref_**: you use [typeparamref] tag just like the [paramref] tag but for generic type or method declarations to describe a generic parameter
-> -   **_xml-list_**: you use the [list] tag to format documentation information as an ordered list, unordered list, or table
-> -   **_xml-inheritdoc_**: you can use the [inheritdoc] tag to inherit XML comments from base classes, interfaces, and similar methods
-> -   **_xml-include_**: the [include] tag lets you refer to comments in a separate XML file that describe the types and members in your source code, as opposed to placing documentation comments directly in your source code file
+Tagged single-line comments are coloured automatically — no extra extension needed. **14 default tags**:
 
-## How to use
+| Tag                | Colour            | Style              |
+| ------------------ | ----------------- | ------------------ |
+| `// BUG`           | red, bold         | error              |
+| `// FIXME`         | red, bold         | error              |
+| `// TODO`          | orange, bold      | task               |
+| `// HACK`          | yellow, italic    | workaround         |
+| `// WIP`           | yellow, italic    | in progress        |
+| `// XXX`           | red, bold, undr.  | careful here       |
+| `// WARNING`       | orange            | caution            |
+| `// IMPORTANT`     | red, bold, undr.  | must read          |
+| `// NOTE`          | blue              | informational      |
+| `// RESEARCH`      | blue              | needs investigation|
+| `// REVIEW`        | magenta           | needs review       |
+| `// OPTIMIZE`      | teal              | perf candidate     |
+| `// DEPRECATED`    | grey, strikethr.  | scheduled removal  |
+| `// //`            | grey, strikethr.  | commented out code |
 
-> -   All the snippets comments are shown as -> snippet name
-> -   Snippets were created thinking on productivity and the extensive use of tab key
->
-> ![Add var, class, function](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/clipvarclassfunc.gif?raw=true)
->
-> ![Add property, dictionary](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/clippropdic.gif?raw=true)
->
-> -   Colored comments were created to increase visibility of todo's, reviews, bugs and research
->
-> ![Add list, comments](https://github.com/rsaz/csharp-snippet-productivity/blob/main/videos/cliplistcom.gif?raw=true)
+All tags are configurable via `csharp-snippet-productivity.tags`.
 
-## Do you want to contribute?
+</details>
 
-### Guidelines
+<details>
+<summary><strong>📜 70+ Snippets</strong></summary>
 
-> 1. **Fork** the original repository to your own repository
-> 2. **Clone** it to your local
-> 3. **Contribute to it**
-> 4. **Push** it to your remote repo
-> 5. Send a **PR** `[Pull Request]` to the main repo
-> 6. Your contribution will be evaluated then we will merge your changes with the original repository. ❤
+- **General productivity** — `cw`, `cwi`, `prop`, `func`, `try`, `class`, `ctor`, `instantiate`, `lst`, `dic`, `enum`, `switch`, `for`, `foreach`, …
+- **Modern C# 11 / 12 / 13** — collection expressions, primary constructors, `params` collections, raw string literals, `required` members, list patterns, file-scoped types, UTF-8 string literals, generic attributes, static abstract members, default lambda parameters, inline arrays, `ref readonly` parameters.
+- **Architectural patterns** — Result / Either, Option / Maybe, generic Repository, CQRS handler, Specification, Fluent Builder, Unit of Work, lightweight Mediator, Minimal API endpoints & route groups.
+- **GoF design patterns** — Singleton, Factory Method, Adapter, Observer (commented reference implementations).
+- **XML documentation** — full `xml-summary` / `xml-remarks` / `xml-returns` / `xml-param` / `xml-typeparam` / `xml-exception` / `xml-see` / `xml-list` / … set.
 
-### For more information
+Full catalog with prefixes and expansions: **[docs/SNIPPETS.md](./docs/SNIPPETS.md)**.
 
--   [Richard Zampieri](https://github.com/rsaz)
+</details>
 
-**Enjoy!**
+<details>
+<summary><strong>⌨️ Keyboard Shortcuts</strong></summary>
+
+All commands are also reachable via `Ctrl+Shift+P`. Default chord shortcuts:
+
+- `Ctrl+Alt+/` then `p` — Create Project
+- `Ctrl+Alt+/` then `c` — Create Class
+- `Ctrl+Alt+/` then `i` — Create Interface
+- `Ctrl+Alt+/` then `r` — Create Record
+- `Ctrl+Alt+/` then `s` — Create Struct
+- `Ctrl+Alt+/` then `a` — Add Project to Solution
+
+</details>
+
+---
+
+## How does it compare?
+
+|                                       | C# Toolbox    | C# Dev Kit (Microsoft) | Roslynator    | Visual Studio |
+| ------------------------------------- | :-----------: | :--------------------: | :-----------: | :-----------: |
+| Modern C# snippet pack (C# 11–13)     |       ✅      |           —            |       —       |       ✅      |
+| Multi-project Clean Arch / DDD scaffold |     ✅      |           —            |       —       |       —       |
+| Pattern Code Actions (Result, CQRS, …)|       ✅      |           —            |       —       |       —       |
+| NuGet quick-add picker                |       ✅      |           —            |       —       |       ✅      |
+| Smart comment highlighting            |       ✅      |           —            |       —       |       —       |
+| Solution dependency analyzer          |       ✅      |           —            |       —       |       ✅      |
+| Roslyn refactorings & analyzers       |       —      |           ✅           |       ✅      |       ✅      |
+| Test Explorer                         |       —      |           ✅           |       —       |       ✅      |
+| Debugger                              |       —      |           ✅           |       —       |       ✅      |
+| Cost                                  |    **Free**   |       Free (license)   |     Free      |   Paid (Pro)  |
+| Cross-platform                        |       ✅      |           ✅           |       ✅      |       —       |
+
+**Recommended setup:** install **C# Toolbox + C# Dev Kit + Roslynator** for the full VS Code experience that rivals Visual Studio at zero cost.
+
+---
+
+## Configuration
+
+Open **Settings** and search for **C# Toolbox**, or edit `settings.json`:
+
+| Setting                                                   | Type      | Default | Description                                                          |
+| --------------------------------------------------------- | --------- | ------- | -------------------------------------------------------------------- |
+| `csharp-snippet-productivity.defaultFolderForProjectCreation` | `string` | `""`    | Default parent folder pre-filled in the project wizard.              |
+| `csharp-snippet-productivity.multilineComments`           | `boolean` | `false` | Apply smart-comment colouring inside `/* … */` blocks.               |
+| `csharp-snippet-productivity.highlightPlainText`          | `boolean` | `false` | Apply smart-comment colouring to `.txt` files.                       |
+| `csharp-snippet-productivity.telemetry.enabled`           | `boolean` | `false` | Opt in to anonymous telemetry. **Nothing is collected today.** See [PRIVACY.md](./PRIVACY.md). |
+| `csharp-snippet-productivity.nuget.popularPackages`       | `array`   | 26 pkgs | Curated package list shown by `Quick Add NuGet`.                     |
+| `csharp-snippet-productivity.tags`                        | `array`   | 14 tags | Smart-comment tags, colours, and styles.                             |
+
+---
+
+## What's new in 3.0.0
+
+> -   **_New_**: **Framework-aware file scaffolds** — `Create Class / Interface / Struct / Record` now reads `<TargetFramework>` from your `.csproj` and emits **modern C# 10+ code** on .NET 6+: file-scoped namespaces, `internal` default, no obsolete `using System;`, and **positional records** (`public sealed record Order(...);`). Legacy `net5.0` / `netstandard*` projects keep the classic block-namespace template.
+> -   **_New_**: **Smart-comment defaults expanded** — 14 tags out of the box (`BUG`, `FIXME`, `TODO`, `HACK`, `WIP`, `XXX`, `WARNING`, `IMPORTANT`, `NOTE`, `RESEARCH`, `REVIEW`, `OPTIMIZE`, `DEPRECATED`, `//`).
+> -   **_New_**: **Clean Architecture** & **DDD** multi-project scaffolds — fail-fast: a failed `dotnet new` aborts the chain with a single clear error instead of cascading.
+> -   **_New_**: **Pattern Code Actions** (`Ctrl+.`) — Result, Option, Repository, CQRS, Specification, Builder, Unit of Work.
+> -   **_New_**: **Quick Add NuGet Package** — curated picker over 26 popular .NET packages.
+> -   **_New_**: **Analyze Solution** — project-graph + circular dependency detection.
+> -   **_New_**: **Welcome walkthrough** — first-class onboarding with four guided steps.
+> -   **_New_**: **Telemetry opt-in setting** + [PRIVACY.md](./PRIVACY.md).
+> -   **_Renamed_**: Marketplace display name simplified from "C# Toolbox of Productivity" to **"C# Toolbox"**. The extension ID, settings, and command IDs are unchanged — your existing config carries over.
+> -   **_Fixed_**: Stale-framework bug in file scaffolds — previously the framework was read from a `globalState` value set by the project wizard.
+
+Full [CHANGELOG](./CHANGELOG.md).
+
+<details>
+<summary><strong>What was new in earlier versions</strong></summary>
+
+### 2.2.0
+- Full **.NET 9.0** support across every modern template, plus first-class **.NET Aspire** and **Worker Service** templates.
+- **Modern C# snippets** for C# 11/12/13.
+- **Architectural pattern snippets** — Result/Option, CQRS handler, generic Repository, Specification, Fluent Builder, Unit of Work, Minimal API.
+- **Wizard UX overhaul** — recent projects, real-time validation, toast notifications, loading overlay, recommended/LTS framework badges, full keyboard navigation, theme-aware styling.
+- **Centralized Logger** ("C# Toolbox" Output channel) and a constants module.
+- **Unit test infrastructure** (Mocha + `vscode` mock) and **GitHub Actions CI**.
+
+### 2.1.1
+- All scaffold commands available in the command palette (not only context menu).
+- Template validation against the .NET SDK installed on the machine.
+
+### 2.0.x
+- Support for all project types and templates under project creation.
+- Support for **.NET 7.0** and **.NET 8.0**.
+- Performance improvements; snippet conflict fixes.
+
+### 1.x
+- File-scoped namespaces in .NET 6.0 templates.
+- Add Project to Solution; Create Class/Interface/Struct/Record from context menu.
+- Project Templates: Console, Class Library, Web API, MVC, Razor Page, Angular SPA, React SPA, gRPC, Razor Class Library, Blazor Server / WebAssembly.
+- Smart comment highlighting, GoF design pattern snippets, regex cheat-sheet.
+
+</details>
+
+---
+
+## Documentation
+
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** — How to set up a dev environment, coding standards, and the PR workflow.
+- **[PRIVACY.md](./PRIVACY.md)** — What we collect (currently nothing) and how the opt-in telemetry contract works.
+- **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — Module layout, command registry pattern, and the wizard message protocol.
+- **[docs/SNIPPETS.md](./docs/SNIPPETS.md)** — Catalog of every snippet, its prefix, and what it expands to.
+- **[docs/TESTING.md](./docs/TESTING.md)** — Test infrastructure, the `vscode` mock, and how to add a unit test.
+
+---
+
+## Like it? Help us grow
+
+If C# Toolbox saved you some clicks today, please:
+
+1. ⭐ **Rate it on the [Marketplace](https://marketplace.visualstudio.com/items?itemName=richardzampieriprog.csharp-snippet-productivity&ssr=false#review-details)** — reviews are the single biggest factor for new users finding the extension.
+2. ⭐ **Star the [GitHub repo](https://github.com/rsaz/csharp-snippet-productivity)** to follow updates.
+3. 🐛 **Open an issue** if something's broken or you want a new feature — every issue gets a response within 48 hours.
+4. 🤝 **Contribute** a snippet, a pattern, or a code action via PR — see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+---
+
+## Contributing
+
+> 1. **Fork** this repo to your own account
+> 2. **Clone** it locally and create a feature branch
+> 3. `npm install` then `npm run watch` to start the TypeScript compiler
+> 4. Press `F5` in VS Code to launch the Extension Development Host
+> 5. Make your changes, add tests under `src/test/suite/`, run `npm test`
+> 6. Open a **PR** against `main` — CI runs lint, build, and tests on Linux / macOS / Windows.
+
+Full guide: **[CONTRIBUTING.md](./CONTRIBUTING.md)**.
+
+---
+
+## License
+
+[MIT](./LICENSE.md) © Richard Zampieri

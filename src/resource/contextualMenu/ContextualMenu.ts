@@ -3,6 +3,11 @@ import * as path from "path";
 import * as fs from "fs";
 import * as parentFinder from "find-parent-dir";
 import * as os from "os";
+import {
+    readTargetFrameworkFromCsproj,
+    selectTemplateFile,
+    ScaffoldType,
+} from "./template-selection";
 const findUpGlob = require("find-up-glob");
 const lineByLine = require("n-readlines");
 
@@ -125,14 +130,53 @@ class ContextualMenu {
                 }
 
                 newFilePath = path.basename(newFilePath, ".cs");
+
+                const detectedFramework = detectFrameworkFromProject(
+                    pathSelected,
+                    projectRoot!
+                );
+                const effectiveFramework = detectedFramework ?? framework;
+
                 loadTemplate(
-                    fileType,
+                    fileType as ScaffoldType,
                     namespace,
                     newFilePath,
                     originalFilePath,
-                    framework
+                    effectiveFramework
                 );
             });
+    }
+}
+
+/**
+ * Locates the nearest `.csproj` to the current scaffold target and reads its
+ * `<TargetFramework>` (or first `<TargetFrameworks>` entry). Returns `undefined`
+ * when no csproj can be found or parsed — callers should fall back to the
+ * caller-supplied framework value in that case.
+ */
+function detectFrameworkFromProject(
+    pathSelected: string,
+    projectRoot: string
+): string | undefined {
+    const matches = findUpGlob.sync("*.csproj", { cwd: pathSelected });
+    const csproj: string | undefined =
+        matches && matches.length > 0
+            ? matches[0]
+            : findCsprojInDir(projectRoot);
+    if (!csproj) {
+        return undefined;
+    }
+    return readTargetFrameworkFromCsproj(csproj);
+}
+
+function findCsprojInDir(dir: string): string | undefined {
+    try {
+        const entry = fs
+            .readdirSync(dir)
+            .find((name) => name.toLowerCase().endsWith(".csproj"));
+        return entry ? path.join(dir, entry) : undefined;
+    } catch {
+        return undefined;
     }
 }
 
@@ -171,19 +215,13 @@ function getProjectRootDirOrFilePath(filePath: any): string | undefined {
 
 // load the template, replace by current values and create the document in the folder selected
 function loadTemplate(
-    templateType: string,
+    templateType: ScaffoldType,
     namespace: string,
     newFilepath: string,
     originalFilePath: string,
     framework: string
 ) {
-    let fileTemplate: string = "";
-
-    if (framework === "net6.0") {
-        fileTemplate = templateType + "6.mdl";
-    } else {
-        fileTemplate = templateType + ".mdl";
-    }
+    const fileTemplate = selectTemplateFile(templateType, framework);
 
     vscode.workspace
         .openTextDocument(

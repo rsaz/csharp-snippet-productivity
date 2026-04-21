@@ -1,0 +1,6 @@
+namespace ${namespace};
+
+internal readonly struct ${fileName}
+{
+    ${cursor}
+}
