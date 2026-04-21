@@ -1,0 +1,59 @@
+# General Guidelines
+
+-   Follow naming convetions and folder structures.
+-   Explore the codebase when unsure.
+-   Place public methods at the top of the files.
+-   Only add comments for complex function singatures.
+-   Keep solutions simple; don't refactor or remove working code unless instructed.
+-   We're using vscode extension api documentation for building the extension.
+-   We're using npm for the package manager.
+-   New code should go inside /src folder.
+
+## Critical
+
+-   Be proactive. Always look for potential improvements in the code.
+-   Make sure to use Cursor provided tools.
+-   Use the proposed code convention below
+
+| Name                   | Convention | Example       | Code Example                      |
+| ---------------------- | ---------- | ------------- | --------------------------------- |
+| single variable name   | camelCase  | variable      | `let age: number = 0;`            |
+| compound variable name | camelCase  | variableName  | `let firstName: string = "";`     |
+| constant name          | UPPER_CASE | CONSTANT      | `const CPU: number = 100;`        |
+| compound constant name | UPPER_CASE | CONSTANT_NAME | `const MAX_NUMBER: number = 100;` |
+| enum name              | PascalCase | MyEnum        | `enum MyEnum { A, B, C };`        |
+| function name          | camelCase  | function      | `function function()`             |
+| compound function name | camelCase  | myFunction    | `function myFunction()`           |
+| class name             | PascalCase | Class         | `class Base`                      |
+| compound class name    | PascalCase | MyClass       | `class MyClass`                   |
+| interface name         | PascalCase | Interface     | `interface IMyInterface`          |
+
+-   When facing issues, focus on the root cause, not remediating symptoms.
+-   Flag with this icon "❓" any quesitonable ideas and explain your concerns. Disagree with me when necessary!
+
+## Code Quality
+
+### Maintainability
+
+✅ Modularize code (split into reusable functions/classes).
+✅ Avoid magic numbers/strings (use constants/enums).
+✅ Follow DRY (Don’t Repeat Yourself) – reuse code via functions/utils.
+✅ Prefer pure functions (no side effects, same input → same output).
+✅ Minimize global state (use dependency injection/local variables).
+✅ Write self-documenting code (reduce comments when logic is clear).
+
+### Error Handling
+
+✅ Validate inputs (check for null, undefined, invalid types).
+✅ Handle errors gracefully (use try/catch, return Result types).
+✅ Avoid silent failures (log/throw meaningful errors).
+✅ Use assertions (console.assert, invariant checks in critical paths).
+✅ Fail fast (detect issues early in execution).
+
+### Performance
+
+✅ Avoid premature optimization (profile first, optimize bottlenecks).
+✅ Minimize memory leaks (clean up event listeners, timeouts, subscriptions).
+✅ Use efficient algorithms/data structures (e.g., Map vs. Array for lookups).
+✅ Debounce/throttle expensive operations (e.g., API calls, UI updates).
+✅ \*\*Lazy-load heavy dependencies

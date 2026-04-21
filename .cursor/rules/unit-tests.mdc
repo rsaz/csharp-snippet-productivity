@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Unit tests
+globs: src/**/__tests__/**/*.spec.ts
+alwaysApply: false
+---
+# Critical
+
+Whenever this rule is loaded, say first:
+`🧪 Unit tests rule loaded!`
+
+# Unit Test Guidelines
+
+- **CRITICAL:** Run tests with: `yarn jest relativepathtofile` and follow existing patterns
+- **IMPORTANT:** If tests fail, add console logs in the code/test to trace issues, then re-run and fix.
+- Mock methods via `jest.spyOn(SomeClass.prototype, "methodName")`.
+- Write tests incrementally; modify existing ones 
+- Use `describe`/`it` with clear descriptions.
+- Run tests individually after changes.
+- Place new tests in a __tests__ folder beside the source file (e.g., `./MyClassHere.ts` and `__tests__/MyClassHere.spec.ts`).
+- Provide full output without extra comments.

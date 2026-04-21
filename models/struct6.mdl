@@ -1,8 +1,10 @@
 using System;
 
-namespace ${namespace};
-
-public struct ${fileName}
+namespace ${namespace}
 {
-    ${cursor}
+    public struct ${fileName}
+    {
+        ${cursor}
+    }
 }
+

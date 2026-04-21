@@ -1,210 +1,667 @@
 /* eslint-disable curly */
-// This script will be run within the webview itself
-// It cannot access the main VS Code APIs directly.
-
+/**
+ * C# Toolbox - Project Creation Wizard
+ * Webview-side script. Cannot access VS Code APIs directly.
+ */
 (function () {
-    // vscode api
+    "use strict";
+
     const vscode = acquireVsCodeApi();
 
-    // Html elements bindings
-    const buttonCreateProject = document.getElementById("create-project-button");
-    const buttonFilePicker = document.getElementById("selectFolder");
-    const projectGroupSelect = document.getElementById("project-group-select");
-    const template = document.getElementById("custom-select");
-    const project = document.getElementById("projectName");
-    const filePath = document.getElementById("inputLocal");
-    const solution = document.getElementById("solution");
-    const framework = document.getElementById("custom-select2");
+    // ===== Constants =====
+    const PROJECT_NAME_REGEX = /^[A-Za-z_][A-Za-z0-9_.]*$/;
+    const RECOMMENDED_FRAMEWORKS = ["net9.0", "net8.0"];
+    const LTS_FRAMEWORKS = ["net8.0", "net6.0"];
+    const TOTAL_STEPS = 3;
+    const DEFAULT_TOAST_MS = 4000;
 
-    document.addEventListener("DOMContentLoaded", function (event) {
-        buttonCreateProject.disabled = "true";
-        buttonCreateProject.style.backgroundColor = "#3C3C3C";
-
-        // Event listener for project group selection
-        projectGroupSelect.addEventListener("change", function () {
-            loadTemplateSelect(this.value, "");
-        });
-
-        fieldValidation();
-    });
-
-    function fieldValidation() {
-        if (project.value === "" || solution.value === "") {
-            buttonCreateProject.disabled = true;
-        } else {
-            buttonCreateProject.disabled = false;
-            buttonCreateProject.style.backgroundColor = "#0E639C";
-        }
-    }
-
-    /* Project group select */
-    const projectGroupToTemplates = {
-        api: [
-            { templateName: ".NET Core Web API", shortName: "webapi" },
-            { templateName: ".NET Core Web API (native AOT)", shortName: "webapiaot" },
-            { templateName: "API Controller", shortName: "apicontroller" },
-        ],
-        blazor: [
-            { templateName: ".NET MAUI Blazor Hybrid App", shortName: "maui-blazor" },
-            { templateName: "Blazor Server App", shortName: "blazorserver" },
-            { templateName: "Blazor Server App Empty", shortName: "blazorserver-empty" },
-            { templateName: "Blazor Web App", shortName: "blazor" },
-            { templateName: "Blazor WebAssembly App Empty", shortName: "blazorwasm-empty" },
-            { templateName: "Blazor WebAssembly Standalone App", shortName: "blazorwasm" },
-        ],
-        cloud: [], // No specific templates for cloud in the given list
-        console: [{ templateName: "Console App", shortName: "console" }],
-        desktop: [
-            { templateName: "Windows Forms App", shortName: "winforms" },
-            { templateName: "Windows Forms Class Library", shortName: "winformslib" },
-            { templateName: "Windows Forms Control Library", shortName: "winformscontrollib" },
-            { templateName: "WPF Application", shortName: "wpf" },
-            { templateName: "WPF Class Library", shortName: "wpflib" },
-            { templateName: "WPF Custom Control Library", shortName: "wpfcustomcontrollib" },
-            { templateName: "WPF User Control Library", shortName: "wpfusercontrollib" },
-        ],
-        extensions: [], // No specific templates for extensions in the given list
-        game: [], // No specific templates for game in the given list
-        iot: [], // No specific templates for IoT in the given list
-        lib: [
-            { templateName: "Class Library", shortName: "classlib" },
-            { templateName: ".NET MAUI Class Library", shortName: "mauilib" },
-            { templateName: "Android Class Library", shortName: "androidlib" },
-            { templateName: "iOS Class Library", shortName: "ioslib" },
-            { templateName: "Mac Catalyst Class Library", shortName: "maccatalystlib" },
-            { templateName: "Razor Class Library", shortName: "razorclasslib" },
-        ],
-        machinelearning: [], // No specific templates for machine learning in the given list
-        maui: [
-            { templateName: ".NET MAUI App", shortName: "maui" },
-            { templateName: ".NET MAUI ContentPage (C#)", shortName: "maui-page-csharp" },
-            { templateName: ".NET MAUI ContentPage (XAML)", shortName: "maui-page-xaml" },
-            { templateName: ".NET MAUI ContentView (C#)", shortName: "maui-view-csharp" },
-            { templateName: ".NET MAUI ContentView (XAML)", shortName: "maui-view-xaml" },
-            { templateName: ".NET MAUI ResourceDictionary (XAML)", shortName: "maui-dict-xaml" },
-        ],
-        mobile: [
-            { templateName: "Android Application", shortName: "android" },
-            { templateName: "Android Wear Application", shortName: "androidwear" },
-            { templateName: "iOS Application", shortName: "ios" },
-            { templateName: "iOS Tabbed Application", shortName: "ios-tabbed" },
-        ],
-        test: [
-            { templateName: "MSTest Test Project", shortName: "mstest" },
-            { templateName: "MSTest Playwright Test Project", shortName: "mstest-playwright" },
-            { templateName: "NUnit 3 Test Project", shortName: "nunit" },
-            { templateName: "NUnit 3 Test Item", shortName: "nunit-test" },
-            { templateName: "NUnit Playwright Test Project", shortName: "nunit-playwright" },
-            { templateName: "xUnit Test Project", shortName: "xunit" },
-        ],
-        web: [
-            { templateName: "ASP.NET Core Empty", shortName: "web" },
-            { templateName: "ASP.NET Core gRPC Service", shortName: "grpc" },
-            { templateName: "ASP.NET Core Web App (Model-View-Controller)", shortName: "mvc" },
-            { templateName: "ASP.NET Core Web App (Razor Pages)", shortName: "webapp" },
-            { templateName: "ASP.NET Core with Angular", shortName: "angular" },
-            { templateName: "ASP.NET Core with React.js", shortName: "react" },
-            { templateName: "ASP.NET Core with React.js and Redux", shortName: "reactredux" },
-            { templateName: "Razor Component", shortName: "razorcomponent" },
-            { templateName: "Razor Page", shortName: "page" },
-            { templateName: "Razor View", shortName: "view" },
-        ],
+    // ===== State =====
+    const state = {
+        currentStep: 1,
+        selectedTemplate: null,
+        selectedTemplateName: null,
+        selectedFramework: null,
+        templateGroups: [],
+        recentProjects: loadPersistedState().recentProjects || [],
     };
 
-    // Load template select based on selected project group
-    function loadTemplateSelect(group, selectedTemplate) {
-        template.innerHTML = ""; // Clear existing options
+    // ===== DOM References =====
+    const dom = {
+        wizardSteps: document.querySelectorAll(".step"),
+        wizardStepsNav: document.querySelector(".wizard-steps"),
+        wizardPages: document.querySelectorAll(".wizard-page"),
+        prevButton: document.getElementById("prev-button"),
+        nextButton: document.getElementById("next-button"),
+        createButton: document.getElementById("create-project-button"),
+        projectGroupSelect: document.getElementById("project-group-select"),
+        templateSearch: document.getElementById("template-search"),
+        templateGrid: document.getElementById("template-grid"),
+        templateEmptyState: document.getElementById("template-empty-state"),
+        projectNameInput: document.getElementById("projectName"),
+        solutionInput: document.getElementById("solution"),
+        locationInput: document.getElementById("inputLocal"),
+        selectFolderButton: document.getElementById("selectFolder"),
+        frameworkGrid: document.getElementById("framework-grid"),
+        httpsCheckbox: document.getElementById("https-checkbox"),
+        dockerCheckbox: document.getElementById("docker-checkbox"),
+        recentProjectsSection: document.getElementById("recent-projects-section"),
+        recentProjectsList: document.getElementById("recent-projects-list"),
+        clearRecentBtn: document.getElementById("clear-recent"),
+        loadingOverlay: document.getElementById("loading-overlay"),
+        loadingText: document.getElementById("loading-text"),
+        toastContainer: document.getElementById("toast-container"),
+        projectNameError: document.getElementById("projectName-error"),
+        solutionError: document.getElementById("solution-error"),
+        locationError: document.getElementById("location-error"),
+    };
 
-        // Add default 'Select Template' option
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "Select Template";
-        template.appendChild(defaultOption);
-
-        // Check if a project group is selected before populating templates
-        if (group && projectGroupToTemplates[group]) {
-            const templates = projectGroupToTemplates[group];
-            templates.forEach((tmpl) => {
-                const option = document.createElement("option");
-                option.value = tmpl.shortName;
-                option.textContent = tmpl.templateName;
-                if (tmpl.shortName === selectedTemplate) option.selected = true;
-                template.appendChild(option);
-            });
+    // ===== Persistence =====
+    function loadPersistedState() {
+        try {
+            return vscode.getState() || {};
+        } catch {
+            return {};
         }
     }
 
-    // Receive message from the extension
-    window.addEventListener("message", (event) => {
-        const message = event.data; // The JSON data our extension sent
+    function persistState() {
+        try {
+            vscode.setState({
+                recentProjects: state.recentProjects,
+            });
+        } catch (e) {
+            console.warn("Could not persist state", e);
+        }
+    }
 
+    // ===== Toast Notifications =====
+    function showToast(message, type = "info", durationMs = DEFAULT_TOAST_MS) {
+        const toast = document.createElement("div");
+        toast.className = `toast toast-${type}`;
+        toast.setAttribute("role", "status");
+
+        const icons = { success: "✓", error: "✕", warning: "!", info: "i" };
+        toast.innerHTML = `
+            <span class="toast-icon">${icons[type] || icons.info}</span>
+            <span class="toast-message"></span>
+            <button class="toast-close" aria-label="Dismiss notification">×</button>
+        `;
+        toast.querySelector(".toast-message").textContent = message;
+
+        const close = () => {
+            toast.classList.add("toast-removing");
+            setTimeout(() => toast.remove(), 250);
+        };
+
+        toast.querySelector(".toast-close").addEventListener("click", close);
+        dom.toastContainer.appendChild(toast);
+
+        if (durationMs > 0) {
+            setTimeout(close, durationMs);
+        }
+    }
+
+    // ===== Loading Overlay =====
+    function showLoading(text) {
+        dom.loadingText.textContent = text || "Loading...";
+        dom.loadingOverlay.classList.add("visible");
+    }
+
+    function hideLoading() {
+        dom.loadingOverlay.classList.remove("visible");
+    }
+
+    // ===== Validation =====
+    function isValidName(value) {
+        return typeof value === "string" && PROJECT_NAME_REGEX.test(value.trim());
+    }
+
+    function setFieldError(fieldGroup, hasError) {
+        if (hasError) {
+            fieldGroup.classList.add("has-error");
+        } else {
+            fieldGroup.classList.remove("has-error");
+        }
+    }
+
+    function setInputValidity(input, isValid, isTouched) {
+        input.classList.toggle("invalid", isTouched && !isValid);
+        input.classList.toggle("valid", isValid);
+    }
+
+    function validateStep1() {
+        return Boolean(state.selectedTemplate);
+    }
+
+    function validateStep2() {
+        const projectName = dom.projectNameInput.value.trim();
+        const solution = dom.solutionInput.value.trim();
+        const location = dom.locationInput.value.trim();
+
+        const projectValid = isValidName(projectName);
+        const solutionValid = isValidName(solution);
+        const locationValid = location.length > 0;
+
+        setInputValidity(dom.projectNameInput, projectValid, projectName.length > 0);
+        setInputValidity(dom.solutionInput, solutionValid, solution.length > 0);
+
+        setFieldError(
+            dom.projectNameInput.closest(".form-group"),
+            projectName.length > 0 && !projectValid
+        );
+        setFieldError(
+            dom.solutionInput.closest(".form-group"),
+            solution.length > 0 && !solutionValid
+        );
+        setFieldError(
+            dom.locationInput.closest(".form-group"),
+            false
+        );
+
+        return projectValid && solutionValid && locationValid;
+    }
+
+    function validateStep3() {
+        return Boolean(state.selectedFramework);
+    }
+
+    function validateCurrentStep() {
+        switch (state.currentStep) {
+            case 1: return validateStep1();
+            case 2: return validateStep2();
+            case 3: return validateStep3();
+            default: return false;
+        }
+    }
+
+    function updateNavButtons() {
+        const isValid = validateCurrentStep();
+        dom.prevButton.disabled = state.currentStep === 1;
+
+        if (state.currentStep === TOTAL_STEPS) {
+            dom.nextButton.classList.add("hidden");
+            dom.createButton.classList.remove("hidden");
+            dom.createButton.disabled = !isValid;
+        } else {
+            dom.nextButton.classList.remove("hidden");
+            dom.createButton.classList.add("hidden");
+            dom.nextButton.disabled = !isValid;
+        }
+    }
+
+    // ===== Wizard Navigation =====
+    function goToStep(step) {
+        if (step < 1 || step > TOTAL_STEPS) return;
+        state.currentStep = step;
+        renderWizardState();
+    }
+
+    function nextStep() {
+        if (!validateCurrentStep()) {
+            showToast("Please complete the required fields before continuing.", "warning");
+            return;
+        }
+        if (state.currentStep < TOTAL_STEPS) {
+            goToStep(state.currentStep + 1);
+        }
+    }
+
+    function prevStep() {
+        if (state.currentStep > 1) {
+            goToStep(state.currentStep - 1);
+        }
+    }
+
+    function renderWizardState() {
+        dom.wizardSteps.forEach((step, index) => {
+            const stepNum = index + 1;
+            step.classList.toggle("active", stepNum === state.currentStep);
+            step.classList.toggle("completed", stepNum < state.currentStep);
+            if (stepNum === state.currentStep) {
+                step.setAttribute("aria-current", "step");
+            } else {
+                step.removeAttribute("aria-current");
+            }
+        });
+
+        dom.wizardStepsNav.setAttribute("data-progress", state.currentStep);
+
+        dom.wizardPages.forEach((page) => {
+            const pageStep = parseInt(page.dataset.step, 10);
+            page.classList.toggle("active", pageStep === state.currentStep);
+        });
+
+        updateNavButtons();
+    }
+
+    // ===== Template Handling =====
+    function populateProjectGroups(templateGroups) {
+        state.templateGroups = templateGroups || [];
+        dom.projectGroupSelect.innerHTML = "";
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "All Categories";
+        dom.projectGroupSelect.appendChild(defaultOption);
+
+        state.templateGroups.forEach((group) => {
+            const option = document.createElement("option");
+            option.value = group.name;
+            option.textContent = group.displayName;
+            dom.projectGroupSelect.appendChild(option);
+        });
+
+        renderTemplates();
+    }
+
+    function getFilteredTemplates() {
+        const groupFilter = dom.projectGroupSelect.value;
+        const searchTerm = dom.templateSearch.value.trim().toLowerCase();
+
+        let templates = [];
+        state.templateGroups.forEach((group) => {
+            if (!groupFilter || group.name === groupFilter) {
+                templates = templates.concat(
+                    group.templates.map((t) => ({ ...t, groupName: group.displayName }))
+                );
+            }
+        });
+
+        if (searchTerm) {
+            templates = templates.filter((t) => {
+                const haystack = [
+                    t.templateName,
+                    t.shortName,
+                    t.description || "",
+                    (t.tags || []).join(" "),
+                ]
+                    .join(" ")
+                    .toLowerCase();
+                return haystack.includes(searchTerm);
+            });
+        }
+
+        return templates;
+    }
+
+    function renderTemplates() {
+        const templates = getFilteredTemplates();
+        dom.templateGrid.innerHTML = "";
+
+        if (templates.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "empty-state";
+            empty.innerHTML = `
+                <div class="empty-state-icon">∅</div>
+                <div class="empty-state-text">No templates match your search</div>
+            `;
+            dom.templateGrid.appendChild(empty);
+            return;
+        }
+
+        templates.forEach((template) => {
+            dom.templateGrid.appendChild(createTemplateCard(template));
+        });
+
+        // Re-apply selection if any
+        if (state.selectedTemplate) {
+            const selected = dom.templateGrid.querySelector(
+                `[data-template="${state.selectedTemplate}"]`
+            );
+            if (selected) selected.classList.add("selected");
+        }
+    }
+
+    function createTemplateCard(template) {
+        const card = document.createElement("div");
+        card.className = "template-card";
+        card.dataset.template = template.shortName;
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", template.templateName);
+
+        const content = document.createElement("div");
+        content.className = "template-content";
+
+        const title = document.createElement("h3");
+        title.textContent = template.templateName;
+        content.appendChild(title);
+
+        if (template.description) {
+            const description = document.createElement("p");
+            description.textContent = template.description;
+            content.appendChild(description);
+        }
+
+        if (template.tags && template.tags.length > 0) {
+            const tags = document.createElement("div");
+            tags.className = "template-tags";
+            template.tags.forEach((tag) => {
+                const tagElement = document.createElement("span");
+                tagElement.className = "tag";
+                tagElement.textContent = tag;
+                tags.appendChild(tagElement);
+            });
+            content.appendChild(tags);
+        }
+
+        if (template.platforms && template.platforms.length > 0) {
+            const platforms = document.createElement("div");
+            platforms.className = "template-platforms";
+            const platformText = document.createElement("small");
+            platformText.textContent = `Platforms: ${template.platforms.join(", ")}`;
+            platforms.appendChild(platformText);
+            content.appendChild(platforms);
+        }
+
+        card.appendChild(content);
+
+        const select = () => {
+            document
+                .querySelectorAll(".template-card")
+                .forEach((c) => c.classList.remove("selected"));
+            card.classList.add("selected");
+            state.selectedTemplate = template.shortName;
+            state.selectedTemplateName = template.templateName;
+            updateNavButtons();
+        };
+
+        card.addEventListener("click", select);
+        card.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                select();
+            }
+        });
+
+        return card;
+    }
+
+    // ===== Frameworks =====
+    function populateFrameworks(sdks) {
+        dom.frameworkGrid.innerHTML = "";
+
+        const versionGroups = new Map();
+        sdks.forEach((sdk) => {
+            const match = sdk.match(/^(\d+)\.(\d+)\.\d+/);
+            if (match) {
+                const majorVersion = match[1];
+                const minorVersion = match[2];
+                const version = `${majorVersion}.${minorVersion}`;
+                const fullVersion = sdk.split(" ")[0];
+                if (
+                    !versionGroups.has(version) ||
+                    versionGroups
+                        .get(version)
+                        .localeCompare(fullVersion, undefined, { numeric: true }) < 0
+                ) {
+                    versionGroups.set(version, fullVersion);
+                }
+            }
+        });
+
+        const sortedVersions = Array.from(versionGroups.entries()).sort((a, b) => {
+            const [majorA, minorA] = a[0].split(".").map(Number);
+            const [majorB, minorB] = b[0].split(".").map(Number);
+            if (majorA !== majorB) return majorB - majorA;
+            return minorB - minorA;
+        });
+
+        sortedVersions.forEach(([version, fullVersion]) => {
+            const frameworkId = `net${version}`;
+            const card = document.createElement("div");
+            card.className = "framework-card";
+            card.dataset.framework = frameworkId;
+            card.dataset.version = fullVersion;
+            card.setAttribute("role", "radio");
+            card.setAttribute("tabindex", "0");
+            card.setAttribute("aria-checked", "false");
+            card.setAttribute("aria-label", `.NET ${version}`);
+
+            if (RECOMMENDED_FRAMEWORKS.includes(frameworkId)) {
+                card.classList.add("recommended");
+            }
+
+            const title = document.createElement("h3");
+            title.textContent = `.NET ${version}`;
+            card.appendChild(title);
+
+            if (LTS_FRAMEWORKS.includes(frameworkId)) {
+                const badge = document.createElement("span");
+                badge.className = "lts-badge";
+                badge.textContent = "LTS";
+                card.appendChild(badge);
+            }
+
+            const select = () => {
+                document.querySelectorAll(".framework-card").forEach((c) => {
+                    c.classList.remove("selected");
+                    c.setAttribute("aria-checked", "false");
+                });
+                card.classList.add("selected");
+                card.setAttribute("aria-checked", "true");
+                state.selectedFramework = frameworkId;
+                updateNavButtons();
+            };
+
+            card.addEventListener("click", select);
+            card.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    select();
+                }
+            });
+
+            dom.frameworkGrid.appendChild(card);
+        });
+
+        // Auto-select first recommended if available
+        const firstRecommended = dom.frameworkGrid.querySelector(
+            ".framework-card.recommended"
+        );
+        if (firstRecommended && !state.selectedFramework) {
+            firstRecommended.click();
+        }
+    }
+
+    // ===== Recent Projects =====
+    function renderRecentProjects() {
+        if (!state.recentProjects || state.recentProjects.length === 0) {
+            dom.recentProjectsSection.classList.add("hidden");
+            return;
+        }
+
+        dom.recentProjectsSection.classList.remove("hidden");
+        dom.recentProjectsList.innerHTML = "";
+
+        state.recentProjects.slice(0, 6).forEach((project) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "recent-project-chip";
+            chip.title = `Reuse template "${project.templateName}" (${project.framework})`;
+            chip.innerHTML = `
+                <span class="icon">↻</span>
+                <span class="text"></span>
+            `;
+            chip.querySelector(".text").textContent = `${project.templateName} · ${project.framework}`;
+            chip.addEventListener("click", () => {
+                state.selectedTemplate = project.template;
+                state.selectedTemplateName = project.templateName;
+                state.selectedFramework = project.framework;
+                renderTemplates();
+                showToast(
+                    `Loaded recent template "${project.templateName}"`,
+                    "info",
+                    2500
+                );
+                updateNavButtons();
+            });
+            dom.recentProjectsList.appendChild(chip);
+        });
+    }
+
+    function addRecentProject(entry) {
+        if (!entry || !entry.template) return;
+        state.recentProjects = [
+            entry,
+            ...state.recentProjects.filter(
+                (p) => !(p.template === entry.template && p.framework === entry.framework)
+            ),
+        ].slice(0, 10);
+        persistState();
+    }
+
+    // ===== Message Handling =====
+    window.addEventListener("message", (event) => {
+        const message = event.data;
         switch (message.command) {
-            case "updateState":
-                projectGroupSelect.value = message.projectGroup;
-                loadTemplateSelect(message.projectGroup, message.selectedTemplate);
+            case "templates":
+                populateProjectGroups(message.templates);
+                break;
+            case "updateLocation":
+                dom.locationInput.value = message.filepath;
+                updateNavButtons();
+                break;
+            case "sdkVersions":
+                populateFrameworks(message.versions);
+                break;
+            case "creationStarted":
+                showLoading(message.text || "Creating project...");
+                break;
+            case "creationCompleted":
+                hideLoading();
+                showToast(
+                    message.text || "Project created successfully!",
+                    "success"
+                );
+                break;
+            case "creationFailed":
+                hideLoading();
+                showToast(
+                    message.text || "Project creation failed.",
+                    "error",
+                    6000
+                );
+                break;
+            case "showToast":
+                showToast(message.text, message.type || "info", message.durationMs);
                 break;
         }
     });
-    /* Project group select End of Implementation */
 
-    template.addEventListener("keydown" | "click", () => {
-        project.focus();
-    });
+    // ===== Event Wiring =====
+    function setupEventListeners() {
+        dom.prevButton.addEventListener("click", prevStep);
+        dom.nextButton.addEventListener("click", nextStep);
 
-    project.addEventListener("change", () => {
-        solution.value = project.value;
-        fieldValidation();
-    });
+        dom.projectGroupSelect.addEventListener("change", renderTemplates);
+        dom.templateSearch.addEventListener("input", debounce(renderTemplates, 150));
 
-    solution.addEventListener("keyup", () => {
-        fieldValidation();
-    });
+        dom.projectNameInput.addEventListener("input", () => {
+            const projectName = dom.projectNameInput.value.trim();
+            if (
+                !dom.solutionInput.value ||
+                dom.solutionInput.value === dom.projectNameInput.dataset.lastValue
+            ) {
+                dom.solutionInput.value = projectName;
+            }
+            dom.projectNameInput.dataset.lastValue = projectName;
+            updateNavButtons();
+        });
 
-    filePath.addEventListener("keyup" | "focus", () => {
-        fieldValidation();
-    });
+        dom.solutionInput.addEventListener("input", updateNavButtons);
 
-    filePath.addEventListener("keydown", () => {
-        buttonFilePicker.focus();
-    });
+        dom.selectFolderButton.addEventListener("click", () => {
+            vscode.postMessage({ command: "selectDirectory" });
+        });
 
-    // create console project
-    buttonCreateProject.addEventListener("click", () => {
-        let frameworkSelected = framework.options[framework.selectedIndex].value;
-        let frameworkRun = "";
+        dom.createButton.addEventListener("click", submitProject);
 
-        if (frameworkSelected === "2.0") frameworkRun = "netcoreapp2.0";
-        else if (frameworkSelected === "2.1") frameworkRun = "netcoreapp2.1";
-        else if (frameworkSelected === "2.2") frameworkRun = "netcoreapp2.2";
-        else if (frameworkSelected === "3.0") frameworkRun = "netcoreapp3.0";
-        else if (frameworkSelected === "3.1") frameworkRun = "netcoreapp3.1";
-        else if (frameworkSelected === "5.0") frameworkRun = "net5.0";
-        else if (frameworkSelected === "6.0") frameworkRun = "net6.0";
-        else if (frameworkSelected === "7.0") frameworkRun = "net7.0";
-        else if (frameworkSelected === "8.0") frameworkRun = "net8.0";
+        dom.dockerCheckbox.addEventListener("change", (e) => {
+            const containerOptions = document.querySelector(".container-options");
+            containerOptions.classList.toggle("visible", e.target.checked);
+        });
 
-        vscode.postMessage({
+        if (dom.clearRecentBtn) {
+            dom.clearRecentBtn.addEventListener("click", () => {
+                state.recentProjects = [];
+                persistState();
+                renderRecentProjects();
+                showToast("Recent projects cleared.", "info", 2000);
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener("keydown", (e) => {
+            const tag = (e.target && e.target.tagName) || "";
+            const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+
+            if (e.key === "Escape") {
+                if (dom.loadingOverlay.classList.contains("visible")) return;
+                vscode.postMessage({ command: "closePanel" });
+            } else if (e.key === "Enter" && !isInput) {
+                if (state.currentStep < TOTAL_STEPS) {
+                    nextStep();
+                } else if (validateCurrentStep()) {
+                    submitProject();
+                }
+            }
+        });
+    }
+
+    function submitProject() {
+        if (!validateCurrentStep()) {
+            showToast("Please complete all required fields.", "warning");
+            return;
+        }
+
+        const projectName = dom.projectNameInput.value.trim();
+        const solutionName = dom.solutionInput.value.trim();
+        const location = dom.locationInput.value.trim();
+        const framework = state.selectedFramework;
+
+        const payload = {
             command: "createProject",
-            template: template.options[template.selectedIndex].value,
-            project: project.value,
-            filePath: filePath.value,
-            solution: solution.value,
-            framework: frameworkRun,
-        });
-    });
+            project: projectName,
+            solution: solutionName,
+            template: state.selectedTemplate,
+            framework: framework,
+            authType: document.getElementById("auth-type").value,
+            noHttps: !dom.httpsCheckbox.checked,
+            docker: dom.dockerCheckbox.checked,
+            containerOs: document.getElementById("container-os").value,
+            containerBuildType: document.getElementById("container-build-type").value,
+            openApi: document.getElementById("openapi-checkbox").checked,
+            noTopLevelStatements: document.getElementById(
+                "top-level-statements-checkbox"
+            ).checked,
+            useControllers: document.getElementById("controllers-checkbox").checked,
+        };
 
-    // file picker to save the project in a specific location
-    buttonFilePicker.addEventListener("click", () => {
-        solution.focus();
-        vscode.postMessage({
-            command: "selectDirectory",
-            projectGroupSelect:
-                projectGroupSelect.options[projectGroupSelect.selectedIndex].textContent,
-            templateName: template.options[template.selectedIndex].text,
-            template: template.options[template.selectedIndex].value,
-            project: project.value,
-            solution: solution.value,
-            framework: framework.options[framework.selectedIndex].value,
+        addRecentProject({
+            template: state.selectedTemplate,
+            templateName: state.selectedTemplateName || state.selectedTemplate,
+            framework: framework,
         });
+
+        showLoading(`Creating ${projectName}...`);
+        vscode.postMessage(payload);
+    }
+
+    function debounce(fn, delay) {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => fn.apply(this, args), delay);
+        };
+    }
+
+    // ===== Initialization =====
+    document.addEventListener("DOMContentLoaded", () => {
+        renderRecentProjects();
+        vscode.postMessage({ command: "getTemplates" });
+        vscode.postMessage({ command: "getSDKVersions" });
+        renderWizardState();
+        setupEventListeners();
     });
 })();

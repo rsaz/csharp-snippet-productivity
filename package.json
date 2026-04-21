@@ -1,8 +1,8 @@
 {
     "name": "csharp-snippet-productivity",
-    "displayName": "C# Toolbox of Productivity",
-    "description": "The complete set of tools for C# development",
-    "version": "2.1.1",
+    "displayName": "C# Toolbox",
+    "description": "Scaffold solutions, insert patterns, and ship modern C# in seconds.",
+    "version": "3.0.0",
     "icon": "icon.png",
     "publisher": "richardzampieriprog",
     "license": "SEE LICENSE IN LICENSE.md",
@@ -19,12 +19,44 @@
         "Formatters"
     ],
     "keywords": [
+        "C#",
         ".NET",
         ".NET Core",
-        "C#",
-        "Visual Studio",
-        "snippet",
+        ".NET 9",
+        ".NET 8",
+        "scaffolding",
+        "snippets",
         "productivity",
+        "code generation",
+        "clean architecture",
+        "ddd",
+        "domain driven design",
+        "cqrs",
+        "mediatr",
+        "result pattern",
+        "repository pattern",
+        "specification pattern",
+        "fluent builder",
+        "unit of work",
+        "ef core",
+        "entity framework",
+        "serilog",
+        "fluentvalidation",
+        "aspire",
+        "minimal api",
+        "blazor",
+        "worker service",
+        "dotnet new",
+        "csproj",
+        "nuget",
+        "modern c#",
+        "primary constructors",
+        "file scoped namespace",
+        "positional records",
+        "smart comments",
+        "better comments",
+        "todo highlight",
+        "Visual Studio",
         "keybindings"
     ],
     "extensionKind": [
@@ -48,6 +80,14 @@
             {
                 "language": "csharp",
                 "path": "./snippets/designpattern.json"
+            },
+            {
+                "language": "csharp",
+                "path": "./snippets/modern.json"
+            },
+            {
+                "language": "csharp",
+                "path": "./snippets/patterns.json"
             }
         ],
         "commands": [
@@ -82,8 +122,28 @@
                 "category": "C# Toolbox"
             },
             {
-                "command": "csharp-snippet-productivity.scaffoldResources",
-                "title": "Scaffold Resources",
+                "command": "csharp-snippet-productivity.scaffoldCleanArchitecture",
+                "title": "Scaffold Clean Architecture Solution",
+                "category": "C# Toolbox"
+            },
+            {
+                "command": "csharp-snippet-productivity.scaffoldDdd",
+                "title": "Scaffold DDD Solution",
+                "category": "C# Toolbox"
+            },
+            {
+                "command": "csharp-snippet-productivity.quickAddNuget",
+                "title": "Quick Add NuGet Package",
+                "category": "C# Toolbox"
+            },
+            {
+                "command": "csharp-snippet-productivity.analyzeSolution",
+                "title": "Analyze Solution",
+                "category": "C# Toolbox"
+            },
+            {
+                "command": "csharp-snippet-productivity.openWalkthrough",
+                "title": "Open Getting Started Walkthrough",
                 "category": "C# Toolbox"
             }
         ],
@@ -115,11 +175,6 @@
                 "command": "csharp-snippet-productivity.createRecord",
                 "key": "ctrl+alt+/ r",
                 "when": "!editorReadonly"
-            },
-            {
-                "command": "csharp-snippet-productivity.scaffoldResources",
-                "key": "ctrl+alt+/ ctrl+e",
-                "when": "!editorReadonly"
             }
         ],
         "menus": {
@@ -144,9 +199,6 @@
                 },
                 {
                     "command": "csharp-snippet-productivity.addProjectToSolution"
-                },
-                {
-                    "command": "csharp-snippet-productivity.scaffoldResources"
                 }
             ],
             "commandPalette": [
@@ -175,7 +227,23 @@
                     "when": "true"
                 },
                 {
-                    "command": "csharp-snippet-productivity.scaffoldResources",
+                    "command": "csharp-snippet-productivity.scaffoldCleanArchitecture",
+                    "when": "true"
+                },
+                {
+                    "command": "csharp-snippet-productivity.scaffoldDdd",
+                    "when": "true"
+                },
+                {
+                    "command": "csharp-snippet-productivity.quickAddNuget",
+                    "when": "true"
+                },
+                {
+                    "command": "csharp-snippet-productivity.analyzeSolution",
+                    "when": "true"
+                },
+                {
+                    "command": "csharp-snippet-productivity.openWalkthrough",
                     "when": "true"
                 }
             ]
@@ -186,8 +254,49 @@
                 "label": "C# Toolbox: Options"
             }
         ],
+        "walkthroughs": [
+            {
+                "id": "csharp-toolbox-getting-started",
+                "title": "Get started with C# Toolbox",
+                "description": "Scaffold .NET projects, generate C# files, and accelerate your workflow with modern snippets and architectural patterns.",
+                "steps": [
+                    {
+                        "id": "create-project",
+                        "title": "Create your first project",
+                        "description": "Launch the project creation wizard and pick from .NET 9, Aspire, Blazor, MAUI, Worker Service, and more.\n[Open Create Project](command:csharp-snippet-productivity.createProject)",
+                        "media": {
+                            "markdown": "walkthroughs/01-create-project.md"
+                        }
+                    },
+                    {
+                        "id": "scaffold-files",
+                        "title": "Scaffold C# files instantly",
+                        "description": "Add classes, interfaces, structs, or records with the right namespace pre-filled — straight from the explorer or the command palette.",
+                        "media": {
+                            "markdown": "walkthroughs/02-scaffold-files.md"
+                        }
+                    },
+                    {
+                        "id": "modern-snippets",
+                        "title": "Use modern C# snippets",
+                        "description": "Type prefixes like `colexpr`, `pctor`, `reqprop`, `result`, `minimalapi` to expand fully-formed snippets.",
+                        "media": {
+                            "markdown": "walkthroughs/03-modern-snippets.md"
+                        }
+                    },
+                    {
+                        "id": "advanced",
+                        "title": "Architecture scaffolds & patterns",
+                        "description": "Scaffold complete Clean Architecture / DDD solutions, insert design patterns at the cursor, and quick-add curated NuGet packages.",
+                        "media": {
+                            "markdown": "walkthroughs/04-advanced.md"
+                        }
+                    }
+                ]
+            }
+        ],
         "configuration": {
-            "title": "C# Toolbox of Productivity",
+            "title": "C# Toolbox",
             "properties": {
                 "csharp-snippet-productivity.defaultFolderForProjectCreation": {
                     "type": [
@@ -207,13 +316,125 @@
                     "description": "Whether the plaintext comment highlighter should be active",
                     "default": false
                 },
+                "csharp-snippet-productivity.telemetry.enabled": {
+                    "type": "boolean",
+                    "description": "Send anonymous usage telemetry (template usage counts, command invocations) to help improve the extension. Reset to false to opt out at any time. See PRIVACY.md for details on what is collected.",
+                    "default": false
+                },
+                "csharp-snippet-productivity.nuget.popularPackages": {
+                    "type": "array",
+                    "description": "Curated list of NuGet packages shown in the 'Quick Add NuGet Package' picker. Each entry is a string in the form '<package-id>: <description>'.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "Serilog.AspNetCore: Structured logging for ASP.NET Core",
+                        "Serilog.Sinks.Console: Console sink for Serilog",
+                        "Polly: Resilience and transient-fault-handling library",
+                        "MediatR: Simple, unambitious mediator implementation",
+                        "FluentValidation: Validation library for .NET",
+                        "FluentValidation.AspNetCore: ASP.NET Core integration for FluentValidation",
+                        "AutoMapper: Object-to-object mapping",
+                        "Microsoft.EntityFrameworkCore: Entity Framework Core ORM",
+                        "Microsoft.EntityFrameworkCore.SqlServer: SQL Server provider for EF Core",
+                        "Microsoft.EntityFrameworkCore.Sqlite: SQLite provider for EF Core",
+                        "Microsoft.EntityFrameworkCore.Design: Design-time tools for EF Core",
+                        "Dapper: Lightweight micro-ORM",
+                        "Newtonsoft.Json: JSON framework for .NET",
+                        "Swashbuckle.AspNetCore: Swagger / OpenAPI for ASP.NET Core",
+                        "Microsoft.Extensions.Http.Polly: Polly integration for HttpClientFactory",
+                        "Microsoft.AspNetCore.Authentication.JwtBearer: JWT bearer authentication",
+                        "BenchmarkDotNet: .NET benchmarking library",
+                        "xunit: xUnit testing framework",
+                        "xunit.runner.visualstudio: Visual Studio runner for xUnit",
+                        "Moq: The most popular .NET mocking library",
+                        "FluentAssertions: Fluent assertions for tests",
+                        "NSubstitute: Friendly mocking framework",
+                        "Bogus: Fake-data generator",
+                        "Hangfire: Background job processing",
+                        "MassTransit: Distributed application framework",
+                        "Refit: Type-safe REST library"
+                    ]
+                },
                 "csharp-snippet-productivity.tags": {
                     "type": "array",
-                    "description": "Colored comments. Select your favorite colors. Changes require a restart of VS Code to take effect",
+                    "description": "Colored comments. Each entry highlights single-line comments whose first word matches the tag (e.g. '// TODO: refactor'). Edit colors and add custom tags here. Changes require a window reload.",
                     "default": [
                         {
                             "tag": "bug",
                             "color": "#FF2D00",
+                            "strikethrough": false,
+                            "underline": false,
+                            "backgroundColor": "transparent",
+                            "bold": true,
+                            "italic": false
+                        },
+                        {
+                            "tag": "fixme",
+                            "color": "#FF2D00",
+                            "strikethrough": false,
+                            "underline": false,
+                            "backgroundColor": "transparent",
+                            "bold": true,
+                            "italic": false
+                        },
+                        {
+                            "tag": "todo",
+                            "color": "#FF8C00",
+                            "strikethrough": false,
+                            "underline": false,
+                            "backgroundColor": "transparent",
+                            "bold": true,
+                            "italic": false
+                        },
+                        {
+                            "tag": "hack",
+                            "color": "#E2C541",
+                            "strikethrough": false,
+                            "underline": false,
+                            "backgroundColor": "transparent",
+                            "bold": false,
+                            "italic": true
+                        },
+                        {
+                            "tag": "wip",
+                            "color": "#E2C541",
+                            "strikethrough": false,
+                            "underline": false,
+                            "backgroundColor": "transparent",
+                            "bold": false,
+                            "italic": true
+                        },
+                        {
+                            "tag": "xxx",
+                            "color": "#FF2D00",
+                            "strikethrough": false,
+                            "underline": true,
+                            "backgroundColor": "transparent",
+                            "bold": true,
+                            "italic": false
+                        },
+                        {
+                            "tag": "warning",
+                            "color": "#FF8C00",
+                            "strikethrough": false,
+                            "underline": false,
+                            "backgroundColor": "transparent",
+                            "bold": false,
+                            "italic": false
+                        },
+                        {
+                            "tag": "important",
+                            "color": "#FF2D00",
+                            "strikethrough": false,
+                            "underline": true,
+                            "backgroundColor": "transparent",
+                            "bold": true,
+                            "italic": false
+                        },
+                        {
+                            "tag": "note",
+                            "color": "#3498DB",
                             "strikethrough": false,
                             "underline": false,
                             "backgroundColor": "transparent",
@@ -230,27 +451,36 @@
                             "italic": false
                         },
                         {
-                            "tag": "//",
-                            "color": "#474747",
+                            "tag": "review",
+                            "color": "#B429A9",
+                            "strikethrough": false,
+                            "underline": false,
+                            "backgroundColor": "transparent",
+                            "bold": false,
+                            "italic": false
+                        },
+                        {
+                            "tag": "optimize",
+                            "color": "#4EC9B0",
+                            "strikethrough": false,
+                            "underline": false,
+                            "backgroundColor": "transparent",
+                            "bold": false,
+                            "italic": false
+                        },
+                        {
+                            "tag": "deprecated",
+                            "color": "#878787",
                             "strikethrough": true,
                             "underline": false,
                             "backgroundColor": "transparent",
                             "bold": false,
-                            "italic": false
+                            "italic": true
                         },
                         {
-                            "tag": "todo",
-                            "color": "#FF8C00",
-                            "strikethrough": false,
-                            "underline": false,
-                            "backgroundColor": "transparent",
-                            "bold": false,
-                            "italic": false
-                        },
-                        {
-                            "tag": "review",
-                            "color": "#B429A9",
-                            "strikethrough": false,
+                            "tag": "//",
+                            "color": "#474747",
+                            "strikethrough": true,
                             "underline": false,
                             "backgroundColor": "transparent",
                             "bold": false,
@@ -270,9 +500,10 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile && npm run lint",
         "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js",
+        "compile:test": "tsc -p tsconfig.test.json",
+        "pretest": "npm run lint && npm run compile:test",
+        "test": "node ./out-test/test/runTest.js",
         "package": "vsce package"
     },
     "devDependencies": {

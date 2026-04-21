@@ -1,0 +1,151 @@
+{
+    "-> Result Pattern": {
+        "prefix": "result",
+        "body": [
+            "public readonly record struct Result<T>(bool IsSuccess, T? Value, string? Error)",
+            "{",
+            "\tpublic static Result<T> Success(T value) => new(true, value, null);",
+            "\tpublic static Result<T> Failure(string error) => new(false, default, error);",
+            "",
+            "\tpublic TResult Match<TResult>(",
+            "\t\tFunc<T, TResult> onSuccess,",
+            "\t\tFunc<string, TResult> onFailure)",
+            "\t\t=> IsSuccess ? onSuccess(Value!) : onFailure(Error!);",
+            "}",
+            "$0"
+        ],
+        "description": "Result/Either pattern (success or failure with payload)"
+    },
+    "-> Option / Maybe": {
+        "prefix": "option",
+        "body": [
+            "public readonly record struct Option<T>(bool HasValue, T? Value)",
+            "{",
+            "\tpublic static Option<T> Some(T value) => new(true, value);",
+            "\tpublic static Option<T> None() => new(false, default);",
+            "",
+            "\tpublic TResult Match<TResult>(Func<T, TResult> onSome, Func<TResult> onNone)",
+            "\t\t=> HasValue ? onSome(Value!) : onNone();",
+            "}",
+            "$0"
+        ],
+        "description": "Option/Maybe monad"
+    },
+    "-> Generic Repository": {
+        "prefix": "repository",
+        "body": [
+            "public interface IRepository<T> where T : class",
+            "{",
+            "\tTask<T?> GetByIdAsync(${1:int} id, CancellationToken ct = default);",
+            "\tTask<IReadOnlyList<T>> GetAllAsync(CancellationToken ct = default);",
+            "\tTask AddAsync(T entity, CancellationToken ct = default);",
+            "\tTask UpdateAsync(T entity, CancellationToken ct = default);",
+            "\tTask DeleteAsync(${1:int} id, CancellationToken ct = default);",
+            "}",
+            "$0"
+        ],
+        "description": "Generic repository pattern interface"
+    },
+    "-> CQRS Handler (MediatR)": {
+        "prefix": "cqrshandler",
+        "body": [
+            "public sealed record ${1:GetItemQuery}(${2:int Id}) : IRequest<${3:ItemDto}>;",
+            "",
+            "public sealed class ${1}Handler : IRequestHandler<${1}, ${3}>",
+            "{",
+            "\tpublic async Task<${3}> Handle(${1} request, CancellationToken ct)",
+            "\t{",
+            "\t\t$0",
+            "\t\treturn default!;",
+            "\t}",
+            "}"
+        ],
+        "description": "CQRS Query/Command handler using MediatR"
+    },
+    "-> Minimal API Endpoint": {
+        "prefix": "minimalapi",
+        "body": [
+            "app.MapGet(\"/${1:items}\", async (${2:IItemService} service, CancellationToken ct) =>",
+            "{",
+            "\tvar items = await service.GetAllAsync(ct);",
+            "\treturn Results.Ok(items);",
+            "})",
+            ".WithName(\"${3:GetItems}\")",
+            ".WithOpenApi();",
+            "$0"
+        ],
+        "description": "ASP.NET Core minimal API endpoint with DI"
+    },
+    "-> Minimal API Endpoint Group": {
+        "prefix": "minimalgroup",
+        "body": [
+            "var ${1:items} = app.MapGroup(\"/${1}\").WithTags(\"${2:Items}\");",
+            "",
+            "${1}.MapGet(\"/\", () => Results.Ok());",
+            "${1}.MapGet(\"/{id:int}\", (int id) => Results.Ok());",
+            "${1}.MapPost(\"/\", () => Results.Created());",
+            "${1}.MapPut(\"/{id:int}\", (int id) => Results.NoContent());",
+            "${1}.MapDelete(\"/{id:int}\", (int id) => Results.NoContent());",
+            "$0"
+        ],
+        "description": "Minimal API endpoint group with CRUD routes"
+    },
+    "-> Specification Pattern": {
+        "prefix": "specification",
+        "body": [
+            "public interface ISpecification<T>",
+            "{",
+            "\tbool IsSatisfiedBy(T candidate);",
+            "}",
+            "",
+            "public sealed class ${1:NameSpec} : ISpecification<${2:Item}>",
+            "{",
+            "\tprivate readonly string _name;",
+            "\tpublic ${1}(string name) => _name = name;",
+            "\tpublic bool IsSatisfiedBy(${2} candidate) => candidate.Name == _name;",
+            "}",
+            "$0"
+        ],
+        "description": "Specification pattern for composable rules"
+    },
+    "-> Builder (Fluent)": {
+        "prefix": "builder",
+        "body": [
+            "public sealed class ${1:Item}Builder",
+            "{",
+            "\tprivate string _name = string.Empty;",
+            "\tprivate int _quantity;",
+            "",
+            "\tpublic ${1}Builder WithName(string name) { _name = name; return this; }",
+            "\tpublic ${1}Builder WithQuantity(int quantity) { _quantity = quantity; return this; }",
+            "\tpublic ${1} Build() => new() { Name = _name, Quantity = _quantity };",
+            "}",
+            "$0"
+        ],
+        "description": "Fluent builder pattern"
+    },
+    "-> Unit of Work": {
+        "prefix": "unitofwork",
+        "body": [
+            "public interface IUnitOfWork : IAsyncDisposable",
+            "{",
+            "\tIRepository<${1:Item}> ${1}s { get; }",
+            "\tTask<int> SaveChangesAsync(CancellationToken ct = default);",
+            "}",
+            "$0"
+        ],
+        "description": "Unit of Work pattern interface"
+    },
+    "-> Mediator Pattern (lightweight)": {
+        "prefix": "mediator",
+        "body": [
+            "public interface IRequest<TResponse> { }",
+            "public interface IRequestHandler<TRequest, TResponse> where TRequest : IRequest<TResponse>",
+            "{",
+            "\tTask<TResponse> Handle(TRequest request, CancellationToken ct);",
+            "}",
+            "$0"
+        ],
+        "description": "Lightweight mediator interfaces (no library required)"
+    }
+}

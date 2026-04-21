@@ -1,17 +1,25 @@
 node_modules
-.vscode/**
 .vscode-test/**
-.gitignore
 vsc-extension-quickstart.md
-out/test/**
+
+# Build output
 /out/
+/out-test/
+out/test/**
 test/**
 *.vsix
-.yarnrc
-**/tsconfig.json
-**/.eslintrc.json
 **/*.map
 
-# Ignore lock files
+# Stray compiled JS sitting next to TypeScript sources
+src/**/*.js
+src/**/*.js.map
+
+# Tooling
+.yarnrc
+
+# Lock files
+# package-lock.json IS tracked — required by `npm ci` in CI for reproducible builds.
 yarn.lock
-package-lock.json
+
+# Long-form planning docs (keep in workspace, not in repo)
+ROADMAP.md

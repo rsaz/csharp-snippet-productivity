@@ -1,50 +1,368 @@
 <!DOCTYPE html>
-    <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}}; img-src {{cspSource}} https:; script-src 'nonce-{{nonce}}';">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="{{stylesResetUri}}" rel="stylesheet">
-  <link href="{{stylesMainUri}}" rel="stylesheet">       
-</head>
-<body>
-  <h1>Add the Project Details</h1>
-  <br/>
-  <br/>
-  <h3>Select the project type</h3>
-    <select id="project-group-select" name="project-group">
-      <option value="api">API</option>
-      <option value="blazor">Blazor</option>
-      <option value="cloud">Cloud</option>
-      <option value="console">Console</option>
-      <option value="desktop">Desktop</option>
-      <option value="extensions">Extensions</option>
-      <option value="game">Game</option>
-      <option value="iot">IoT</option>
-      <option value="lib">Libraries</option>
-      <option value="machinelearning">Machine Learning</option>
-      <option value="maui">MAUI</option>
-      <option value="mobile">Mobile</option>
-      <option value="test">Test</option>
-      <option value="web">Web</option>      
-    </select>
-  <br/>
-  <br/>
-  <h3>Select the project template</h3>
-  <select id="custom-select" name="project-type">
-    <!-- Dynamically filled options -->
-  </select>
-  </br>
-  </br>
-  <label for="projectName">Project Name:</label>
-  <input id="projectName" type="text" name="projectName" value="{{project}}" required placeholder="Insert your project name">
-  <br /> 
-  <label for="framework">Framework</label>
-  <br />
-  <select id="custom-select2" name="framework">
-    {{sdkOptions}}
-  </select>
-  <button id="create-project-button">Create Project</button>
-  <script nonce="{{nonce}}" src="{{script}}"></script>
-  </body>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'none'; style-src {{cspSource}}; img-src {{cspSource}} https: data:; script-src 'nonce-{{nonce}}' 'unsafe-inline';"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Create Project</title>
+        <link href="{{stylesResetUri}}" rel="stylesheet" />
+        <link href="{{stylesMainUri}}" rel="stylesheet" />
+
+        <script nonce="{{nonce}}" src="{{templateIconsScript}}"></script>
+        <script nonce="{{nonce}}" src="{{script}}" defer></script>
+    </head>
+    <body>
+        <div class="wizard-container" role="main">
+            <header class="wizard-header">
+                <div>
+                    <h1>Create a New Project</h1>
+                    <div class="wizard-subtitle">
+                        Scaffold a modern .NET project in seconds
+                    </div>
+                </div>
+                <div class="search-container">
+                    <input
+                        type="text"
+                        id="template-search"
+                        placeholder="Search templates..."
+                        aria-label="Search templates"
+                        autocomplete="off"
+                    />
+                </div>
+            </header>
+
+            <nav class="wizard-steps" data-progress="1" aria-label="Wizard progress">
+                <div class="step active" data-step="1" aria-current="step">
+                    <div class="step-number"><span class="num">1</span></div>
+                    <div class="step-title">Choose Template</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number"><span class="num">2</span></div>
+                    <div class="step-title">Configure Project</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number"><span class="num">3</span></div>
+                    <div class="step-title">Additional Options</div>
+                </div>
+            </nav>
+
+            <div class="wizard-content">
+                <!-- Step 1: Template Selection -->
+                <div class="wizard-page active" id="template-selection" data-step="1">
+                    <section
+                        class="recent-projects-section hidden"
+                        id="recent-projects-section"
+                        aria-label="Recent projects"
+                    >
+                        <div class="recent-projects-header">
+                            <h3>Recent Projects</h3>
+                            <button
+                                type="button"
+                                class="recent-projects-clear"
+                                id="clear-recent"
+                                title="Clear recent projects"
+                            >
+                                Clear
+                            </button>
+                        </div>
+                        <div
+                            class="recent-projects-list"
+                            id="recent-projects-list"
+                        ></div>
+                    </section>
+
+                    <div class="template-filters">
+                        <label for="project-group-select">Category:</label>
+                        <select id="project-group-select" name="project-group">
+                            <option value="">Select Project Type</option>
+                        </select>
+                    </div>
+
+                    <div class="template-grid" id="template-grid">
+                        <div class="empty-state" id="template-empty-state">
+                            <div class="empty-state-icon">.NET</div>
+                            <div class="empty-state-text">
+                                Select a category or search to view available
+                                templates
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Project Configuration -->
+                <div class="wizard-page" data-step="2">
+                    <div class="config-form">
+                        <div class="form-group">
+                            <label for="projectName">
+                                Project name<span class="required">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="projectName"
+                                name="projectName"
+                                placeholder="MyProject"
+                                autocomplete="off"
+                                spellcheck="false"
+                                required
+                            />
+                            <span class="help-text">
+                                The name of your project. This will also be used
+                                as the default namespace.
+                            </span>
+                            <span class="error-text" id="projectName-error">
+                                Please provide a valid project name (letters,
+                                digits, underscores).
+                            </span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="solution">
+                                Solution name<span class="required">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="solution"
+                                name="solution"
+                                placeholder="MySolution"
+                                autocomplete="off"
+                                spellcheck="false"
+                                required
+                            />
+                            <span class="help-text">
+                                The name of the solution that will contain your
+                                project.
+                            </span>
+                            <span class="error-text" id="solution-error">
+                                Please provide a valid solution name.
+                            </span>
+                        </div>
+
+                        <div class="form-group location">
+                            <label for="inputLocal">
+                                Location<span class="required">*</span>
+                            </label>
+                            <div class="location-input">
+                                <input
+                                    type="text"
+                                    id="inputLocal"
+                                    name="location"
+                                    placeholder="Choose a folder..."
+                                    readonly
+                                />
+                                <button
+                                    type="button"
+                                    id="selectFolder"
+                                    class="secondary-button"
+                                >
+                                    Browse...
+                                </button>
+                            </div>
+                            <span class="help-text">
+                                The folder where your project will be created.
+                            </span>
+                            <span class="error-text" id="location-error">
+                                Please choose a folder for your project.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Additional Options -->
+                <div class="wizard-page" data-step="3">
+                    <div class="config-form">
+                        <div class="form-group">
+                            <label>
+                                Framework<span class="required">*</span>
+                            </label>
+                            <div
+                                id="framework-grid"
+                                class="framework-grid"
+                                role="radiogroup"
+                                aria-label="Select target framework"
+                            >
+                                <!-- Framework cards populated dynamically -->
+                            </div>
+                            <span class="help-text">
+                                Frameworks marked with
+                                <span style="color: var(--warning-color)">★</span>
+                                are recommended (latest LTS or current).
+                            </span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="auth-type">Authentication type</label>
+                            <select id="auth-type" class="form-select">
+                                <option value="None">None</option>
+                                <option value="MicrosoftIdentityPlatform">
+                                    Microsoft identity platform
+                                </option>
+                                <option value="Windows">Windows</option>
+                            </select>
+                            <span class="help-text">
+                                The type of authentication to use.
+                            </span>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="https-checkbox"
+                                        checked
+                                    />
+                                    Configure for HTTPS
+                                    <span
+                                        class="info-icon"
+                                        title="Enables an HTTPS endpoint for the application"
+                                    >ⓘ</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="docker-checkbox"
+                                    />
+                                    Enable container support
+                                    <span
+                                        class="info-icon"
+                                        title="Adds Dockerfile and container configuration"
+                                    >ⓘ</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group container-options">
+                            <label for="container-os">Container OS</label>
+                            <select id="container-os" class="form-select">
+                                <option value="Linux">Linux</option>
+                                <option value="Windows">Windows</option>
+                            </select>
+
+                            <label for="container-build-type">
+                                Container build type
+                            </label>
+                            <select
+                                id="container-build-type"
+                                class="form-select"
+                            >
+                                <option value="Dockerfile">Dockerfile</option>
+                                <option value="DockerCompose">
+                                    Docker Compose
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="openapi-checkbox"
+                                    />
+                                    Enable OpenAPI support
+                                    <span
+                                        class="info-icon"
+                                        title="Adds OpenAPI (Swagger) support to the project"
+                                    >ⓘ</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="top-level-statements-checkbox"
+                                    />
+                                    Do not use top-level statements
+                                    <span
+                                        class="info-icon"
+                                        title="Uses the traditional Program class structure instead of top-level statements"
+                                    >ⓘ</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        id="controllers-checkbox"
+                                    />
+                                    Use controllers
+                                    <span
+                                        class="info-icon"
+                                        title="Uses controllers instead of minimal APIs"
+                                    >ⓘ</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="wizard-footer">
+                <div class="wizard-footer-left">
+                    <span class="help-text">
+                        Use <span class="kbd">Tab</span> to navigate,
+                        <span class="kbd">Enter</span> to advance,
+                        <span class="kbd">Esc</span> to close.
+                    </span>
+                </div>
+                <div class="wizard-footer-right">
+                    <button
+                        id="prev-button"
+                        class="secondary-button"
+                        disabled
+                    >
+                        Previous
+                    </button>
+                    <button id="next-button" class="primary-button" disabled>
+                        Next
+                    </button>
+                    <button
+                        id="create-project-button"
+                        class="primary-button hidden"
+                    >
+                        Create Project
+                    </button>
+                </div>
+            </footer>
+        </div>
+
+        <!-- Loading overlay -->
+        <div
+            class="loading-overlay"
+            id="loading-overlay"
+            role="alert"
+            aria-busy="true"
+            aria-live="polite"
+        >
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <div class="loading-text" id="loading-text">
+                    Creating project...
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast notifications -->
+        <div
+            class="toast-container"
+            id="toast-container"
+            role="region"
+            aria-label="Notifications"
+            aria-live="polite"
+        ></div>
+    </body>
 </html>

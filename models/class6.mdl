@@ -1,8 +1,9 @@
 using System;
 
-namespace ${namespace};
-
-public class ${fileName}
+namespace ${namespace}
 {
-    ${cursor}
+    internal class ${fileName}
+    {
+        ${cursor}
+    }
 }
