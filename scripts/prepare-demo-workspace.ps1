@@ -30,8 +30,11 @@
     "$env:USERPROFILE\Desktop\ext-demo-screenshots".
 
 .PARAMETER Framework
-    Target framework for every scaffolded project. Defaults to net9.0; pass
-    net8.0 if you don't have the .NET 9 SDK installed.
+    Target framework for every scaffolded project. When omitted, the script
+    auto-detects the highest .NET major installed locally (>= 6) so the
+    captured screenshots always exercise the modern templates the extension
+    ships. Pass an explicit value (e.g. net8.0) to pin the demo workspace
+    to a specific framework.
 
 .EXAMPLE
     ./scripts/prepare-demo-workspace.ps1
@@ -43,8 +46,8 @@
 [CmdletBinding()]
 param(
     [string] $Root = (Join-Path $env:USERPROFILE 'Desktop\ext-demo-screenshots'),
-    [ValidateSet('net8.0', 'net9.0')]
-    [string] $Framework = 'net9.0'
+    [ValidatePattern('^net(6|7|8|9|10)\.0$')]
+    [string] $Framework
 )
 
 $ErrorActionPreference = 'Stop'
@@ -62,20 +65,50 @@ function Invoke-Dotnet {
     }
 }
 
-# Confirm the requested framework is actually installed before we start
-# scaffolding — otherwise every dotnet new will fail with the same opaque
+# Discover what's actually on this machine before we start scaffolding —
+# otherwise every dotnet new will fail with the same opaque
 # "Invalid option(s): --framework" error the extension itself guards against.
-Write-Step "Checking for .NET SDK that supports $Framework"
+Write-Step "Probing installed .NET SDKs"
 $installed = & dotnet --list-sdks
 if (-not $installed) {
     throw "dotnet --list-sdks returned nothing. Install the .NET SDK first: https://dotnet.microsoft.com/download"
 }
-$majorWanted = [int]($Framework -replace 'net', '' -replace '\..*', '')
-$haveMatching = $installed | Where-Object {
-    $_ -match '^(\d+)\.' -and [int]$matches[1] -ge $majorWanted
+
+$installedMajors = $installed |
+    ForEach-Object { if ($_ -match '^(\d+)\.') { [int]$matches[1] } } |
+    Where-Object { $_ -ge 6 } |
+    Sort-Object -Unique
+
+if (-not $installedMajors) {
+    throw @"
+No installed SDK supports modern templates (need .NET 6 or higher). Installed SDKs:
+$installed
+
+Install the latest LTS or current SDK from https://dotnet.microsoft.com/download
+"@
 }
-if (-not $haveMatching) {
-    throw "No installed SDK >= $majorWanted.x found. Installed:`n$installed"
+
+if ($Framework) {
+    # Caller pinned a framework — verify the matching SDK is installed.
+    $majorWanted = [int]($Framework -replace 'net', '' -replace '\..*', '')
+    if ($majorWanted -notin $installedMajors) {
+        throw @"
+Requested -Framework $Framework but no .NET $majorWanted SDK is installed.
+Installed major versions: $($installedMajors -join ', ')
+Either install .NET $majorWanted or rerun without -Framework to auto-pick.
+"@
+    }
+    Write-Host "Using requested framework: $Framework" -ForegroundColor Green
+}
+else {
+    # Auto-pick the highest installed major so the demo always exercises the
+    # extension's modern templates (file-scoped namespaces, positional records).
+    $best = ($installedMajors | Measure-Object -Maximum).Maximum
+    $Framework = "net$best.0"
+    Write-Host "Auto-selected framework: $Framework (highest installed: net$best)" -ForegroundColor Green
+    if ($installedMajors.Count -gt 1) {
+        Write-Host "  Other installed majors: $(($installedMajors | Where-Object { $_ -ne $best }) -join ', ')" -ForegroundColor DarkGray
+    }
 }
 
 Write-Step "Resetting demo root: $Root"
