@@ -2,7 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main, feature/new-ui]
+    branches:
+      - main
+      - "feature/**"
+      - "fix/**"
+      - "chore/**"
+      - "release/**"
   pull_request:
     branches: [main]
 
