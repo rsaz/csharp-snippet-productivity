@@ -1,6 +1,20 @@
 import * as vscode from "vscode";
 import { Parser } from "./Parser";
 
+/**
+ * Settings that, when changed, require the Parser to be rebuilt because
+ * they're consumed in the field initializer (and therefore frozen at
+ * construction time). Keeping this list explicit avoids the cost of tearing
+ * down decorations on unrelated config edits like
+ * `csharp-snippet-productivity.tags.popularPackages`.
+ */
+const PARSER_CONFIG_KEYS = [
+  "csharp-snippet-productivity.tags",
+  "csharp-snippet-productivity.multilineComments",
+  "csharp-snippet-productivity.highlightPlainText",
+  "csharp-snippet-productivity.useJSDocStyle",
+] as const;
+
 export class SmartComments {
   private context: vscode.ExtensionContext;
 
@@ -9,11 +23,11 @@ export class SmartComments {
   }
 
   public activateSmartComments() {
-    let activeEditor: vscode.TextEditor;
+    let activeEditor: vscode.TextEditor | undefined;
     let parser: Parser = new Parser();
 
     // Called to handle events below
-    let updateDecorations = function (useHash = false) {
+    const updateDecorations = () => {
       // if no active window is open, return
       if (!activeEditor) {
         return;
@@ -77,10 +91,44 @@ export class SmartComments {
       this.context.subscriptions
     );
 
+    // * Handle settings changed at runtime.
+    // The Parser snapshots tags / multilineComments / highlightPlainText in
+    // its field initializer, so changes to those keys can't take effect by
+    // mutating the existing instance — rebuild it instead. Disposing the old
+    // parser releases its TextEditorDecorationType handles so the editor
+    // doesn't keep painting the old colours alongside the new ones.
+    vscode.workspace.onDidChangeConfiguration(
+      (event) => {
+        const affectsParser = PARSER_CONFIG_KEYS.some((key) =>
+          event.affectsConfiguration(key)
+        );
+        if (!affectsParser) {
+          return;
+        }
+
+        parser.dispose();
+        parser = new Parser();
+
+        if (activeEditor) {
+          parser.SetRegex(activeEditor.document.languageId);
+          triggerUpdateDecorations();
+        }
+      },
+      null,
+      this.context.subscriptions
+    );
+
+    // Make sure decorations are released when the extension deactivates,
+    // even if VS Code doesn't tear the window down before another extension
+    // host instance grabs the same handles.
+    this.context.subscriptions.push({
+      dispose: () => parser.dispose(),
+    });
+
     // * IMPORTANT:
     // To avoid calling update too often,
     // set a timer for 200ms to wait before updating decorations
-    var timeout: NodeJS.Timeout;
+    let timeout: NodeJS.Timeout | undefined;
     function triggerUpdateDecorations() {
       if (timeout) {
         clearTimeout(timeout);

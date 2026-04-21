@@ -358,7 +358,7 @@
                 },
                 "csharp-snippet-productivity.tags": {
                     "type": "array",
-                    "description": "Colored comments. Each entry highlights single-line comments whose first word matches the tag (e.g. '// TODO: refactor'). Edit colors and add custom tags here. Changes require a window reload.",
+                    "description": "Colored comments. Each entry highlights single-line comments whose first word matches the tag (e.g. '// TODO: refactor'). Edit colors and add custom tags here — changes apply live, no window reload needed.",
                     "default": [
                         {
                             "tag": "bug",

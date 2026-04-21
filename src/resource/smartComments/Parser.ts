@@ -240,6 +240,18 @@ export class Parser {
 	}
 
 	/**
+	 * Releases every decoration type the parser allocated. Required before
+	 * dropping a parser instance — otherwise the editor keeps painting the
+	 * old colours alongside the new ones until the window is reloaded.
+	 */
+	public dispose(): void {
+		for (const tag of this.tags) {
+			tag.decoration.dispose();
+		}
+		this.tags.length = 0;
+	}
+
+	/**
 	 * Sets the comment delimiter [//, #, --, '] of a given language
 	 * @param languageCode The short code of the current language
 	 * https://code.visualstudio.com/docs/languages/identifiers

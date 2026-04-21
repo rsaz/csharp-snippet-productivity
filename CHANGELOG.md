@@ -40,6 +40,7 @@ This is a major release that consolidates the `feature/new-ui` branch: a redesig
 ### Fixed
 
 - **Stale-framework bug** in file scaffolds — `ContextualMenu` previously read the framework from a `globalState` key set by the project wizard, so opening any pre-existing project gave you the *last wizard pick* instead of the project's real TFM. Fixed: framework is now resolved from the nearest `.csproj` first.
+- **Smart-comment settings now apply live** — editing `csharp-snippet-productivity.tags` (or `multilineComments` / `highlightPlainText` / `useJSDocStyle`) used to require a full window reload because the parser snapshotted them in a field initializer. The smart-comment service now subscribes to `onDidChangeConfiguration`, disposes the stale `TextEditorDecorationType` handles, rebuilds the parser, and re-applies decorations to the active editor — no reload needed.
 - **Hard-coded magic strings** replaced with constants from `src/utils/constants.ts` to prevent drift between webview and extension.
 - **Webview message dispatch** wrapped in try/catch.
 
